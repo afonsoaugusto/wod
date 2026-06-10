@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>WOD Timer — Controle remoto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=5">
+</head>
+<body data-page="remote">
+  <div id="app">
+    <nav class="site-nav">
+      <a href="index.html">Timer</a>
+      <a href="display.html">Tela</a>
+      <a href="about.html">Sobre</a>
+    </nav>
+
+    <section id="remote-screen" class="screen active">
+      <header class="setup-header">
+        <h1>Controle remoto</h1>
+        <p class="subtitle">Configure o WOD aqui e inicie na tela do iPad</p>
+      </header>
+
+      <div class="remote-connect">
+        <label>
+          Código da tela
+          <div class="connect-row">
+            <input type="text" id="remote-code" maxlength="6" placeholder="ABC123" autocapitalize="characters" autocomplete="off">
+            <button type="button" id="btn-connect" class="btn-primary btn-connect">Conectar</button>
+          </div>
+        </label>
+        <p class="remote-status" id="remote-status">Desconectado</p>
+      </div>
+
+      <div class="block-tabs" role="tablist">
+        <button type="button" class="block-tab active" data-block="alongamento" role="tab" aria-selected="true">Alongamento</button>
+        <button type="button" class="block-tab" data-block="tecnica" role="tab">Técnica</button>
+        <button type="button" class="block-tab" data-block="wod" role="tab">WOD</button>
+      </div>
+
+      <div class="setup-panels">
+        <div class="setup-panel active" data-block="alongamento">
+          <div class="panel-config" id="config-alongamento"></div>
+          <div class="exercise-list" id="exercises-alongamento"></div>
+          <button type="button" class="btn-add" data-block="alongamento">+ Exercício</button>
+        </div>
+        <div class="setup-panel" data-block="tecnica">
+          <div class="panel-config" id="config-tecnica"></div>
+          <div class="exercise-list" id="exercises-tecnica"></div>
+          <button type="button" class="btn-add" data-block="tecnica">+ Exercício</button>
+        </div>
+        <div class="setup-panel" data-block="wod">
+          <div class="panel-config" id="config-wod"></div>
+          <div class="exercise-list" id="exercises-wod"></div>
+          <button type="button" class="btn-add" data-block="wod">+ Exercício</button>
+        </div>
+      </div>
+
+      <div class="global-settings">
+        <label>
+          Descanso entre blocos (seg)
+          <input type="number" id="rest-between-blocks" min="0" max="600" value="60">
+        </label>
+      </div>
+
+      <div class="remote-controls">
+        <button type="button" id="btn-send-config" class="btn-secondary" disabled>Enviar configuração</button>
+        <button type="button" id="btn-remote-start" class="btn-primary" disabled>Iniciar na tela</button>
+        <div class="remote-live">
+          <button type="button" id="btn-remote-pause" class="btn-control" disabled>Pausar</button>
+          <button type="button" id="btn-remote-skip" class="btn-control" disabled>Pular</button>
+          <button type="button" id="btn-remote-stop" class="btn-control btn-danger" disabled>Parar</button>
+        </div>
+        <p class="remote-live-status" id="remote-live-status">—</p>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="sync.js"></script>
+  <script src="app.js?v=5"></script>
+</body>
+</html>

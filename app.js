@@ -37,6 +37,10 @@
   let audioUnlocked = false;
   let voicesReady = false;
 
+  const PAGE_MODE = document.body.dataset.page || "standalone";
+  let displaySync = null;
+  let remoteSync = null;
+
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => document.querySelectorAll(sel);
 
@@ -123,6 +127,57 @@
     $("#sound-enabled").checked = state.soundEnabled;
     $("#prep-seconds").value = state.prepSeconds;
     applyLayoutRatio(state.layoutRatio);
+  }
+
+  function getSerializableConfig() {
+    return {
+      blocks: JSON.parse(JSON.stringify(state.blocks)),
+      restBetweenBlocks: state.restBetweenBlocks,
+      layoutRatio: state.layoutRatio,
+      soundEnabled: state.soundEnabled,
+      prepSeconds: state.prepSeconds,
+    };
+  }
+
+  function applyRemoteConfig(payload) {
+    if (!payload) return;
+    if (payload.blocks) {
+      BLOCKS.forEach((b) => {
+        if (payload.blocks[b]) state.blocks[b] = payload.blocks[b];
+      });
+    }
+    if (payload.restBetweenBlocks !== undefined) {
+      state.restBetweenBlocks = payload.restBetweenBlocks;
+      const el = $("#rest-between-blocks");
+      if (el) el.value = state.restBetweenBlocks;
+    }
+    if (payload.layoutRatio !== undefined) applyLayoutRatio(payload.layoutRatio);
+    if (payload.soundEnabled !== undefined) {
+      state.soundEnabled = payload.soundEnabled;
+      const el = $("#sound-enabled");
+      if (el) el.checked = state.soundEnabled;
+    }
+    if (payload.prepSeconds !== undefined) {
+      state.prepSeconds = payload.prepSeconds;
+      const el = $("#prep-seconds");
+      if (el) el.value = state.prepSeconds;
+    }
+  }
+
+  function broadcastStatus() {
+    if (PAGE_MODE !== "display" || !displaySync) return;
+    const activeScreen = document.querySelector(".screen.active");
+    const phase = timeline[phaseIndex];
+    displaySync.send({
+      type: "status",
+      payload: {
+        screen: activeScreen?.id || "pairing-screen",
+        paused: state.paused,
+        remaining: phase ? Math.ceil(remaining) : 0,
+        block: phase?.blockLabel || "",
+        label: phase?.label || phase?.exercise?.name || "",
+      },
+    });
   }
 
   function renderBlockConfig(block) {
@@ -542,7 +597,7 @@
     $("#btn-round-plus")?.addEventListener("click", () => updateAmrapRounds(1));
     $("#btn-round-minus")?.addEventListener("click", () => updateAmrapRounds(-1));
 
-    $("#btn-start").addEventListener("click", () => {
+    $("#btn-start")?.addEventListener("click", () => {
       if (state.soundEnabled) unlockAudioInGesture();
       startWorkout();
     });
@@ -562,10 +617,13 @@
         { passive: true }
       );
     });
-    $("#btn-pause").addEventListener("click", togglePause);
-    $("#btn-skip").addEventListener("click", skipPhase);
-    $("#btn-stop").addEventListener("click", stopWorkout);
-    $("#btn-restart").addEventListener("click", () => showScreen("setup-screen"));
+    $("#btn-pause")?.addEventListener("click", togglePause);
+    $("#btn-skip")?.addEventListener("click", skipPhase);
+    $("#btn-stop")?.addEventListener("click", stopWorkout);
+    $("#btn-restart")?.addEventListener("click", () => {
+      if (PAGE_MODE === "display") showScreen("pairing-screen");
+      else showScreen("setup-screen");
+    });
 
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible" && $("#timer-screen").classList.contains("active")) {
@@ -589,7 +647,8 @@
 
   function showScreen(id) {
     $$(".screen").forEach((s) => s.classList.remove("active"));
-    $(`#${id}`).classList.add("active");
+    $(`#${id}`)?.classList.add("active");
+    broadcastStatus();
   }
 
   function getActiveBlocks() {
@@ -723,11 +782,11 @@
   let tickInterval = null;
   let lastTick = 0;
 
-  function startWorkout() {
+  function startWorkout(opts = {}) {
     timeline = buildTimeline();
     if (timeline.length === 0) {
-      alert("Adicione pelo menos um exercício em algum bloco.");
-      return;
+      if (!opts.remote) alert("Adicione pelo menos um exercício em algum bloco.");
+      return false;
     }
 
     closeSettings();
@@ -749,6 +808,8 @@
     } else {
       enterPhase(0);
     }
+    broadcastStatus();
+    return true;
   }
 
   function runPrepCountdown(seconds, done) {
@@ -974,6 +1035,7 @@
       const exNum = phase.exerciseIndex + 1;
       $("#round-info").textContent = `Exercício ${exNum} / ${phase.exercises.length}`;
     }
+    broadcastStatus();
   }
 
   function togglePause() {
@@ -995,7 +1057,8 @@
   function stopWorkout() {
     clearInterval(tickInterval);
     releaseWakeLock();
-    showScreen("setup-screen");
+    if (PAGE_MODE === "display") showScreen("pairing-screen");
+    else showScreen("setup-screen");
   }
 
   function finishWorkout(opts = {}) {
@@ -1007,5 +1070,154 @@
     showScreen("finished-screen");
   }
 
-  init();
+  function handleRemoteCommand(data) {
+    switch (data.type) {
+      case "config":
+        applyRemoteConfig(data.payload);
+        break;
+      case "start":
+        if (state.soundEnabled) unlockAudioInGesture();
+        startWorkout({ remote: true });
+        break;
+      case "pause":
+        if (!state.paused) togglePause();
+        break;
+      case "resume":
+        if (state.paused) togglePause();
+        break;
+      case "skip":
+        skipPhase();
+        break;
+      case "stop":
+        stopWorkout();
+        break;
+      default:
+        break;
+    }
+  }
+
+  function initDisplay() {
+    BLOCKS.forEach((block) => {
+      state.blocks[block] = defaultBlock();
+    });
+    loadPreferences();
+    buildProgressRing();
+    applyLayoutRatio(state.layoutRatio);
+    $("#sound-enabled").checked = state.soundEnabled;
+    $("#prep-seconds").value = state.prepSeconds;
+    bindEvents();
+
+    const codeEl = $("#pairing-code");
+    const statusEl = $("#pairing-status");
+
+    displaySync = WodSync.createHost({
+      onReady(code) {
+        codeEl.textContent = code;
+        statusEl.textContent = "Aguardando controle remoto…";
+      },
+      onConnect() {
+        statusEl.textContent = "Controle conectado!";
+        $("#remote-connected")?.classList.add("visible");
+        broadcastStatus();
+      },
+      onDisconnect() {
+        statusEl.textContent = "Controle desconectado — aguardando…";
+        $("#remote-connected")?.classList.remove("visible");
+        broadcastStatus();
+      },
+      onMessage: handleRemoteCommand,
+      onError() {
+        statusEl.textContent = "Erro de conexão. Recarregue a página.";
+      },
+    });
+  }
+
+  function setRemoteUi(connected) {
+    $("#btn-send-config").disabled = !connected;
+    $("#btn-remote-start").disabled = !connected;
+    $("#btn-remote-pause").disabled = !connected;
+    $("#btn-remote-skip").disabled = !connected;
+    $("#btn-remote-stop").disabled = !connected;
+    $("#remote-status").textContent = connected ? "Conectado à tela" : "Desconectado";
+    $("#remote-status").classList.toggle("connected", connected);
+  }
+
+  function initRemote() {
+    BLOCKS.forEach((block) => {
+      state.blocks[block] = defaultBlock();
+      renderBlockConfig(block);
+      renderExercises(block);
+    });
+    $("#rest-between-blocks").value = state.restBetweenBlocks;
+    bindEvents();
+    setRemoteUi(false);
+
+    $("#btn-connect")?.addEventListener("click", () => {
+      const code = WodSync.normalizeCode($("#remote-code").value);
+      if (code.length < 6) {
+        alert("Digite o código de 6 caracteres exibido na tela.");
+        return;
+      }
+      remoteSync?.destroy();
+      $("#remote-status").textContent = "Conectando…";
+      remoteSync = WodSync.connect(code, {
+        onConnect() {
+          setRemoteUi(true);
+          remoteSync.send({ type: "config", payload: getSerializableConfig() });
+        },
+        onDisconnect() {
+          setRemoteUi(false);
+          $("#remote-live-status").textContent = "—";
+        },
+        onMessage(data) {
+          if (data.type === "status") {
+            const p = data.payload || {};
+            const pauseBtn = $("#btn-remote-pause");
+            if (pauseBtn) pauseBtn.textContent = p.paused ? "Continuar" : "Pausar";
+            if (p.screen === "timer-screen" && p.label) {
+              $("#remote-live-status").textContent = `${p.block} · ${p.label} · ${p.remaining}s`;
+            } else if (p.screen === "finished-screen") {
+              $("#remote-live-status").textContent = "Treino concluído na tela";
+            } else if (p.screen === "pairing-screen") {
+              $("#remote-live-status").textContent = "Tela aguardando";
+            } else {
+              $("#remote-live-status").textContent = "—";
+            }
+          }
+        },
+        onError() {
+          setRemoteUi(false);
+          $("#remote-status").textContent = "Código inválido ou tela offline";
+        },
+      });
+    });
+
+    $("#btn-send-config")?.addEventListener("click", () => {
+      remoteSync?.send({ type: "config", payload: getSerializableConfig() });
+      $("#remote-status").textContent = "Configuração enviada";
+    });
+
+    $("#btn-remote-start")?.addEventListener("click", () => {
+      remoteSync?.send({ type: "config", payload: getSerializableConfig() });
+      remoteSync?.send({ type: "start" });
+    });
+
+    $("#btn-remote-pause")?.addEventListener("click", () => {
+      const btn = $("#btn-remote-pause");
+      const isPaused = btn?.textContent === "Continuar";
+      remoteSync?.send({ type: isPaused ? "resume" : "pause" });
+    });
+
+    $("#btn-remote-skip")?.addEventListener("click", () => {
+      remoteSync?.send({ type: "skip" });
+    });
+
+    $("#btn-remote-stop")?.addEventListener("click", () => {
+      remoteSync?.send({ type: "stop" });
+    });
+  }
+
+  if (PAGE_MODE === "display") initDisplay();
+  else if (PAGE_MODE === "remote") initRemote();
+  else init();
 })();

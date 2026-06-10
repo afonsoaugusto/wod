@@ -2,25 +2,23 @@
 
 Contador de tempo para treinos de CrossFit, otimizado para iPad em modo paisagem.
 
-## Uso
+## Páginas
 
-1. Configure os blocos **Alongamento**, **Técnica** e **WOD** com exercícios e repetições.
-2. Escolha o modo de cada bloco: Sequencial, EMOM, Tabata, AMRAP ou For Time.
-3. Ajuste a **proporção relógio / exercícios** (presets ou slider) para leitura à distância.
-4. Toque em **Iniciar treino** — contagem regressiva configurável (⚙), relógio grande e painel lateral com exercício atual/próximo.
+| Página | URL | Uso |
+|--------|-----|-----|
+| Timer | [index.html](index.html) | Tudo no mesmo dispositivo |
+| Tela | [display.html](display.html) | iPad — relógio e exercícios |
+| Controle | [remote.html](remote.html) | Celular — configurar e comandar |
+| Sobre | [about.html](about.html) | Guia completo + redes |
 
-### Recursos extras
+## Controle remoto
 
-- **Tabata** — 20s trabalho / 10s descanso por round
-- **Apito de início** e **apito de término** (sons distintos) em cada fase
-- **Voz "half time"** na metade e **"10 seconds"** nos últimos 10s
-- **Bips** nos últimos 3 segundos
-- **Contagem antes de iniciar** — 0 a 30 segundos (0 = desligado)
-- **Contador de rounds** no AMRAP (+/−)
-- **Tela cheia** e **tela sempre ligada** durante o treino
-- Preferências de layout salvas na sessão do navegador
+1. iPad abre **display.html** → anote o código de 6 letras
+2. Celular abre **remote.html** → digite o código → **Conectar**
+3. Configure o WOD no celular → **Iniciar na tela**
+
+Requer mesma rede Wi‑Fi e internet (sinalização WebRTC via PeerJS).
 
 ## GitHub Pages
 
-Publicado em [https://afonsorodrigues.com/wod/](https://afonsorodrigues.com/wod/)
-
+[https://afonsorodrigues.com/wod/](https://afonsorodrigues.com/wod/)

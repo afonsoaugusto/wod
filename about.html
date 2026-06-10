@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WOD Timer — Sobre</title>
+  <link rel="stylesheet" href="styles.css?v=5">
+</head>
+<body data-page="about">
+  <div class="about-page">
+    <nav class="site-nav">
+      <a href="index.html">Timer</a>
+      <a href="display.html">Tela</a>
+      <a href="remote.html">Controle</a>
+      <a href="about.html" class="active">Sobre</a>
+    </nav>
+
+    <main class="about-content">
+      <header>
+        <h1>WOD Timer</h1>
+        <p class="about-lead">Contador de tempo para treinos de CrossFit, pensado para leitura à distância no iPad em modo paisagem.</p>
+        <p class="about-author">Por <strong>Afonso Rodrigues</strong> — <a href="https://afonsorodrigues.com">afonsorodrigues.com</a></p>
+      </header>
+
+      <section>
+        <h2>Modos de uso</h2>
+        <div class="about-cards">
+          <article>
+            <h3>Timer local</h3>
+            <p><a href="index.html">index.html</a> — configure e rode tudo no mesmo dispositivo (iPad ou computador).</p>
+          </article>
+          <article>
+            <h3>Tela + Controle remoto</h3>
+            <p><a href="display.html">display.html</a> no iPad (tela grande) + <a href="remote.html">remote.html</a> no celular (configuração e comandos).</p>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2>Controle remoto — passo a passo</h2>
+        <ol class="about-steps">
+          <li>Conecte <strong>iPad</strong> e <strong>celular</strong> na mesma rede Wi‑Fi (ambos precisam de internet para o pareamento).</li>
+          <li>No <strong>iPad</strong>, abra <a href="display.html">Tela do treino</a> em modo paisagem. Anote o <strong>código de 6 letras</strong> exibido.</li>
+          <li>No <strong>celular</strong>, abra <a href="remote.html">Controle remoto</a>, digite o código e toque em <strong>Conectar</strong>.</li>
+          <li>Configure Alongamento, Técnica e WOD no celular (exercícios, reps, modo EMOM/AMRAP etc.).</li>
+          <li>Toque em <strong>Iniciar na tela</strong> — o iPad começa a contagem, sons e troca de exercícios.</li>
+          <li>Durante o treino use <strong>Pausar</strong>, <strong>Pular</strong> e <strong>Parar</strong> no celular.</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>Configuração do treino</h2>
+        <h3>Blocos</h3>
+        <ul>
+          <li><strong>Alongamento</strong>, <strong>Técnica</strong> e <strong>WOD</strong> — cada um com lista de exercícios e repetições.</li>
+          <li>Blocos sem exercícios são ignorados na hora de iniciar.</li>
+          <li><strong>Descanso entre blocos</strong> — pausa configurável entre Alongamento → Técnica → WOD.</li>
+        </ul>
+
+        <h3>Modos por bloco</h3>
+        <table class="about-table">
+          <thead>
+            <tr><th>Modo</th><th>Comportamento</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Sequencial</td><td>Exercício a exercício com tempo de trabalho e descanso.</td></tr>
+            <tr><td>EMOM</td><td>A cada minuto (ou intervalo definido) troca o exercício. Mostra atual e próximo.</td></tr>
+            <tr><td>Tabata</td><td>20s trabalho / 10s descanso por round.</td></tr>
+            <tr><td>AMRAP</td><td>Lista todos os exercícios do bloco. Time cap opcional. Contador de rounds (+/−) na tela.</td></tr>
+            <tr><td>For Time</td><td>Lista completa do bloco; cronômetro progressivo ou time cap.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>Menu ⚙ (configurações)</h2>
+        <ul>
+          <li><strong>Tamanho do relógio</strong> — presets ou slider (35%–75% da tela).</li>
+          <li><strong>Sons e voz</strong> — apito de início/término, “half time”, “10 seconds” e bips finais.</li>
+          <li><strong>Contagem antes de iniciar</strong> — segundos livres (0 = desligado). Ex.: 3 → 3, 2, 1, GO!</li>
+          <li><strong>Testar áudio</strong> — valida som no dispositivo antes do treino.</li>
+          <li><strong>Tela cheia</strong> — ideal para o iPad durante o WOD.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Dicas para o iPad</h2>
+        <ul>
+          <li>Use modo <strong>paisagem</strong> e afaste o dispositivo para enxergar o relógio.</li>
+          <li>Prefira <strong>Relógio grande</strong> no menu ⚙.</li>
+          <li>Toque na tela uma vez se o áudio não tocar (Safari exige interação).</li>
+          <li>Desative o modo silencioso se não ouvir os apitos.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Redes e contato</h2>
+        <ul class="social-links">
+          <li><a href="https://afonsorodrigues.com" target="_blank" rel="noopener">Blog — afonsorodrigues.com</a></li>
+          <li><a href="https://github.com/afonsoaugusto" target="_blank" rel="noopener">GitHub — @afonsoaugusto</a></li>
+          <li><a href="https://linkedin.com/in/afonsoavr" target="_blank" rel="noopener">LinkedIn — Afonso Rodrigues</a></li>
+          <li><a href="https://twitter.com/Afonsoavr" target="_blank" rel="noopener">Twitter / X — @Afonsoavr</a></li>
+          <li><a href="https://instagram.com/afonsoavr" target="_blank" rel="noopener">Instagram — @afonsoavr</a></li>
+        </ul>
+      </section>
+
+      <footer class="about-footer">
+        <p>Código aberto em <a href="https://github.com/afonsoaugusto/wod" target="_blank" rel="noopener">github.com/afonsoaugusto/wod</a></p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

@@ -49,9 +49,50 @@ body {
 
 /* ── Setup ── */
 
+/* ── Site nav ── */
+
+.site-nav {
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.65rem 1rem;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--bg-input);
+  overflow-x: auto;
+}
+
+.site-nav a {
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.site-nav a:hover,
+.site-nav a.active {
+  color: var(--accent);
+  background: rgba(0, 229, 255, 0.08);
+}
+
+.site-nav--minimal {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  background: transparent;
+  border: none;
+}
+
 #setup-screen {
   overflow-y: auto;
   padding: 1.25rem 1.5rem 2rem;
+}
+
+#remote-screen {
+  overflow-y: auto;
+  padding: 1rem 1.25rem 2rem;
 }
 
 .header-row {
@@ -783,6 +824,226 @@ body {
   .timer-exercise-area {
     padding: 2rem 3rem;
   }
+}
+
+/* ── Pairing / Remote ── */
+
+.pairing-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.pairing-code {
+  font-family: var(--font-mono);
+  font-size: clamp(3.5rem, 12vw, 6rem);
+  letter-spacing: 0.25em;
+  color: var(--accent);
+  text-shadow: 0 0 30px var(--accent-glow);
+  margin: 1.5rem 0 1rem;
+}
+
+.pairing-status,
+.pairing-hint {
+  color: var(--text-muted);
+  max-width: 420px;
+}
+
+.pairing-hint {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.remote-badge {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.remote-badge.visible {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.remote-connect {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: var(--bg-panel);
+  border-radius: var(--radius);
+}
+
+.remote-connect label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.connect-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.connect-row input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid var(--bg-input);
+  border-radius: 8px;
+  background: var(--bg-input);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.btn-connect {
+  min-width: auto;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.95rem;
+}
+
+.remote-status {
+  margin-top: 0.65rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.remote-status.connected {
+  color: var(--accent);
+}
+
+.remote-controls {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.remote-live {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.remote-live .btn-control {
+  flex: 1;
+  min-width: 90px;
+}
+
+.remote-live-status {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  padding: 0.5rem;
+}
+
+/* ── About page ── */
+
+.about-page {
+  min-height: 100%;
+  overflow-y: auto;
+}
+
+.about-content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+  line-height: 1.65;
+}
+
+.about-content h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.about-lead {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+}
+
+.about-author {
+  margin-top: 0.75rem;
+}
+
+.about-content section {
+  margin-top: 2rem;
+}
+
+.about-content h2 {
+  font-size: 1.35rem;
+  margin-bottom: 0.75rem;
+  color: var(--accent);
+}
+
+.about-content h3 {
+  font-size: 1.05rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.about-cards {
+  display: grid;
+  gap: 1rem;
+}
+
+.about-cards article {
+  padding: 1rem;
+  background: var(--bg-panel);
+  border-radius: var(--radius);
+}
+
+.about-steps {
+  padding-left: 1.25rem;
+}
+
+.about-steps li {
+  margin-bottom: 0.65rem;
+}
+
+.about-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.about-table th,
+.about-table td {
+  border: 1px solid var(--bg-input);
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+}
+
+.about-table th {
+  background: var(--bg-panel);
+}
+
+.social-links {
+  list-style: none;
+}
+
+.social-links a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.social-links a:hover {
+  text-decoration: underline;
+}
+
+.about-footer {
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--bg-input);
+  color: var(--text-muted);
+  font-size: 0.9rem;
 }
 
 @media (orientation: portrait) {

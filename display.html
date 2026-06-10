@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="styles.css?v=7">
 </head>
 <body data-page="display">
   <audio id="audio-unlock" preload="auto" playsinline src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQQAAAAAAA=="></audio>
@@ -22,6 +22,9 @@
 
     <!-- Pairing -->
     <section id="pairing-screen" class="screen active">
+      <div class="pairing-toolbar toolbar-actions">
+        <button type="button" class="btn-icon btn-theme" title="Alternar tema">🌙</button>
+      </div>
       <div class="pairing-content">
         <h1>Tela do treino</h1>
         <p class="subtitle">Abra o <strong>Controle remoto</strong> no celular e digite o código:</p>
@@ -35,7 +38,10 @@
     <section id="timer-screen" class="screen">
       <div class="timer-toolbar">
         <span class="remote-badge" id="remote-connected">Controle conectado</span>
-        <button type="button" id="btn-settings-timer" class="btn-icon" title="Configurações" aria-label="Configurações">⚙</button>
+        <div class="toolbar-actions">
+          <button type="button" class="btn-icon btn-theme" title="Alternar tema">🌙</button>
+          <button type="button" id="btn-settings-timer" class="btn-icon" title="Configurações" aria-label="Configurações">⚙</button>
+        </div>
       </div>
       <div class="timer-layout" id="timer-layout">
         <div class="timer-clock-area">
@@ -136,6 +142,7 @@
   </div>
 
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="theme.js"></script>
   <script src="sync.js"></script>
   <script src="app.js?v=6"></script>
 </body>

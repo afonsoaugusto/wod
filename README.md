@@ -19,6 +19,10 @@ Contador de tempo para treinos de CrossFit, otimizado para iPad em modo paisagem
 
 Requer mesma rede Wi‑Fi e internet (sinalização WebRTC via PeerJS).
 
+## Temas
+
+Botão ao lado do ⚙ alterna: **Escuro** → **Claro** → **Neon** → **Âmbar** → **Oceano**. Preferência salva na sessão do navegador.
+
 ## GitHub Pages
 
 [https://afonsorodrigues.com/wod/](https://afonsorodrigues.com/wod/)

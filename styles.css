@@ -6,7 +6,8 @@
   padding: 0;
 }
 
-:root {
+:root,
+[data-theme="dark"] {
   --bg: #1a1f24;
   --bg-panel: #242b32;
   --bg-input: #2d3640;
@@ -14,13 +15,84 @@
   --text-muted: #7a8794;
   --accent: #00e5ff;
   --accent-glow: rgba(0, 229, 255, 0.45);
+  --accent-on: #0a1218;
   --rest: #ffb347;
   --rest-glow: rgba(255, 179, 71, 0.4);
   --danger: #ff5c5c;
   --segment-inactive: #3d4a56;
+  --overlay-bg: rgba(10, 14, 18, 0.92);
+  --backdrop: rgba(0, 0, 0, 0.65);
   --radius: 12px;
   --font-mono: "Share Tech Mono", "Courier New", monospace;
   --clock-col: 70;
+}
+
+[data-theme="light"] {
+  --bg: #eef1f5;
+  --bg-panel: #ffffff;
+  --bg-input: #dde3ea;
+  --text: #1a2332;
+  --text-muted: #5a6a7e;
+  --accent: #0077cc;
+  --accent-glow: rgba(0, 119, 204, 0.25);
+  --accent-on: #ffffff;
+  --rest: #d97706;
+  --rest-glow: rgba(217, 119, 6, 0.3);
+  --danger: #dc2626;
+  --segment-inactive: #c5d0dc;
+  --overlay-bg: rgba(255, 255, 255, 0.94);
+  --backdrop: rgba(26, 35, 50, 0.35);
+}
+
+[data-theme="neon"] {
+  --bg: #080c10;
+  --bg-panel: #101820;
+  --bg-input: #182228;
+  --text: #e0fff4;
+  --text-muted: #6b9e8a;
+  --accent: #39ff14;
+  --accent-glow: rgba(57, 255, 20, 0.5);
+  --accent-on: #041008;
+  --rest: #ff2d95;
+  --rest-glow: rgba(255, 45, 149, 0.45);
+  --danger: #ff3355;
+  --segment-inactive: #1e3d32;
+  --overlay-bg: rgba(4, 8, 6, 0.94);
+  --backdrop: rgba(0, 0, 0, 0.75);
+}
+
+[data-theme="amber"] {
+  --bg: #1c1410;
+  --bg-panel: #2a1f18;
+  --bg-input: #3a2c22;
+  --text: #fff4e6;
+  --text-muted: #b8956f;
+  --accent: #ff9500;
+  --accent-glow: rgba(255, 149, 0, 0.45);
+  --accent-on: #1c1008;
+  --rest: #ffd60a;
+  --rest-glow: rgba(255, 214, 10, 0.35);
+  --danger: #ff6b4a;
+  --segment-inactive: #4a3828;
+  --overlay-bg: rgba(20, 12, 8, 0.92);
+  --backdrop: rgba(0, 0, 0, 0.65);
+}
+
+[data-theme="ocean"] {
+  --bg: #0a1628;
+  --bg-panel: #122240;
+  --bg-input: #1a3050;
+  --text: #e8f4ff;
+  --text-muted: #7aa3c4;
+  --accent: #2dd4bf;
+  --accent-glow: rgba(45, 212, 191, 0.45);
+  --accent-on: #042028;
+  --rest: #60a5fa;
+  --rest-glow: rgba(96, 165, 250, 0.4);
+  --danger: #f87171;
+  --segment-inactive: #1e4060;
+  --overlay-bg: rgba(6, 14, 28, 0.92);
+  --backdrop: rgba(0, 0, 0, 0.65);
 }
 
 html,
@@ -76,6 +148,13 @@ body {
   background: rgba(0, 229, 255, 0.08);
 }
 
+.site-nav-theme {
+  margin-left: auto;
+  width: 40px;
+  height: 40px;
+  font-size: 1.1rem;
+}
+
 .site-nav--minimal {
   position: absolute;
   top: 0;
@@ -100,6 +179,14 @@ body {
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
+}
+
+.header-actions,
+.toolbar-actions {
+  display: flex;
+  gap: 0.45rem;
+  flex-shrink: 0;
+  align-items: center;
 }
 
 .setup-header h1 {
@@ -291,7 +378,7 @@ body {
   position: absolute;
   inset: 0;
   border: none;
-  background: rgba(0, 0, 0, 0.65);
+  background: var(--backdrop);
   cursor: pointer;
 }
 
@@ -461,7 +548,7 @@ body {
   border: none;
   border-radius: var(--radius);
   background: var(--accent);
-  color: #0a1218;
+  color: var(--accent-on);
   font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -483,6 +570,8 @@ body {
 .timer-toolbar {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
   padding: 0.5rem 1.25rem 0;
 }
 
@@ -782,7 +871,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(10, 14, 18, 0.92);
+  background: var(--overlay-bg);
+}
+
+.pairing-toolbar {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 5;
 }
 
 .prep-overlay span {

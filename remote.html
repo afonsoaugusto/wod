@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="styles.css?v=7">
 </head>
 <body data-page="remote">
   <div id="app">
@@ -19,8 +19,15 @@
 
     <section id="remote-screen" class="screen active">
       <header class="setup-header">
-        <h1>Controle remoto</h1>
-        <p class="subtitle">Configure o WOD aqui e inicie na tela do iPad</p>
+        <div class="header-row">
+          <div>
+            <h1>Controle remoto</h1>
+            <p class="subtitle">Configure o WOD aqui e inicie na tela do iPad</p>
+          </div>
+          <div class="header-actions">
+            <button type="button" class="btn-icon btn-theme" title="Alternar tema">🌙</button>
+          </div>
+        </div>
       </header>
 
       <div class="remote-connect">
@@ -79,6 +86,7 @@
   </div>
 
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="theme.js"></script>
   <script src="sync.js"></script>
   <script src="app.js?v=6"></script>
 </body>

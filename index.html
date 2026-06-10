@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="styles.css?v=7">
 </head>
 <body data-page="standalone">
   <!-- Desbloqueio de áudio no iOS/Safari (gesto do usuário) -->
@@ -30,7 +30,10 @@
             <h1>WOD Timer</h1>
             <p class="subtitle">Configure o treino e inicie no iPad em modo paisagem</p>
           </div>
-          <button type="button" id="btn-settings-setup" class="btn-icon" title="Configurações" aria-label="Configurações">⚙</button>
+          <div class="header-actions">
+            <button type="button" class="btn-icon btn-theme" title="Alternar tema">🌙</button>
+            <button type="button" id="btn-settings-setup" class="btn-icon" title="Configurações" aria-label="Configurações">⚙</button>
+          </div>
         </div>
       </header>
 
@@ -73,7 +76,10 @@
     <!-- Timer -->
     <section id="timer-screen" class="screen">
       <div class="timer-toolbar">
-        <button type="button" id="btn-settings-timer" class="btn-icon" title="Configurações" aria-label="Configurações">⚙</button>
+        <div class="toolbar-actions">
+          <button type="button" class="btn-icon btn-theme" title="Alternar tema">🌙</button>
+          <button type="button" id="btn-settings-timer" class="btn-icon" title="Configurações" aria-label="Configurações">⚙</button>
+        </div>
       </div>
       <div class="timer-layout" id="timer-layout">
         <div class="timer-clock-area">
@@ -185,6 +191,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=5"></script>
+  <script src="theme.js"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>

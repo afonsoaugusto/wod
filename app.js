@@ -34,6 +34,8 @@
   };
 
   let audioCtx = null;
+  let audioUnlocked = false;
+  let voicesReady = false;
 
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => document.querySelectorAll(sel);
@@ -93,13 +95,30 @@
 
   function applyLayoutRatio(ratio) {
     state.layoutRatio = ratio;
-    document.documentElement.style.setProperty("--clock-ratio", `${ratio}%`);
-    $("#layout-ratio").value = ratio;
-    $("#layout-ratio-label").textContent = `${ratio}% relógio`;
+    document.documentElement.style.setProperty("--clock-col", String(ratio));
+    const slider = $("#layout-ratio");
+    const label = $("#layout-ratio-label");
+    if (slider) slider.value = ratio;
+    if (label) label.textContent = `${ratio}%`;
     $$(".layout-preset").forEach((btn) => {
       btn.classList.toggle("active", +btn.dataset.ratio === ratio);
     });
     savePreferences();
+  }
+
+  function openSettings() {
+    $("#settings-menu").classList.remove("hidden");
+    syncSettingsUI();
+  }
+
+  function closeSettings() {
+    $("#settings-menu").classList.add("hidden");
+  }
+
+  function syncSettingsUI() {
+    $("#sound-enabled").checked = state.soundEnabled;
+    $("#prep-countdown").checked = state.prepCountdown;
+    applyLayoutRatio(state.layoutRatio);
   }
 
   function renderBlockConfig(block) {
@@ -171,18 +190,76 @@
 
   function getAudioContext() {
     if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioCtx.state === "suspended") {
-      audioCtx.resume();
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return null;
+      audioCtx = new Ctx();
     }
     return audioCtx;
   }
 
+  async function unlockAudio() {
+    if (!state.soundEnabled) return false;
+    const ctx = getAudioContext();
+    if (!ctx) return false;
+
+    if (ctx.state === "suspended") {
+      await ctx.resume();
+    }
+
+    const buffer = ctx.createBuffer(1, 1, 22050);
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(ctx.destination);
+    source.start(0);
+
+    audioUnlocked = ctx.state === "running";
+    await preloadVoices();
+    return audioUnlocked;
+  }
+
+  function preloadVoices() {
+    return new Promise((resolve) => {
+      if (!("speechSynthesis" in window)) {
+        resolve([]);
+        return;
+      }
+
+      const pick = () => {
+        const voices = speechSynthesis.getVoices();
+        if (voices.length) {
+          voicesReady = true;
+          resolve(voices);
+          return true;
+        }
+        return false;
+      };
+
+      if (pick()) return;
+
+      const onVoices = () => {
+        if (pick()) {
+          speechSynthesis.removeEventListener("voiceschanged", onVoices);
+        }
+      };
+      speechSynthesis.addEventListener("voiceschanged", onVoices);
+
+      const boot = new SpeechSynthesisUtterance(" ");
+      boot.volume = 0;
+      speechSynthesis.speak(boot);
+
+      setTimeout(() => {
+        pick();
+        resolve(speechSynthesis.getVoices());
+      }, 250);
+    });
+  }
+
   function playTone({ freq, duration, volume = 0.3, type = "sine", freqEnd, delay = 0 }) {
-    if (!state.soundEnabled) return;
+    if (!state.soundEnabled || !audioUnlocked) return;
+    const ctx = getAudioContext();
+    if (!ctx || ctx.state !== "running") return;
+
     try {
-      const ctx = getAudioContext();
       const t = ctx.currentTime + delay;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -220,21 +297,36 @@
   }
 
   function speak(text) {
-    if (!state.soundEnabled || !("speechSynthesis" in window)) return;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-US";
-    utterance.rate = 0.95;
-    utterance.volume = 1;
-    const voices = speechSynthesis.getVoices();
-    const en = voices.find((v) => v.lang.startsWith("en") && v.name.includes("Female"))
-      || voices.find((v) => v.lang.startsWith("en"));
-    if (en) utterance.voice = en;
-    speechSynthesis.cancel();
-    speechSynthesis.speak(utterance);
+    if (!state.soundEnabled || !audioUnlocked || !("speechSynthesis" in window)) return;
+
+    window.setTimeout(() => {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      utterance.rate = 0.92;
+      utterance.volume = 1;
+      const voices = speechSynthesis.getVoices();
+      const en = voices.find((v) => v.lang.startsWith("en-US"))
+        || voices.find((v) => v.lang.startsWith("en"));
+      if (en) utterance.voice = en;
+      speechSynthesis.speak(utterance);
+    }, 50);
   }
 
-  if ("speechSynthesis" in window) {
-    speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+  async function testAudio() {
+    state.soundEnabled = true;
+    $("#sound-enabled").checked = true;
+    savePreferences();
+
+    const ok = await unlockAudio();
+    if (!ok) {
+      alert("Não foi possível ativar o áudio. Verifique se o iPad não está no modo silencioso.");
+      return;
+    }
+
+    whistleStart();
+    window.setTimeout(() => speak("half time"), 500);
+    window.setTimeout(() => speak("10 seconds"), 1800);
+    window.setTimeout(() => whistleEnd(), 3200);
   }
 
   function checkPhaseAnnouncements(secLeft, phaseTotal) {
@@ -382,7 +474,20 @@
       });
     });
 
+    $("#rest-between-blocks").addEventListener("change", (e) => {
+      state.restBetweenBlocks = +e.target.value || 0;
+      savePreferences();
+    });
+
+    $("#layout-ratio")?.addEventListener("input", (e) => {
+      applyLayoutRatio(+e.target.value);
+    });
+
     document.addEventListener("click", (e) => {
+      if (e.target.classList.contains("layout-preset")) {
+        applyLayoutRatio(+e.target.dataset.ratio);
+        return;
+      }
       if (!e.target.classList.contains("btn-remove")) return;
       const block = e.target.dataset.block;
       const index = +e.target.dataset.index;
@@ -391,35 +496,27 @@
       renderExercises(block);
     });
 
-    $("#rest-between-blocks").addEventListener("change", (e) => {
-      state.restBetweenBlocks = +e.target.value || 0;
-      savePreferences();
-    });
-
-    $("#layout-ratio").addEventListener("input", (e) => {
-      applyLayoutRatio(+e.target.value);
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!e.target.classList.contains("layout-preset")) return;
-      applyLayoutRatio(+e.target.dataset.ratio);
-    });
-
-    $("#sound-enabled").addEventListener("change", (e) => {
+    $("#sound-enabled")?.addEventListener("change", async (e) => {
       state.soundEnabled = e.target.checked;
       savePreferences();
+      if (state.soundEnabled) await unlockAudio();
     });
 
-    $("#prep-countdown").addEventListener("change", (e) => {
+    $("#prep-countdown")?.addEventListener("change", (e) => {
       state.prepCountdown = e.target.checked;
       savePreferences();
     });
 
-    $("#btn-fullscreen").addEventListener("click", toggleFullscreen);
-    $("#btn-round-plus").addEventListener("click", () => updateAmrapRounds(1));
-    $("#btn-round-minus").addEventListener("click", () => updateAmrapRounds(-1));
+    $("#btn-settings-setup")?.addEventListener("click", openSettings);
+    $("#btn-settings-timer")?.addEventListener("click", openSettings);
+    $("#btn-settings-close")?.addEventListener("click", closeSettings);
+    $("#settings-backdrop")?.addEventListener("click", closeSettings);
+    $("#btn-test-audio")?.addEventListener("click", testAudio);
+    $("#btn-fullscreen")?.addEventListener("click", toggleFullscreen);
+    $("#btn-round-plus")?.addEventListener("click", () => updateAmrapRounds(1));
+    $("#btn-round-minus")?.addEventListener("click", () => updateAmrapRounds(-1));
 
-    $("#btn-start").addEventListener("click", startWorkout);
+    $("#btn-start").addEventListener("click", () => startWorkout());
     $("#btn-pause").addEventListener("click", togglePause);
     $("#btn-skip").addEventListener("click", skipPhase);
     $("#btn-stop").addEventListener("click", stopWorkout);
@@ -581,25 +678,27 @@
   let tickInterval = null;
   let lastTick = 0;
 
-  function startWorkout() {
+  async function startWorkout() {
     timeline = buildTimeline();
     if (timeline.length === 0) {
       alert("Adicione pelo menos um exercício em algum bloco.");
       return;
     }
 
+    closeSettings();
     phaseIndex = 0;
     state.paused = false;
     state.amrapRounds = 0;
     state.lastBeepSec = -1;
     state.halfTimeAnnounced = false;
     state.tenSecAnnounced = false;
-    getAudioContext();
     $("#round-count").textContent = "0";
-    $("#sound-enabled").checked = state.soundEnabled;
-    $("#prep-countdown").checked = state.prepCountdown;
     $("#rest-between-blocks").value = state.restBetweenBlocks;
     applyLayoutRatio(state.layoutRatio);
+
+    if (state.soundEnabled) {
+      await unlockAudio();
+    }
 
     showScreen("timer-screen");
     requestWakeLock();

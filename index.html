@@ -16,8 +16,13 @@
     <!-- Setup -->
     <section id="setup-screen" class="screen active">
       <header class="setup-header">
-        <h1>WOD Timer</h1>
-        <p class="subtitle">Configure o treino e inicie no iPad em modo paisagem</p>
+        <div class="header-row">
+          <div>
+            <h1>WOD Timer</h1>
+            <p class="subtitle">Configure o treino e inicie no iPad em modo paisagem</p>
+          </div>
+          <button type="button" id="btn-settings-setup" class="btn-icon" title="Configurações" aria-label="Configurações">⚙</button>
+        </div>
       </header>
 
       <div class="block-tabs" role="tablist">
@@ -49,24 +54,6 @@
           Descanso entre blocos (seg)
           <input type="number" id="rest-between-blocks" min="0" max="600" value="60">
         </label>
-        <label>
-          Proporção relógio / exercícios
-          <div class="layout-presets" role="group" aria-label="Proporção da tela">
-            <button type="button" class="layout-preset active" data-ratio="70">Relógio grande</button>
-            <button type="button" class="layout-preset" data-ratio="55">Balanceado</button>
-            <button type="button" class="layout-preset" data-ratio="40">Exercícios</button>
-          </div>
-          <input type="range" id="layout-ratio" min="35" max="75" value="70" step="5">
-          <span class="range-hint" id="layout-ratio-label">70% relógio</span>
-        </label>
-        <label class="toggle-label">
-          <input type="checkbox" id="sound-enabled" checked>
-          Áudio: apitos, "half time", "10 seconds" e bips finais
-        </label>
-        <label class="toggle-label">
-          <input type="checkbox" id="prep-countdown" checked>
-          Contagem 3-2-1 antes de iniciar
-        </label>
       </div>
 
       <footer class="setup-footer">
@@ -77,12 +64,7 @@
     <!-- Timer -->
     <section id="timer-screen" class="screen">
       <div class="timer-toolbar">
-        <div class="layout-presets layout-presets--inline" role="group" aria-label="Ajustar proporção">
-          <button type="button" class="layout-preset layout-preset--sm active" data-ratio="70" title="Relógio grande">⏱</button>
-          <button type="button" class="layout-preset layout-preset--sm" data-ratio="55" title="Balanceado">⊞</button>
-          <button type="button" class="layout-preset layout-preset--sm" data-ratio="40" title="Exercícios">☰</button>
-        </div>
-        <button type="button" id="btn-fullscreen" class="btn-icon" title="Tela cheia">⛶</button>
+        <button type="button" id="btn-settings-timer" class="btn-icon" title="Configurações" aria-label="Configurações">⚙</button>
       </div>
       <div class="timer-layout" id="timer-layout">
         <div class="timer-clock-area">
@@ -151,6 +133,46 @@
         <button type="button" id="btn-restart" class="btn-primary">Novo treino</button>
       </div>
     </section>
+
+    <!-- Settings menu -->
+    <div id="settings-menu" class="settings-menu hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <button type="button" class="settings-backdrop" id="settings-backdrop" aria-label="Fechar"></button>
+      <div class="settings-panel">
+        <header class="settings-header">
+          <h2 id="settings-title">Configurações</h2>
+          <button type="button" id="btn-settings-close" class="btn-close" aria-label="Fechar">×</button>
+        </header>
+
+        <div class="settings-body">
+          <section class="settings-section">
+            <h3>Tamanho do relógio</h3>
+            <div class="layout-presets" role="group" aria-label="Proporção da tela">
+              <button type="button" class="layout-preset active" data-ratio="70">Relógio grande</button>
+              <button type="button" class="layout-preset" data-ratio="55">Balanceado</button>
+              <button type="button" class="layout-preset" data-ratio="40">Exercícios</button>
+            </div>
+            <label class="settings-range">
+              <span>Ajuste fino — <strong id="layout-ratio-label">70%</strong> para o relógio</span>
+              <input type="range" id="layout-ratio" min="35" max="75" value="70" step="5">
+            </label>
+          </section>
+
+          <section class="settings-section">
+            <h3>Áudio e tela</h3>
+            <label class="settings-toggle">
+              <input type="checkbox" id="sound-enabled" checked>
+              <span>Sons e voz (apitos, half time, 10 seconds)</span>
+            </label>
+            <label class="settings-toggle">
+              <input type="checkbox" id="prep-countdown" checked>
+              <span>Contagem 3-2-1 antes de iniciar</span>
+            </label>
+            <button type="button" id="btn-test-audio" class="btn-secondary">Testar áudio</button>
+            <button type="button" id="btn-fullscreen" class="btn-secondary">Tela cheia</button>
+          </section>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="app.js"></script>

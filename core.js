@@ -43,6 +43,11 @@
     return { name: "", reps: "", weightM: "", weightF: "", restSeconds: "" };
   }
 
+  const EXERCISE_VIEWS = [
+    { value: "list", label: "Lista completa" },
+    { value: "cards", label: "Card a card" },
+  ];
+
   function defaultBlock() {
     return {
       mode: "sequential",
@@ -52,6 +57,7 @@
       totalMinutes: 12,
       timeCapMinutes: 0,
       tabataRounds: 8,
+      exerciseView: "list",
       exercises: [],
     };
   }
@@ -469,6 +475,7 @@
           blockLabel: block.label,
           mode: config.mode,
           exercises,
+          exerciseView: config.exerciseView === "cards" ? "cards" : "list",
           duration: cap > 0 ? cap * 60 : 0,
           countdown: cap > 0,
           label: config.mode === "amrap" ? "AMRAP" : "For Time",
@@ -590,6 +597,7 @@
     BLOCK_LABELS,
     BLOCK_CATEGORIES: BLOCKS,
     MODES,
+    EXERCISE_VIEWS,
     WEIGHT_UNITS,
     PLATES_LB,
     PLATES_KG,

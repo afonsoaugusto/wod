@@ -1184,6 +1184,8 @@ body[data-page="bar-calculator"] {
   padding: 1.25rem 1.5rem;
   background: var(--bg-panel);
   border-radius: var(--radius);
+  flex: 1;
+  min-height: 0;
 }
 
 .exercise-now {

@@ -218,6 +218,38 @@ describe("defaultExercise", () => {
   });
 });
 
+describe("AMRAP / For Time — exibição de exercícios", () => {
+  it("inclui exerciseView na fase do timeline", () => {
+    const stateCards = makeState({
+      blockList: [
+        {
+          ...defaultBlockEntry("wod"),
+          mode: "fortime",
+          exerciseView: "cards",
+          exercises: [
+            { name: "Run", reps: "1 mile" },
+            { name: "Pull-up", reps: "100" },
+          ],
+        },
+      ],
+    });
+    const phaseCards = buildTimeline(stateCards)[0];
+    assert.equal(phaseCards.exerciseView, "cards");
+    assert.equal(phaseCards.exercises.length, 2);
+
+    const stateList = makeState({
+      blockList: [
+        {
+          ...defaultBlockEntry("wod"),
+          mode: "fortime",
+          exercises: [{ name: "Grace", reps: "30" }],
+        },
+      ],
+    });
+    assert.equal(buildTimeline(stateList)[0].exerciseView, "list");
+  });
+});
+
 describe("Descanso entre blocos", () => {
   it("insere pausa entre blocos ativos na ordem", () => {
     const state = makeState({

@@ -11,6 +11,7 @@
   const BLOCKS = WodCore.BLOCKS;
   const BLOCK_LABELS = WodCore.BLOCK_LABELS;
   const MODES = WodCore.MODES;
+  const EXERCISE_VIEWS = WodCore.EXERCISE_VIEWS || [];
   const defaultBlock = WodCore.defaultBlock;
   const defaultBlockEntry = WodCore.defaultBlockEntry || ((cat) => ({ id: `block-${Date.now()}`, category: cat || "wod", ...defaultBlock() }));
   const defaultExercise = WodCore.defaultExercise || (() => ({ name: "", reps: "", weightM: "", weightF: "", restSeconds: "" }));
@@ -37,6 +38,7 @@
     paused: false,
     segments: [],
     amrapRounds: 0,
+    exerciseCursor: 0,
     forTimeElapsed: null,
     wakeLock: null,
     lastBeepSec: -1,
@@ -447,6 +449,15 @@
         Time cap (min, 0 = sem limite)
         <input type="number" min="0" max="60" value="${cfg.timeCapMinutes}" data-block-id="${blockId}" data-field="timeCapMinutes">
       </label>
+      <label class="field-exercise-view" data-block-id="${blockId}">
+        Exibição no treino
+        <select data-block-id="${blockId}" data-field="exerciseView">
+          ${EXERCISE_VIEWS.map(
+            (v) =>
+              `<option value="${v.value}" ${cfg.exerciseView === v.value ? "selected" : ""}>${v.label}</option>`
+          ).join("")}
+        </select>
+      </label>
       <label class="field-tabata" data-block-id="${blockId}">
         Rounds Tabata
         <input type="number" min="1" max="30" value="${cfg.tabataRounds}" data-block-id="${blockId}" data-field="tabataRounds">
@@ -478,6 +489,9 @@
       el.style.display = mode === "emom" ? "" : "none";
     });
     panel.querySelectorAll(".field-cap").forEach((el) => {
+      el.style.display = mode === "amrap" || mode === "fortime" ? "" : "none";
+    });
+    panel.querySelectorAll(".field-exercise-view").forEach((el) => {
       el.style.display = mode === "amrap" || mode === "fortime" ? "" : "none";
     });
     panel.querySelectorAll(".field-tabata").forEach((el) => {
@@ -749,6 +763,40 @@
     }
   }
 
+  function renderBlockExerciseList(exercises, currentIndex) {
+    const ul = $("#block-exercise-list");
+    if (!ul) return;
+    ul.innerHTML = exercises
+      .map((ex, i) => {
+        const name = ex.name?.trim() || ex.reps?.trim() || "—";
+        const detail = formatExerciseDetail(ex);
+        return `<li class="${i === currentIndex ? "current" : ""}"><span class="item-name">${escapeHtml(name)}</span><span class="item-reps">${escapeHtml(detail)}</span></li>`;
+      })
+      .join("");
+  }
+
+  function isMultiExerciseBlockPhase(phase) {
+    return (
+      phase &&
+      (phase.mode === "amrap" || phase.mode === "fortime") &&
+      (phase.exercises?.length || 0) > 1
+    );
+  }
+
+  function canAdvanceExerciseInPhase(phase) {
+    if (!isMultiExerciseBlockPhase(phase)) return false;
+    return state.exerciseCursor < phase.exercises.length - 1;
+  }
+
+  function advanceExerciseInBlock() {
+    const phase = timeline[phaseIndex];
+    if (!canAdvanceExerciseInPhase(phase)) return false;
+    state.exerciseCursor += 1;
+    updateTimerUI(phase);
+    broadcastStatus();
+    return true;
+  }
+
   function escapeHtml(str) {
     return String(str)
       .replace(/&/g, "&amp;")
@@ -822,6 +870,11 @@
         block.mode = e.target.value;
         updateConfigVisibility(blockId);
         renderExercises(blockId);
+        return;
+      }
+
+      if (field === "exerciseView") {
+        block.exerciseView = e.target.value === "cards" ? "cards" : "list";
         return;
       }
 
@@ -1005,6 +1058,7 @@
   function completeForTime() {
     const phase = timeline[phaseIndex];
     if (!phase || phase.mode !== "fortime" || phase.countdown) return;
+    if (phase.exerciseView === "cards" && advanceExerciseInBlock()) return;
     state.forTimeElapsed = Math.floor(remaining);
     clearInterval(tickInterval);
     whistleEnd();
@@ -1016,6 +1070,11 @@
     if (!btn) return;
     const show = phase?.mode === "fortime" && !phase.countdown && $("#timer-screen").classList.contains("active");
     btn.classList.toggle("hidden", !show);
+    if (!show) return;
+    const exs = phase.exercises || [];
+    const onLast = state.exerciseCursor >= exs.length - 1;
+    btn.textContent =
+      phase.exerciseView === "cards" && exs.length > 1 && !onLast ? "Próximo" : "Concluído";
   }
 
   function showScreen(id) {
@@ -1045,6 +1104,7 @@
     phaseIndex = 0;
     state.paused = false;
     state.amrapRounds = 0;
+    state.exerciseCursor = 0;
     state.forTimeElapsed = null;
     state.lastBeepSec = -1;
     state.halfTimeAnnounced = false;
@@ -1114,6 +1174,7 @@
     state.lastBeepSec = -1;
     state.halfTimeAnnounced = false;
     state.tenSecAnnounced = false;
+    state.exerciseCursor = 0;
 
     if (!opts.skipStartWhistle) {
       whistleStart();
@@ -1191,26 +1252,22 @@
 
     const listPanel = $("#exercise-list-panel");
     const amrapPanel = $("#amrap-rounds-panel");
+    const nowPanel = $("#exercise-now-panel");
+    const nextPanel = $("#exercise-next-panel");
 
     if (phase.mode === "amrap") {
       amrapPanel.classList.remove("hidden");
     } else {
       amrapPanel.classList.add("hidden");
     }
-
-    if (phase.mode === "amrap") {
-      amrapPanel.classList.remove("hidden");
-    } else {
-      amrapPanel.classList.add("hidden");
-    }
-
-    listPanel.classList.add("hidden");
 
     if (isRest) {
+      listPanel.classList.add("hidden");
       const upcoming = findUpcomingExercises(phaseIndex + 1, 2);
       setExercisePanels(upcoming[0], upcoming[1]);
       $("#round-info").textContent = phase.blockLabel || "";
     } else if (phase.mode === "emom") {
+      listPanel.classList.add("hidden");
       setExercisePanels(phase.exercise, null);
       const nextExIndex = (phase.exerciseIndex + 1) % phase.exercises.length;
       const isLastInterval = phase.interval === phase.totalIntervals;
@@ -1230,6 +1287,7 @@
       }
       $("#round-info").textContent = `Minuto ${phase.interval} / ${phase.totalIntervals}`;
     } else if (phase.mode === "tabata") {
+      listPanel.classList.add("hidden");
       setExercisePanels(phase.exercise, null);
       const isLastRound = phase.round === phase.totalRounds;
       if (isLastRound) {
@@ -1249,14 +1307,31 @@
       $("#round-info").textContent = `Round ${phase.round} / ${phase.totalRounds}`;
     } else if (phase.mode === "amrap" || phase.mode === "fortime") {
       const exs = phase.exercises || [];
-      setExercisePanels(exs[0], exs[1]);
+      const view = phase.exerciseView || "list";
+      const cursor = state.exerciseCursor;
       const capLabel = phase.countdown
         ? `Time cap: ${Math.floor(phaseTotal / 60)} min`
         : phase.mode === "amrap"
           ? "AMRAP — sem limite"
           : "For Time — sem limite";
-      $("#round-info").textContent = capLabel;
+
+      if (view === "list" && exs.length > 0) {
+        nowPanel?.classList.add("hidden");
+        nextPanel?.classList.add("hidden");
+        listPanel.classList.remove("hidden");
+        renderBlockExerciseList(exs, cursor);
+      } else {
+        listPanel.classList.add("hidden");
+        setExercisePanels(exs[cursor], exs[cursor + 1]);
+      }
+
+      if (exs.length > 1) {
+        $("#round-info").textContent = `${capLabel} · Exercício ${cursor + 1} / ${exs.length}`;
+      } else {
+        $("#round-info").textContent = capLabel;
+      }
     } else {
+      listPanel.classList.add("hidden");
       setExercisePanels(phase.exercise, null);
       const upcoming = findUpcomingExercises(phaseIndex + 1, 1);
       if (upcoming[0]) {
@@ -1280,6 +1355,12 @@
   }
 
   function skipPhase() {
+    const phase = timeline[phaseIndex];
+    if (canAdvanceExerciseInPhase(phase)) {
+      whistleEnd();
+      advanceExerciseInBlock();
+      return;
+    }
     clearInterval(tickInterval);
     whistleEnd();
     const next = phaseIndex + 1;

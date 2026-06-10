@@ -11,3 +11,4 @@ Contador de tempo para treinos de CrossFit, otimizado para iPad em modo paisagem
 ## GitHub Pages
 
 Publicado em [https://afonsorodrigues.com/wod/](https://afonsorodrigues.com/wod/)
+

@@ -40,7 +40,7 @@
   const PERCENTAGES = [50, 60, 75, 80, 90, 95, 110];
 
   function defaultExercise() {
-    return { name: "", reps: "", weightM: "", weightF: "" };
+    return { name: "", reps: "", weightM: "", weightF: "", restSeconds: "" };
   }
 
   function defaultBlock() {
@@ -52,8 +52,57 @@
       totalMinutes: 12,
       timeCapMinutes: 0,
       tabataRounds: 8,
-      exercises: [defaultExercise()],
+      exercises: [],
     };
+  }
+
+  function createBlockId() {
+    return `block-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  }
+
+  function defaultBlockEntry(category = "wod", id) {
+    const cat = BLOCKS.includes(category) ? category : "wod";
+    return {
+      id: id || createBlockId(),
+      category: cat,
+      ...defaultBlock(),
+    };
+  }
+
+  function normalizeBlockEntry(entry) {
+    const base = defaultBlockEntry(entry?.category || "wod", entry?.id);
+    const merged = { ...base, ...entry, category: BLOCKS.includes(entry?.category) ? entry.category : base.category };
+    merged.exercises = Array.isArray(entry?.exercises)
+      ? entry.exercises.map(normalizeExercise)
+      : [];
+    return merged;
+  }
+
+  function normalizeBlockList(payload) {
+    if (Array.isArray(payload?.blockList)) {
+      return payload.blockList.map(normalizeBlockEntry);
+    }
+    if (payload?.blocks) {
+      const list = [];
+      BLOCKS.forEach((cat) => {
+        const raw = payload.blocks[cat];
+        if (!raw) return;
+        const normalized = normalizeBlock(raw);
+        if (normalized.exercises.length > 0) {
+          list.push(normalizeBlockEntry({ ...normalized, category: cat }));
+        }
+      });
+      return list;
+    }
+    return [];
+  }
+
+  function getBlockList(state) {
+    if (Array.isArray(state?.blockList)) return state.blockList;
+    if (state?.blocks) {
+      return normalizeBlockList({ blocks: state.blocks });
+    }
+    return [];
   }
 
   function defaultPreferences() {
@@ -71,11 +120,13 @@
     return {
       restBetweenBlocks: 0,
       weightUnit: "lb",
-      blocks: {
-        alongamento: defaultBlock(),
-        tecnica: defaultBlock(),
-        wod: { ...defaultBlock(), ...wodOverrides },
-      },
+      blockList: [
+        normalizeBlockEntry({
+          category: "wod",
+          ...defaultBlock(),
+          ...wodOverrides,
+        }),
+      ],
     };
   }
 
@@ -226,13 +277,23 @@
       reps: ex?.reps ?? "",
       weightM: ex?.weightM ?? "",
       weightF: ex?.weightF ?? "",
+      restSeconds: ex?.restSeconds ?? "",
     };
+  }
+
+  function exerciseRestSeconds(ex, config) {
+    if (ex?.restSeconds !== undefined && ex.restSeconds !== "" && ex.restSeconds !== null) {
+      return Math.max(0, +ex.restSeconds || 0);
+    }
+    return Math.max(0, config.restSeconds || 0);
   }
 
   function normalizeBlock(block) {
     const base = defaultBlock();
     const merged = { ...base, ...block };
-    merged.exercises = (block?.exercises?.length ? block.exercises : base.exercises).map(normalizeExercise);
+    merged.exercises = Array.isArray(block?.exercises)
+      ? block.exercises.map(normalizeExercise)
+      : base.exercises.map(normalizeExercise);
     return merged;
   }
 
@@ -248,21 +309,17 @@
   }
 
   function getActiveBlocks(state) {
-    return BLOCKS.filter((b) => {
-      const block = state.blocks?.[b];
-      if (!Array.isArray(block?.exercises)) return false;
-      return block.exercises.some(isExerciseActive);
-    }).map((b) => {
-      const block = state.blocks[b];
-      return {
-        key: b,
-        label: BLOCK_LABELS[b],
+    return getBlockList(state)
+      .filter((block) => block.exercises?.some(isExerciseActive))
+      .map((block) => ({
+        key: block.id,
+        category: block.category,
+        label: BLOCK_LABELS[block.category] || block.category,
         config: {
           ...block,
           exercises: block.exercises.filter(isExerciseActive).map(resolveExerciseDisplay),
         },
-      };
-    });
+      }));
   }
 
   function estimateBlockSeconds(block, config) {
@@ -270,8 +327,13 @@
     if (!n) return 0;
 
     switch (config.mode) {
-      case "sequential":
-        return n * config.workSeconds + Math.max(0, n - 1) * config.restSeconds;
+      case "sequential": {
+        let total = n * config.workSeconds;
+        for (let i = 0; i < n - 1; i++) {
+          total += exerciseRestSeconds(config.exercises[i], config);
+        }
+        return total;
+      }
       case "emom":
         return config.totalMinutes * config.intervalSeconds;
       case "tabata":
@@ -331,16 +393,19 @@
             duration: config.workSeconds,
             countdown: true,
           });
-          if (config.restSeconds > 0 && i < exercises.length - 1) {
+          if (i < exercises.length - 1) {
+            const restDur = exerciseRestSeconds(ex, config);
+            if (restDur > 0) {
             timeline.push({
               type: "rest",
               blockKey: block.key,
               blockLabel: block.label,
               mode: config.mode,
-              duration: config.restSeconds,
+              duration: restDur,
               countdown: true,
               label: "Descanso",
             });
+            }
           }
         });
       } else if (config.mode === "emom") {
@@ -427,17 +492,11 @@
   }
 
   function createStateFromConfig(payload) {
-    const state = {
-      blocks: {},
+    return {
+      blockList: normalizeBlockList(payload),
       restBetweenBlocks: payload.restBetweenBlocks ?? 60,
       weightUnit: payload.weightUnit ?? "lb",
     };
-    BLOCKS.forEach((b) => {
-      state.blocks[b] = payload.blocks?.[b]
-        ? normalizeBlock(payload.blocks[b])
-        : defaultBlock();
-    });
-    return state;
   }
 
   function getPlatesForUnit(unit) {
@@ -517,7 +576,7 @@
 
   function serializeConfig(state) {
     return {
-      blocks: JSON.parse(JSON.stringify(state.blocks)),
+      blockList: JSON.parse(JSON.stringify(getBlockList(state))),
       restBetweenBlocks: state.restBetweenBlocks,
       weightUnit: state.weightUnit ?? "lb",
       layoutRatio: state.layoutRatio,
@@ -529,6 +588,7 @@
   return {
     BLOCKS,
     BLOCK_LABELS,
+    BLOCK_CATEGORIES: BLOCKS,
     MODES,
     WEIGHT_UNITS,
     PLATES_LB,
@@ -538,6 +598,11 @@
     CLASSIC_TEMPLATES,
     defaultExercise,
     defaultBlock,
+    defaultBlockEntry,
+    createBlockId,
+    normalizeBlockEntry,
+    normalizeBlockList,
+    getBlockList,
     defaultPreferences,
     normalizeExercise,
     normalizeBlock,

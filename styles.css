@@ -190,26 +190,22 @@ body[data-page="bar-calculator"] {
 #setup-screen,
 #remote-screen {
   padding: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
-.setup-header,
-.remote-connect,
-.block-tabs,
-.setup-start-bar,
-.remote-controls {
-  flex-shrink: 0;
+.setup-flow {
+  padding: 0 1.25rem 2rem;
+  padding-bottom: max(2rem, env(safe-area-inset-bottom));
 }
 
 #setup-screen .setup-header,
-#setup-screen .block-tabs,
-#setup-screen .setup-start-bar,
 #remote-screen .setup-header,
-#remote-screen .remote-connect,
-#remote-screen .block-tabs,
-#remote-screen .setup-start-bar {
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
+#remote-screen .remote-connect {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 #setup-screen .setup-header {
@@ -220,20 +216,181 @@ body[data-page="bar-calculator"] {
   padding-top: 0.75rem;
 }
 
-.setup-scroll {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-  padding: 0 1.25rem 2rem;
-  padding-bottom: max(2rem, env(safe-area-inset-bottom));
+.workout-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
-#setup-screen .block-tabs,
-#remote-screen .block-tabs {
-  margin-bottom: 0.75rem;
+.workout-list-empty {
+  padding: 1rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  background: var(--bg-panel);
+  border-radius: var(--radius);
+  border: 1px dashed var(--bg-input);
+}
+
+#btn-add-block {
+  margin-top: 0.65rem;
+}
+
+.workout-block-toolbar {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  background: var(--bg);
+  border-radius: 8px;
+  border: 1px solid var(--bg-input);
+}
+
+.block-type-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.block-type-field span {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.block-type-field select,
+.setup-select,
+.settings-field select {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.55rem 2.25rem 0.55rem 0.75rem;
+  border: 1px solid var(--bg-input);
+  border-radius: 8px;
+  background-color: var(--bg-input);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%237a8794' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 12px 8px;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+}
+
+.block-type-field select:hover,
+.setup-select:hover,
+.settings-field select:hover {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--bg-input));
+}
+
+.block-type-field select:focus,
+.setup-select:focus,
+.settings-field select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.block-type-field select option,
+.setup-select option,
+.settings-field select option {
+  background: var(--bg-panel);
+  color: var(--text);
+}
+
+.workout-block-order {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg-input);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.btn-remove-block {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 92, 92, 0.15);
+  color: var(--danger);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.workout-block {
+  padding: 0.75rem;
+  background: var(--bg-panel);
+  border-radius: var(--radius);
+  border: 1px solid var(--bg-input);
+}
+
+.workout-block--empty {
+  padding-bottom: 0.65rem;
+}
+
+.workout-block--empty .panel-config {
+  margin-bottom: 0.5rem;
+}
+
+.workout-block-title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  margin-bottom: 0.15rem;
+}
+
+.workout-block-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.workout-block--empty .workout-block-hint {
+  margin-bottom: 0.35rem;
+}
+
+.workout-block .panel-config {
+  margin-bottom: 0.65rem;
+  padding: 0.5rem 0.65rem;
+  background: var(--bg-input);
+  border-radius: 8px;
+}
+
+@media (max-width: 520px) {
+  .workout-block:not(.workout-block--empty) {
+    overflow-x: auto;
+  }
+
+  .exercise-list-header,
+  .exercise-item,
+  .exercise-item--with-rest {
+    min-width: 420px;
+  }
+}
+
+.template-hint {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
 }
 
 .header-row {
@@ -303,10 +460,10 @@ body[data-page="bar-calculator"] {
 
 .panel-config {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  padding: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+  padding: 0.5rem 0.65rem;
   background: var(--bg-panel);
   border-radius: var(--radius);
 }
@@ -314,8 +471,8 @@ body[data-page="bar-calculator"] {
 .panel-config label {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  font-size: 0.8rem;
+  gap: 0.2rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
   font-weight: 600;
   text-transform: uppercase;
@@ -325,30 +482,122 @@ body[data-page="bar-calculator"] {
 .panel-config select,
 .panel-config input,
 .exercise-row input,
+.exercise-item input,
 .global-settings input {
-  padding: 0.65rem 0.75rem;
+  padding: 0.45rem 0.5rem;
   border: 1px solid var(--bg-input);
-  border-radius: 8px;
+  border-radius: 6px;
   background: var(--bg-input);
   color: var(--text);
-  font-size: 1rem;
+  font-size: 0.9rem;
+}
+
+.panel-config select {
+  min-height: 2.25rem;
+  padding: 0.45rem 2rem 0.45rem 0.55rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: var(--bg-input);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%237a8794' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.55rem center;
+  background-size: 12px 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.panel-config select option {
+  background: var(--bg-panel);
+  color: var(--text);
 }
 
 .panel-config select:focus,
 .panel-config input:focus,
-.exercise-row input:focus {
+.exercise-row input:focus,
+.exercise-item input:focus {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 
 .exercise-list {
+  list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  max-height: min(42dvh, 360px);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-right: 0.15rem;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+}
+
+.exercise-list-header {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(80px, 1fr) 3.5rem 3.5rem 4rem 3.5rem 2rem;
+  gap: 0.35rem;
+  padding: 0 0.15rem 0.25rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.exercise-list-header span:nth-child(n + 3) {
+  text-align: center;
+}
+
+.exercise-list-header--no-rest {
+  grid-template-columns: 1.5rem minmax(80px, 1fr) 3.5rem 3.5rem 4rem 2rem;
+}
+
+.exercise-list-header--no-rest span:nth-child(6) {
+  display: none;
+}
+
+.exercise-item {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(80px, 1fr) 3.5rem 3.5rem 4rem 2rem;
+  gap: 0.35rem;
+  align-items: center;
+  padding: 0.25rem 0.15rem;
+  background: var(--bg);
+  border-radius: 6px;
+}
+
+.exercise-item-num {
+  flex-shrink: 0;
+  width: 1.35rem;
+  height: 1.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg-panel);
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.exercise-item-name {
+  min-width: 0;
+}
+
+.exercise-item-weight,
+.exercise-item-reps,
+.exercise-item-rest {
+  min-width: 0;
+  text-align: center;
+}
+
+.exercise-item--with-rest {
+  grid-template-columns: 1.5rem minmax(80px, 1fr) 3.5rem 3.5rem 4rem 3.5rem 2rem;
+}
+
+.btn-remove--compact {
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+  padding: 0;
+  font-size: 1.15rem;
 }
 
 .exercise-row {
@@ -420,12 +669,26 @@ body[data-page="bar-calculator"] {
 .global-settings select,
 .wod-templates select {
   max-width: 100%;
-  padding: 0.65rem 0.75rem;
+  padding: 0.65rem 2.25rem 0.65rem 0.75rem;
   border: 1px solid var(--bg-input);
   border-radius: 8px;
-  background: var(--bg-input);
+  background-color: var(--bg-input);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%237a8794' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 12px 8px;
   color: var(--text);
   font-size: 1rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+}
+
+.global-settings select option,
+.wod-templates select option {
+  background: var(--bg-panel);
+  color: var(--text);
 }
 
 .wod-templates {
@@ -487,16 +750,6 @@ body[data-page="bar-calculator"] {
 .btn-control.btn-accent {
   border-color: var(--accent);
   color: var(--accent);
-}
-
-.settings-field select {
-  width: 100%;
-  padding: 0.65rem 0.75rem;
-  border: 1px solid var(--bg-input);
-  border-radius: 8px;
-  background: var(--bg-input);
-  color: var(--text);
-  font-size: 1rem;
 }
 
 .remote-amrap {
@@ -698,8 +951,8 @@ body[data-page="bar-calculator"] {
 }
 
 .setup-start-bar {
-  margin: 0 1.25rem 0.75rem;
-  padding: 0.85rem 1rem;
+  margin: 1.25rem 0 0;
+  padding: 1rem;
   background: var(--bg-panel);
   border-radius: var(--radius);
   border: 2px solid var(--accent);
@@ -707,11 +960,6 @@ body[data-page="bar-calculator"] {
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  flex-shrink: 0;
-  position: sticky;
-  top: 0;
-  z-index: 15;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
 }
 
 .setup-start-bar .btn-primary {
@@ -1037,6 +1285,16 @@ body[data-page="bar-calculator"] {
   min-width: 120px;
 }
 
+.btn-skip-clock {
+  margin-top: 0.65rem;
+  min-width: 140px;
+}
+
+.timer-controls .btn-control {
+  flex: 1;
+  max-width: 180px;
+}
+
 .btn-control.btn-danger {
   border-color: rgba(255, 92, 92, 0.4);
   color: var(--danger);
@@ -1109,25 +1367,9 @@ body[data-page="bar-calculator"] {
 /* ── Landscape iPad optimization ── */
 
 @media (orientation: landscape) and (min-width: 768px) {
-  #setup-screen .setup-header,
-  #setup-screen .block-tabs,
-  #setup-screen .setup-start-bar,
-  #remote-screen .setup-header,
-  #remote-screen .remote-connect,
-  #remote-screen .block-tabs,
-  #remote-screen .setup-start-bar {
+  .setup-flow {
     padding-left: 2rem;
     padding-right: 2rem;
-  }
-
-  .setup-scroll {
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
-
-  .setup-start-bar {
-    margin-left: 2rem;
-    margin-right: 2rem;
   }
 
   .timer-layout {
@@ -1240,11 +1482,9 @@ body[data-page="bar-calculator"] {
 }
 
 .remote-controls {
-  margin-top: 0;
-  padding: 0.75rem 1.25rem;
-  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  margin-top: 1.25rem;
+  padding: 1rem 0 0;
   border-top: 1px solid var(--bg-input);
-  background: var(--bg);
   display: flex;
   flex-direction: column;
   gap: 0.65rem;

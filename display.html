@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="stylesheet" href="styles.css?v=16">
 </head>
 <body data-page="display">
   <audio id="audio-unlock" preload="auto" playsinline src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQQAAAAAAA=="></audio>
@@ -61,6 +61,7 @@
             </div>
           </div>
           <div class="round-info" id="round-info"></div>
+          <button type="button" id="btn-skip" class="btn-control btn-skip-clock">Pular</button>
           <div class="amrap-rounds hidden" id="amrap-rounds-panel">
             <span class="label">Rounds</span>
             <div class="round-counter">
@@ -89,7 +90,6 @@
       </div>
       <footer class="timer-controls">
         <button type="button" id="btn-pause" class="btn-control">Pausar</button>
-        <button type="button" id="btn-skip" class="btn-control">Pular</button>
         <button type="button" id="btn-fortime-done" class="btn-control btn-accent hidden">Concluído</button>
         <button type="button" id="btn-stop" class="btn-control btn-danger">Parar</button>
       </footer>
@@ -157,9 +157,9 @@
   </div>
 
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script src="core.js?v=11"></script>
-  <script src="theme.js?v=11"></script>
-  <script src="sync.js?v=11"></script>
-  <script src="app.js?v=11"></script>
+  <script src="core.js?v=12"></script>
+  <script src="theme.js?v=12"></script>
+  <script src="sync.js?v=12"></script>
+  <script src="app.js?v=12"></script>
 </body>
 </html>

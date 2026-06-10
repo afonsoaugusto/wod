@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="stylesheet" href="styles.css?v=20">
 </head>
 <body data-page="standalone">
   <!-- Desbloqueio de áudio no iOS/Safari (gesto do usuário) -->
@@ -27,6 +27,7 @@
 
     <!-- Setup -->
     <section id="setup-screen" class="screen active">
+      <div class="setup-flow">
       <header class="setup-header">
         <div class="header-row">
           <div>
@@ -40,35 +41,8 @@
         </div>
       </header>
 
-      <div class="block-tabs" role="tablist">
-        <button type="button" class="block-tab active" data-block="alongamento" role="tab" aria-selected="true">Alongamento</button>
-        <button type="button" class="block-tab" data-block="tecnica" role="tab">Técnica</button>
-        <button type="button" class="block-tab" data-block="wod" role="tab">WOD</button>
-      </div>
-
-      <div class="setup-start-bar">
-        <button type="button" id="btn-start" class="btn-primary">Iniciar treino</button>
-        <p class="workout-preview" id="workout-preview">Adicione exercícios para ver a duração estimada.</p>
-      </div>
-
-      <div class="setup-scroll">
-      <div class="setup-panels">
-        <div class="setup-panel active" data-block="alongamento">
-          <div class="panel-config" id="config-alongamento"></div>
-          <div class="exercise-list" id="exercises-alongamento"></div>
-          <button type="button" class="btn-add" data-block="alongamento">+ Exercício</button>
-        </div>
-        <div class="setup-panel" data-block="tecnica">
-          <div class="panel-config" id="config-tecnica"></div>
-          <div class="exercise-list" id="exercises-tecnica"></div>
-          <button type="button" class="btn-add" data-block="tecnica">+ Exercício</button>
-        </div>
-        <div class="setup-panel" data-block="wod">
-          <div class="panel-config" id="config-wod"></div>
-          <div class="exercise-list" id="exercises-wod"></div>
-          <button type="button" class="btn-add" data-block="wod">+ Exercício</button>
-        </div>
-      </div>
+      <div class="workout-list" id="workout-list"></div>
+      <button type="button" id="btn-add-block" class="btn-add">+ Bloco</button>
 
       <div class="wod-templates">
         <label>
@@ -77,9 +51,10 @@
         </label>
         <div class="template-save-row">
           <input type="text" id="template-name" placeholder="Nome para salvar">
-          <button type="button" id="btn-save-wod" class="btn-secondary btn-inline">Salvar</button>
+          <button type="button" id="btn-save-wod" class="btn-secondary btn-inline">Salvar treino</button>
           <button type="button" id="btn-delete-wod" class="btn-secondary btn-inline btn-danger-text">Excluir</button>
         </div>
+        <p class="template-hint">Salva todos os blocos (tipo, modo, exercícios) e configurações para carregar depois.</p>
       </div>
 
       <div class="global-settings">
@@ -87,17 +62,13 @@
           Descanso entre blocos (seg)
           <input type="number" id="rest-between-blocks" min="0" max="600" value="60">
         </label>
-        <label>
-          Unidade de peso sugerido
-          <select id="weight-unit">
-            <option value="lb" selected>Libras (lb)</option>
-            <option value="kg">Quilos (kg)</option>
-          </select>
-          <small>Referência para pesos M/F nos exercícios (padrão: libras)</small>
-        </label>
-      </div>
       </div>
 
+      <div class="setup-start-bar">
+        <button type="button" id="btn-start" class="btn-primary">Iniciar treino</button>
+        <p class="workout-preview" id="workout-preview">Adicione exercícios para ver a duração estimada.</p>
+      </div>
+      </div>
     </section>
 
     <!-- Timer -->
@@ -125,6 +96,7 @@
           </div>
 
           <div class="round-info" id="round-info"></div>
+          <button type="button" id="btn-skip" class="btn-control btn-skip-clock">Pular</button>
           <div class="amrap-rounds hidden" id="amrap-rounds-panel">
             <span class="label">Rounds</span>
             <div class="round-counter">
@@ -157,7 +129,6 @@
 
       <footer class="timer-controls">
         <button type="button" id="btn-pause" class="btn-control">Pausar</button>
-        <button type="button" id="btn-skip" class="btn-control">Pular</button>
         <button type="button" id="btn-fortime-done" class="btn-control btn-accent hidden">Concluído</button>
         <button type="button" id="btn-stop" class="btn-control btn-danger">Parar</button>
       </footer>
@@ -231,8 +202,8 @@
     </div>
   </div>
 
-  <script src="core.js?v=11"></script>
-  <script src="theme.js?v=11"></script>
-  <script src="app.js?v=11"></script>
+  <script src="core.js?v=14"></script>
+  <script src="theme.js?v=14"></script>
+  <script src="app.js?v=14"></script>
 </body>
 </html>

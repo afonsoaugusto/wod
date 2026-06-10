@@ -11,10 +11,11 @@
   const BLOCKS = WodCore.BLOCKS;
   const BLOCK_LABELS = WodCore.BLOCK_LABELS;
   const MODES = WodCore.MODES;
+  const defaultBlock = WodCore.defaultBlock;
+  const defaultBlockEntry = WodCore.defaultBlockEntry || ((cat) => ({ id: `block-${Date.now()}`, category: cat || "wod", ...defaultBlock() }));
+  const defaultExercise = WodCore.defaultExercise || (() => ({ name: "", reps: "", weightM: "", weightF: "", restSeconds: "" }));
   const WEIGHT_UNITS = WodCore.WEIGHT_UNITS || [];
   const CLASSIC_TEMPLATES = WodCore.CLASSIC_TEMPLATES || [];
-  const defaultBlock = WodCore.defaultBlock;
-  const defaultExercise = WodCore.defaultExercise || (() => ({ name: "", reps: "", weightM: "", weightF: "" }));
   const buildTimeline = WodCore.buildTimeline;
   const estimateDuration = WodCore.estimateDuration || (() => 0);
   const formatDuration = WodCore.formatDuration || ((s) => (s > 0 ? `${s}s` : "sem limite"));
@@ -27,7 +28,7 @@
   const SEGMENT_COUNT = 60;
 
   const state = {
-    blocks: {},
+    blockList: [],
     restBetweenBlocks: 60,
     weightUnit: "lb",
     layoutRatio: 70,
@@ -56,13 +57,24 @@
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => document.querySelectorAll(sel);
 
-  function init() {
-    BLOCKS.forEach((block) => {
-      state.blocks[block] = defaultBlock();
-      renderBlockConfig(block);
-      renderExercises(block);
-    });
+  function getBlock(blockId) {
+    return state.blockList.find((b) => b.id === blockId);
+  }
 
+  function addBlock(category = "wod") {
+    state.blockList.push(defaultBlockEntry(category));
+    renderWorkoutList();
+    updateWorkoutPreview();
+  }
+
+  function removeBlock(blockId) {
+    state.blockList = state.blockList.filter((b) => b.id !== blockId);
+    renderWorkoutList();
+    updateWorkoutPreview();
+  }
+
+  function init() {
+    state.blockList = [];
     loadPreferences();
     buildProgressRing();
     applyLayoutRatio(state.layoutRatio);
@@ -74,6 +86,7 @@
     const restEl = $("#rest-between-blocks");
     if (restEl) restEl.value = state.restBetweenBlocks;
     renderTemplateSelectors();
+    renderWorkoutList();
     updateWorkoutPreview();
     bindEvents();
   }
@@ -109,9 +122,8 @@
   }
 
   function syncWeightUnitUI() {
-    const el = $("#weight-unit");
-    if (!el) return;
-    el.value = state.weightUnit;
+    const el = $("#weight-unit-settings");
+    if (el) el.value = state.weightUnit;
     document.querySelectorAll(".weight-unit-label").forEach((node) => {
       node.textContent = state.weightUnit;
     });
@@ -127,6 +139,7 @@
   }
 
   function saveTemplate(name) {
+    syncFormToState();
     const trimmed = String(name || "").trim();
     if (!trimmed) {
       alert("Digite um nome para salvar o WOD.");
@@ -183,20 +196,11 @@
 
   function applyFullConfig(payload) {
     if (!payload) return;
-    let merged;
-    if (createStateFromConfig) {
-      merged = createStateFromConfig(payload);
-    } else {
-      merged = { restBetweenBlocks: payload.restBetweenBlocks ?? 60, weightUnit: payload.weightUnit || "lb", blocks: {} };
-      BLOCKS.forEach((b) => {
-        merged.blocks[b] = payload.blocks?.[b] ? { ...defaultBlock(), ...payload.blocks[b] } : defaultBlock();
-      });
-    }
-    BLOCKS.forEach((b) => {
-      state.blocks[b] = merged.blocks[b] || defaultBlock();
-      renderBlockConfig(b);
-      renderExercises(b);
-    });
+    const merged = createStateFromConfig
+      ? createStateFromConfig(payload)
+      : { blockList: [], restBetweenBlocks: payload.restBetweenBlocks ?? 60, weightUnit: payload.weightUnit || "lb" };
+
+    state.blockList = merged.blockList || [];
     if (payload.restBetweenBlocks !== undefined) {
       state.restBetweenBlocks = payload.restBetweenBlocks;
       const el = $("#rest-between-blocks");
@@ -218,6 +222,7 @@
       if (el) el.value = state.prepSeconds;
     }
     savePreferences();
+    renderWorkoutList();
     updateWorkoutPreview();
   }
 
@@ -228,22 +233,47 @@
     const template = classic || saved;
     if (!template) return;
     applyFullConfig(template.config);
+    const nameEl = $("#template-name");
+    if (nameEl && !classic) nameEl.value = template.name;
   }
 
   function syncFormToState() {
-    document.querySelectorAll(".exercise-row input[data-block][data-index][data-field]").forEach((input) => {
-      const block = input.dataset.block;
+    document.querySelectorAll(".exercise-item input[data-block-id][data-index][data-field]").forEach((input) => {
+      const blockId = input.dataset.blockId;
       const index = +input.dataset.index;
       const field = input.dataset.field;
-      if (state.blocks[block]?.exercises[index]) {
-        state.blocks[block].exercises[index][field] = input.value;
+      const block = getBlock(blockId);
+      if (block?.exercises[index]) {
+        block.exercises[index][field] = input.value;
       }
+    });
+
+    document.querySelectorAll(".panel-config [data-block-id][data-field]").forEach((input) => {
+      const blockId = input.dataset.blockId;
+      const field = input.dataset.field;
+      const block = getBlock(blockId);
+      if (!block || field === "mode" || field === "category") return;
+      block[field] = +input.value || 0;
+    });
+
+    document.querySelectorAll(".panel-config select[data-block-id][data-field]").forEach((select) => {
+      const blockId = select.dataset.blockId;
+      const field = select.dataset.field;
+      const block = getBlock(blockId);
+      if (!block) return;
+      if (field === "mode") block.mode = select.value;
+      if (field === "category") block.category = select.value;
+    });
+
+    document.querySelectorAll(".workout-block-toolbar select[data-block-id][data-field='category']").forEach((select) => {
+      const block = getBlock(select.dataset.blockId);
+      if (block) block.category = select.value;
     });
 
     const restEl = $("#rest-between-blocks");
     if (restEl) state.restBetweenBlocks = +restEl.value || 0;
 
-    const weightEl = $("#weight-unit");
+    const weightEl = $("#weight-unit-settings");
     if (weightEl) state.weightUnit = weightEl.value;
   }
 
@@ -253,7 +283,7 @@
     const seconds = estimateDuration(state);
     const phases = buildTimeline(state);
     if (!phases.length) {
-      el.textContent = "Adicione exercícios (nome ou reps) para ver a duração estimada.";
+      el.textContent = "Adicione blocos e exercícios (nome ou reps) para ver a duração estimada.";
       return;
     }
     el.textContent = `Duração estimada: ${formatDuration(seconds)} · ${phases.length} fases`;
@@ -287,26 +317,31 @@
   }
 
   function openSettings() {
-    $("#settings-menu").classList.remove("hidden");
+    const menu = $("#settings-menu");
+    if (!menu) return;
+    menu.classList.remove("hidden");
     syncSettingsUI();
   }
 
   function closeSettings() {
-    $("#settings-menu").classList.add("hidden");
+    $("#settings-menu")?.classList.add("hidden");
   }
 
   function syncSettingsUI() {
-    $("#sound-enabled").checked = state.soundEnabled;
-    $("#prep-seconds").value = state.prepSeconds;
+    const sound = $("#sound-enabled");
+    if (sound) sound.checked = state.soundEnabled;
+    const prep = $("#prep-seconds");
+    if (prep) prep.value = state.prepSeconds;
     const weightEl = $("#weight-unit-settings");
     if (weightEl) weightEl.value = state.weightUnit;
-    applyLayoutRatio(state.layoutRatio);
+    if ($("#layout-ratio")) applyLayoutRatio(state.layoutRatio);
   }
 
   function getSerializableConfig() {
+    syncFormToState();
     if (serializeConfig) return serializeConfig(state);
     return {
-      blocks: JSON.parse(JSON.stringify(state.blocks)),
+      blockList: JSON.parse(JSON.stringify(state.blockList)),
       restBetweenBlocks: state.restBetweenBlocks,
       weightUnit: state.weightUnit,
       layoutRatio: state.layoutRatio,
@@ -317,10 +352,6 @@
 
   function applyRemoteConfig(payload) {
     applyFullConfig(payload);
-    if (PAGE_MODE === "remote") {
-      BLOCKS.forEach((b) => renderBlockConfig(b));
-      BLOCKS.forEach((b) => renderExercises(b));
-    }
   }
 
   function broadcastStatus() {
@@ -342,58 +373,102 @@
     });
   }
 
-  function renderBlockConfig(block) {
-    const container = $(`#config-${block}`);
+  function renderWorkoutList() {
+    const container = $("#workout-list");
     if (!container) return;
-    const cfg = state.blocks[block];
+
+    if (!state.blockList.length) {
+      container.innerHTML = `<p class="workout-list-empty">Nenhum bloco ainda. Toque em <strong>+ Bloco</strong> para começar.</p>`;
+      return;
+    }
+
+    container.innerHTML = state.blockList
+      .map(
+        (block, blockIndex) => `
+      <section class="workout-block" data-block-id="${block.id}">
+        <div class="workout-block-toolbar">
+          <label class="block-type-field">
+            <span>Tipo</span>
+            <select data-block-id="${block.id}" data-field="category">
+              ${BLOCKS.map(
+                (cat) =>
+                  `<option value="${cat}" ${block.category === cat ? "selected" : ""}>${BLOCK_LABELS[cat]}</option>`
+              ).join("")}
+            </select>
+          </label>
+          <span class="workout-block-order">${blockIndex + 1}</span>
+          <button type="button" class="btn-remove-block" data-block-id="${block.id}" aria-label="Remover bloco">×</button>
+        </div>
+        <div class="panel-config" id="config-${block.id}"></div>
+        <ol class="exercise-list" id="exercises-${block.id}"></ol>
+        <button type="button" class="btn-add btn-add-exercise" data-block-id="${block.id}">+ Exercício</button>
+      </section>`
+      )
+      .join("");
+
+    state.blockList.forEach((block) => {
+      renderBlockConfig(block.id);
+      renderExercises(block.id);
+    });
+  }
+
+  function renderBlockConfig(blockId) {
+    const container = $(`#config-${blockId}`);
+    const cfg = getBlock(blockId);
+    if (!container || !cfg) return;
 
     container.innerHTML = `
       <label>
         Modo
-        <select data-block="${block}" data-field="mode">
+        <select data-block-id="${blockId}" data-field="mode">
           ${MODES.map(
             (m) =>
               `<option value="${m.value}" ${cfg.mode === m.value ? "selected" : ""}>${m.label}</option>`
           ).join("")}
         </select>
       </label>
-      <label class="field-work" data-block="${block}">
+      <label class="field-work" data-block-id="${blockId}">
         Trabalho (seg)
-        <input type="number" min="5" max="600" value="${cfg.workSeconds}" data-block="${block}" data-field="workSeconds">
+        <input type="number" min="5" max="600" value="${cfg.workSeconds}" data-block-id="${blockId}" data-field="workSeconds">
       </label>
-      <label class="field-rest" data-block="${block}">
-        Descanso (seg)
-        <input type="number" min="0" max="300" value="${cfg.restSeconds}" data-block="${block}" data-field="restSeconds">
+      <label class="field-rest" data-block-id="${blockId}">
+        Descanso padrão (seg)
+        <input type="number" min="0" max="300" value="${cfg.restSeconds}" data-block-id="${blockId}" data-field="restSeconds">
       </label>
-      <label class="field-interval" data-block="${block}">
+      <label class="field-interval" data-block-id="${blockId}">
         Intervalo EMOM (seg)
-        <input type="number" min="10" max="300" value="${cfg.intervalSeconds}" data-block="${block}" data-field="intervalSeconds">
+        <input type="number" min="10" max="300" value="${cfg.intervalSeconds}" data-block-id="${blockId}" data-field="intervalSeconds">
       </label>
-      <label class="field-total" data-block="${block}">
+      <label class="field-total" data-block-id="${blockId}">
         Total EMOM (min)
-        <input type="number" min="1" max="60" value="${cfg.totalMinutes}" data-block="${block}" data-field="totalMinutes">
+        <input type="number" min="1" max="60" value="${cfg.totalMinutes}" data-block-id="${blockId}" data-field="totalMinutes">
       </label>
-      <label class="field-cap" data-block="${block}">
+      <label class="field-cap" data-block-id="${blockId}">
         Time cap (min, 0 = sem limite)
-        <input type="number" min="0" max="60" value="${cfg.timeCapMinutes}" data-block="${block}" data-field="timeCapMinutes">
+        <input type="number" min="0" max="60" value="${cfg.timeCapMinutes}" data-block-id="${blockId}" data-field="timeCapMinutes">
       </label>
-      <label class="field-tabata" data-block="${block}">
+      <label class="field-tabata" data-block-id="${blockId}">
         Rounds Tabata
-        <input type="number" min="1" max="30" value="${cfg.tabataRounds}" data-block="${block}" data-field="tabataRounds">
+        <input type="number" min="1" max="30" value="${cfg.tabataRounds}" data-block-id="${blockId}" data-field="tabataRounds">
       </label>
     `;
 
-    updateConfigVisibility(block);
+    updateConfigVisibility(blockId);
   }
 
-  function updateConfigVisibility(block) {
-    const mode = state.blocks[block].mode;
-    const panel = $(`.setup-panel[data-block="${block}"]`);
+  function updateConfigVisibility(blockId) {
+    const block = getBlock(blockId);
+    const panel = $(`.workout-block[data-block-id="${blockId}"]`);
+    if (!block || !panel) return;
+    const mode = block.mode;
 
     panel.querySelectorAll(".field-work").forEach((el) => {
       el.style.display = mode === "sequential" ? "" : "none";
     });
     panel.querySelectorAll(".field-rest").forEach((el) => {
+      el.style.display = mode === "sequential" ? "" : "none";
+    });
+    panel.querySelectorAll(".field-rest-exercise").forEach((el) => {
       el.style.display = mode === "sequential" ? "" : "none";
     });
     panel.querySelectorAll(".field-interval").forEach((el) => {
@@ -599,23 +674,79 @@
     state.wakeLock = null;
   }
 
-  function renderExercises(block) {
-    const container = $(`#exercises-${block}`);
-    if (!container) return;
-    const exercises = state.blocks[block].exercises;
+  function renderExercises(blockId) {
+    const container = $(`#exercises-${blockId}`);
+    const block = getBlock(blockId);
+    if (!container || !block) return;
+    const exercises = block.exercises;
+    const showRest = block.mode === "sequential";
+    const blockEl = $(`.workout-block[data-block-id="${blockId}"]`);
+
+    blockEl?.classList.toggle("workout-block--empty", exercises.length === 0);
+
+    let header = $(`#exercise-header-${blockId}`);
+    if (!header && blockEl) {
+      header = document.createElement("div");
+      header.id = `exercise-header-${blockId}`;
+      header.className = "exercise-list-header";
+      header.innerHTML =
+        "<span></span><span>Exercício</span><span>M</span><span>F</span><span>Reps</span><span>Desc</span><span></span>";
+      container.before(header);
+    }
+    header?.classList.toggle("hidden", exercises.length === 0);
+    header?.classList.toggle("exercise-list-header--no-rest", !showRest);
+
+    if (!exercises.length) {
+      container.innerHTML = "";
+      return;
+    }
 
     container.innerHTML = exercises
       .map(
         (ex, i) => `
-      <div class="exercise-row exercise-row--weights" data-block="${block}" data-index="${i}">
-        <input type="text" placeholder="Exercício" value="${escapeHtml(ex.name)}" data-block="${block}" data-index="${i}" data-field="name">
-        <input type="text" placeholder="Reps" value="${escapeHtml(ex.reps)}" data-block="${block}" data-index="${i}" data-field="reps">
-        <input type="text" class="weight-field" placeholder="Peso M" value="${escapeHtml(ex.weightM || "")}" data-block="${block}" data-index="${i}" data-field="weightM" title="Peso sugerido masculino">
-        <input type="text" class="weight-field" placeholder="Peso F" value="${escapeHtml(ex.weightF || "")}" data-block="${block}" data-index="${i}" data-field="weightF" title="Peso sugerido feminino">
-        <button type="button" class="btn-remove" data-block="${block}" data-index="${i}" aria-label="Remover">×</button>
-      </div>`
+      <li class="exercise-item${showRest ? " exercise-item--with-rest" : ""}" data-block-id="${blockId}" data-index="${i}">
+        <span class="exercise-item-num">${i + 1}</span>
+        <input type="text" class="exercise-item-name" placeholder="Exercício" value="${escapeHtml(ex.name)}" data-block-id="${blockId}" data-index="${i}" data-field="name">
+        <input type="text" class="exercise-item-weight" placeholder="M" value="${escapeHtml(ex.weightM || "")}" data-block-id="${blockId}" data-index="${i}" data-field="weightM" title="Peso M" aria-label="Peso M">
+        <input type="text" class="exercise-item-weight" placeholder="F" value="${escapeHtml(ex.weightF || "")}" data-block-id="${blockId}" data-index="${i}" data-field="weightF" title="Peso F" aria-label="Peso F">
+        <input type="text" class="exercise-item-reps" placeholder="Reps" value="${escapeHtml(ex.reps)}" data-block-id="${blockId}" data-index="${i}" data-field="reps" title="Repetições" aria-label="Repetições">
+        <input type="number" class="exercise-item-rest${showRest ? "" : " hidden"}" min="0" max="600" placeholder="Desc" value="${escapeHtml(ex.restSeconds ?? "")}" data-block-id="${blockId}" data-index="${i}" data-field="restSeconds" title="Descanso em segundos" aria-label="Descanso segundos">
+        <button type="button" class="btn-remove btn-remove--compact" data-block-id="${blockId}" data-index="${i}" aria-label="Remover exercício ${i + 1}">×</button>
+      </li>`
       )
       .join("");
+  }
+
+  function findUpcomingExercises(fromIndex, count = 2) {
+    const found = [];
+    for (let i = fromIndex; i < timeline.length && found.length < count; i++) {
+      const p = timeline[i];
+      if (p.type === "work" && p.exercise) {
+        found.push(p.exercise);
+      } else if (p.type === "work" && p.exercises?.length && (p.mode === "amrap" || p.mode === "fortime")) {
+        for (let j = 0; j < p.exercises.length && found.length < count; j++) {
+          found.push(p.exercises[j]);
+        }
+        break;
+      }
+    }
+    return found;
+  }
+
+  function setExercisePanels(currentEx, nextEx) {
+    const nowPanel = $("#exercise-now-panel");
+    const nextPanel = $("#exercise-next-panel");
+    nowPanel?.classList.remove("hidden");
+    nextPanel?.classList.remove("hidden");
+    $("#current-exercise").textContent = currentEx?.name?.trim() || currentEx?.reps?.trim() || "—";
+    $("#current-reps").textContent = currentEx ? formatExerciseDetail(currentEx) : "";
+    if (nextEx) {
+      $("#next-exercise").textContent = nextEx.name?.trim() || nextEx.reps?.trim() || "—";
+      $("#next-reps").textContent = formatExerciseDetail(nextEx);
+    } else {
+      $("#next-exercise").textContent = "—";
+      $("#next-reps").textContent = "";
+    }
   }
 
   function escapeHtml(str) {
@@ -672,71 +803,82 @@
   }
 
   function bindEvents() {
-    $$(".block-tab").forEach((tab) => {
-      tab.addEventListener("click", () => {
-        const block = tab.dataset.block;
-        $$(".block-tab").forEach((t) => {
-          t.classList.toggle("active", t === tab);
-          t.setAttribute("aria-selected", t === tab ? "true" : "false");
-        });
-        $$(".setup-panel").forEach((p) => {
-          p.classList.toggle("active", p.dataset.block === block);
-        });
-      });
-    });
+    $("#btn-add-block")?.addEventListener("click", () => addBlock("wod"));
 
     document.addEventListener("change", (e) => {
-      const block = e.target.dataset?.block;
+      const blockId = e.target.dataset?.blockId;
       const field = e.target.dataset?.field;
-      if (!block || !field) return;
+      if (!blockId || !field) return;
+      const block = getBlock(blockId);
+      if (!block) return;
+
+      if (field === "category") {
+        block.category = e.target.value;
+        updateWorkoutPreview();
+        return;
+      }
 
       if (field === "mode") {
-        state.blocks[block].mode = e.target.value;
-        updateConfigVisibility(block);
+        block.mode = e.target.value;
+        updateConfigVisibility(blockId);
+        renderExercises(blockId);
         return;
       }
 
       const index = e.target.dataset.index;
       if (index !== undefined) {
-        state.blocks[block].exercises[+index][field] = e.target.value;
+        block.exercises[+index][field] = e.target.value;
         if (field === "name" || field === "reps") updateWorkoutPreview();
         return;
       }
 
-      state.blocks[block][field] = +e.target.value || 0;
+      block[field] = +e.target.value || 0;
       updateWorkoutPreview();
     });
 
     document.addEventListener("input", (e) => {
-      const block = e.target.dataset?.block;
+      const blockId = e.target.dataset?.blockId;
       const field = e.target.dataset?.field;
       const index = e.target.dataset?.index;
-      if (!block || !field || index === undefined) return;
-      state.blocks[block].exercises[+index][field] = e.target.value;
+      if (!blockId || !field || index === undefined) return;
+      const block = getBlock(blockId);
+      if (!block?.exercises[+index]) return;
+      block.exercises[+index][field] = e.target.value;
       if (field === "name" || field === "reps") updateWorkoutPreview();
     });
 
-    $$(".btn-add").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const block = btn.dataset.block;
-        state.blocks[block].exercises.push(defaultExercise());
-        renderExercises(block);
+    document.addEventListener("click", (e) => {
+      if (e.target.classList.contains("btn-add-exercise")) {
+        const blockId = e.target.dataset.blockId;
+        const block = getBlock(blockId);
+        if (!block) return;
+        block.exercises.push(defaultExercise());
+        renderExercises(blockId);
         updateWorkoutPreview();
-      });
+        return;
+      }
+      if (e.target.classList.contains("btn-remove-block")) {
+        removeBlock(e.target.dataset.blockId);
+        return;
+      }
+      if (e.target.classList.contains("layout-preset")) {
+        applyLayoutRatio(+e.target.dataset.ratio);
+        return;
+      }
+      if (!e.target.classList.contains("btn-remove")) return;
+      const blockId = e.target.dataset.blockId;
+      const index = +e.target.dataset.index;
+      const block = getBlock(blockId);
+      if (!block) return;
+      block.exercises.splice(index, 1);
+      renderExercises(blockId);
+      updateWorkoutPreview();
     });
 
     $("#rest-between-blocks")?.addEventListener("change", (e) => {
       state.restBetweenBlocks = +e.target.value || 0;
       savePreferences();
       updateWorkoutPreview();
-    });
-
-    $("#weight-unit")?.addEventListener("change", (e) => {
-      state.weightUnit = e.target.value;
-      syncWeightUnitUI();
-      const settingsUnit = $("#weight-unit-settings");
-      if (settingsUnit) settingsUnit.value = state.weightUnit;
-      savePreferences();
     });
 
     $("#template-select")?.addEventListener("change", (e) => {
@@ -761,20 +903,6 @@
       applyLayoutRatio(+e.target.value);
     });
 
-    document.addEventListener("click", (e) => {
-      if (e.target.classList.contains("layout-preset")) {
-        applyLayoutRatio(+e.target.dataset.ratio);
-        return;
-      }
-      if (!e.target.classList.contains("btn-remove")) return;
-      const block = e.target.dataset.block;
-      const index = +e.target.dataset.index;
-      if (state.blocks[block].exercises.length <= 1) return;
-      state.blocks[block].exercises.splice(index, 1);
-      renderExercises(block);
-      updateWorkoutPreview();
-    });
-
     $("#sound-enabled")?.addEventListener("change", (e) => {
       state.soundEnabled = e.target.checked;
       savePreferences();
@@ -790,8 +918,6 @@
     $("#weight-unit-settings")?.addEventListener("change", (e) => {
       state.weightUnit = e.target.value;
       syncWeightUnitUI();
-      const setupUnit = $("#weight-unit");
-      if (setupUnit) setupUnit.value = state.weightUnit;
       savePreferences();
     });
 
@@ -1045,7 +1171,7 @@
     const countdown = phase.countdown;
 
     $("#timer-block-name").textContent = phase.blockLabel;
-    $("#timer-phase").textContent = isRest ? (phase.label || "Descanso") : phase.label || "Trabalho";
+    $("#timer-phase").textContent = isRest ? "Trabalho" : phase.label || "Trabalho";
     $("#timer-phase").classList.toggle("rest", isRest);
 
     const displaySec = countdown ? Math.ceil(remaining) : Math.floor(remaining);
@@ -1063,8 +1189,6 @@
     const progressRemaining = countdown ? remaining : remaining % 60;
     updateProgressRing(progressRemaining, progressTotal, isRest);
 
-    const nowPanel = $("#exercise-now-panel");
-    const nextPanel = $("#exercise-next-panel");
     const listPanel = $("#exercise-list-panel");
     const amrapPanel = $("#amrap-rounds-panel");
 
@@ -1074,103 +1198,58 @@
       amrapPanel.classList.add("hidden");
     }
 
+    if (phase.mode === "amrap") {
+      amrapPanel.classList.remove("hidden");
+    } else {
+      amrapPanel.classList.add("hidden");
+    }
+
+    listPanel.classList.add("hidden");
+
     if (isRest) {
-      nowPanel.classList.remove("hidden");
-      nextPanel.classList.remove("hidden");
-      listPanel.classList.add("hidden");
-      $("#current-exercise").textContent = phase.label || "Descanso";
-      $("#current-reps").textContent = "";
-
-      const nextPhase = timeline[phaseIndex + 1];
-      if (nextPhase && nextPhase.exercise) {
-        $("#next-exercise").textContent = nextPhase.exercise.name;
-        $("#next-reps").textContent = formatExerciseDetail(nextPhase.exercise);
-      } else if (nextPhase && nextPhase.exercises) {
-        $("#next-exercise").textContent = nextPhase.label || BLOCK_LABELS[nextPhase.blockKey];
-        $("#next-reps").textContent = `${nextPhase.exercises.length} exercícios`;
-      } else {
-        $("#next-exercise").textContent = "—";
-        $("#next-reps").textContent = "";
-      }
+      const upcoming = findUpcomingExercises(phaseIndex + 1, 2);
+      setExercisePanels(upcoming[0], upcoming[1]);
+      $("#round-info").textContent = phase.blockLabel || "";
     } else if (phase.mode === "emom") {
-      nowPanel.classList.remove("hidden");
-      nextPanel.classList.remove("hidden");
-      listPanel.classList.add("hidden");
-
-      $("#current-exercise").textContent = phase.exercise.name;
-      $("#current-reps").textContent = formatExerciseDetail(phase.exercise);
-
+      setExercisePanels(phase.exercise, null);
       const nextExIndex = (phase.exerciseIndex + 1) % phase.exercises.length;
-      const nextEx = phase.exercises[nextExIndex];
       const isLastInterval = phase.interval === phase.totalIntervals;
       if (isLastInterval) {
-        const nextPhase = timeline[phaseIndex + 1];
-        if (nextPhase?.exercise) {
-          $("#next-exercise").textContent = nextPhase.exercise.name;
-          $("#next-reps").textContent = formatExerciseDetail(nextPhase.exercise);
-        } else if (nextPhase?.type === "rest") {
-          $("#next-exercise").textContent = nextPhase.label || "Descanso";
-          $("#next-reps").textContent = "";
+        const upcoming = findUpcomingExercises(phaseIndex + 1, 1);
+        if (upcoming[0]) {
+          $("#next-exercise").textContent = upcoming[0].name?.trim() || upcoming[0].reps?.trim() || "—";
+          $("#next-reps").textContent = formatExerciseDetail(upcoming[0]);
         } else {
           $("#next-exercise").textContent = "Fim do bloco";
           $("#next-reps").textContent = "";
         }
       } else {
-        $("#next-exercise").textContent = nextEx.name;
+        const nextEx = phase.exercises[nextExIndex];
+        $("#next-exercise").textContent = nextEx.name?.trim() || nextEx.reps?.trim() || "—";
         $("#next-reps").textContent = formatExerciseDetail(nextEx);
       }
-
       $("#round-info").textContent = `Minuto ${phase.interval} / ${phase.totalIntervals}`;
     } else if (phase.mode === "tabata") {
-      nowPanel.classList.remove("hidden");
-      nextPanel.classList.remove("hidden");
-      listPanel.classList.add("hidden");
-
-      if (isRest) {
-        $("#current-exercise").textContent = "Descanso";
-        $("#current-reps").textContent = "";
-        const nextEx = phase.exercises[phase.round % phase.exercises.length];
-        $("#next-exercise").textContent = nextEx.name;
-        $("#next-reps").textContent = formatExerciseDetail(nextEx);
-      } else {
-        $("#current-exercise").textContent = phase.exercise.name;
-        $("#current-reps").textContent = formatExerciseDetail(phase.exercise);
-        const isLastRound = phase.round === phase.totalRounds;
-        if (isLastRound) {
-          const nextPhase = timeline[phaseIndex + 1];
-          if (nextPhase?.exercise) {
-            $("#next-exercise").textContent = nextPhase.exercise.name;
-            $("#next-reps").textContent = formatExerciseDetail(nextPhase.exercise);
-          } else if (nextPhase?.type === "rest") {
-            $("#next-exercise").textContent = nextPhase.label || "Descanso";
-            $("#next-reps").textContent = "";
-          } else {
-            $("#next-exercise").textContent = "Fim do bloco";
-            $("#next-reps").textContent = "";
-          }
+      setExercisePanels(phase.exercise, null);
+      const isLastRound = phase.round === phase.totalRounds;
+      if (isLastRound) {
+        const upcoming = findUpcomingExercises(phaseIndex + 1, 1);
+        if (upcoming[0]) {
+          $("#next-exercise").textContent = upcoming[0].name?.trim() || upcoming[0].reps?.trim() || "—";
+          $("#next-reps").textContent = formatExerciseDetail(upcoming[0]);
         } else {
-          const nextEx = phase.exercises[phase.round % phase.exercises.length];
-          $("#next-exercise").textContent = nextEx.name;
-          $("#next-reps").textContent = formatExerciseDetail(nextEx);
+          $("#next-exercise").textContent = "Fim do bloco";
+          $("#next-reps").textContent = "";
         }
+      } else {
+        const nextEx = phase.exercises[phase.round % phase.exercises.length];
+        $("#next-exercise").textContent = nextEx.name?.trim() || nextEx.reps?.trim() || "—";
+        $("#next-reps").textContent = formatExerciseDetail(nextEx);
       }
-      $("#round-info").textContent = `Round ${phase.round} / ${phase.totalRounds} · ${isRest ? "10s" : "20s"}`;
+      $("#round-info").textContent = `Round ${phase.round} / ${phase.totalRounds}`;
     } else if (phase.mode === "amrap" || phase.mode === "fortime") {
-      nowPanel.classList.add("hidden");
-      nextPanel.classList.add("hidden");
-      listPanel.classList.remove("hidden");
-
-      const list = $("#block-exercise-list");
-      list.innerHTML = phase.exercises
-        .map(
-          (ex, i) => `
-        <li>
-          <span>${escapeHtml(ex.name)}</span>
-          <span class="item-reps">${escapeHtml([ex.reps, formatWeightLine(ex)].filter(Boolean).join(" · "))}</span>
-        </li>`
-        )
-        .join("");
-
+      const exs = phase.exercises || [];
+      setExercisePanels(exs[0], exs[1]);
       const capLabel = phase.countdown
         ? `Time cap: ${Math.floor(phaseTotal / 60)} min`
         : phase.mode === "amrap"
@@ -1178,25 +1257,15 @@
           : "For Time — sem limite";
       $("#round-info").textContent = capLabel;
     } else {
-      nowPanel.classList.remove("hidden");
-      nextPanel.classList.remove("hidden");
-      listPanel.classList.add("hidden");
-
-      $("#current-exercise").textContent = phase.exercise.name;
-      $("#current-reps").textContent = formatExerciseDetail(phase.exercise);
-
-      const nextPhase = timeline[phaseIndex + 1];
-      if (nextPhase?.exercise) {
-        $("#next-exercise").textContent = nextPhase.exercise.name;
-        $("#next-reps").textContent = formatExerciseDetail(nextPhase.exercise);
-      } else if (nextPhase?.type === "rest") {
-        $("#next-exercise").textContent = "Descanso";
-        $("#next-reps").textContent = `${nextPhase.duration}s`;
+      setExercisePanels(phase.exercise, null);
+      const upcoming = findUpcomingExercises(phaseIndex + 1, 1);
+      if (upcoming[0]) {
+        $("#next-exercise").textContent = upcoming[0].name?.trim() || upcoming[0].reps?.trim() || "—";
+        $("#next-reps").textContent = formatExerciseDetail(upcoming[0]);
       } else {
         $("#next-exercise").textContent = "—";
         $("#next-reps").textContent = "";
       }
-
       const exNum = phase.exerciseIndex + 1;
       $("#round-info").textContent = `Exercício ${exNum} / ${phase.exercises.length}`;
     }
@@ -1274,9 +1343,7 @@
   }
 
   function initDisplay() {
-    BLOCKS.forEach((block) => {
-      state.blocks[block] = defaultBlock();
-    });
+    state.blockList = [];
     loadPreferences();
     buildProgressRing();
     applyLayoutRatio(state.layoutRatio);
@@ -1326,7 +1393,6 @@
     $("#btn-send-config").disabled = !connected;
     $("#btn-remote-start").disabled = !connected;
     $("#btn-remote-pause").disabled = !connected;
-    $("#btn-remote-skip").disabled = !connected;
     $("#btn-remote-stop").disabled = !connected;
     $("#btn-remote-round-plus").disabled = !connected;
     $("#btn-remote-round-minus").disabled = !connected;
@@ -1365,14 +1431,11 @@
   }
 
   function initRemote() {
-    BLOCKS.forEach((block) => {
-      state.blocks[block] = defaultBlock();
-      renderBlockConfig(block);
-      renderExercises(block);
-    });
+    state.blockList = [];
     loadPreferences();
     syncWeightUnitUI();
     renderTemplateSelectors();
+    renderWorkoutList();
     updateWorkoutPreview();
     const restEl = $("#rest-between-blocks");
     if (restEl) restEl.value = state.restBetweenBlocks;
@@ -1415,6 +1478,7 @@
     });
 
     $("#btn-send-config")?.addEventListener("click", () => {
+      syncFormToState();
       remoteSync?.send({ type: "config", payload: getSerializableConfig() });
       $("#remote-status").textContent = "Configuração enviada";
     });
@@ -1429,10 +1493,6 @@
       const btn = $("#btn-remote-pause");
       const isPaused = btn?.textContent === "Continuar";
       remoteSync?.send({ type: isPaused ? "resume" : "pause" });
-    });
-
-    $("#btn-remote-skip")?.addEventListener("click", () => {
-      remoteSync?.send({ type: "skip" });
     });
 
     $("#btn-remote-stop")?.addEventListener("click", () => {

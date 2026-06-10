@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>WOD Timer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Setup -->
+    <section id="setup-screen" class="screen active">
+      <header class="setup-header">
+        <h1>WOD Timer</h1>
+        <p class="subtitle">Configure o treino e inicie no iPad em modo paisagem</p>
+      </header>
+
+      <div class="block-tabs" role="tablist">
+        <button type="button" class="block-tab active" data-block="alongamento" role="tab" aria-selected="true">Alongamento</button>
+        <button type="button" class="block-tab" data-block="tecnica" role="tab">Técnica</button>
+        <button type="button" class="block-tab" data-block="wod" role="tab">WOD</button>
+      </div>
+
+      <div class="setup-panels">
+        <div class="setup-panel active" data-block="alongamento">
+          <div class="panel-config" id="config-alongamento"></div>
+          <div class="exercise-list" id="exercises-alongamento"></div>
+          <button type="button" class="btn-add" data-block="alongamento">+ Exercício</button>
+        </div>
+        <div class="setup-panel" data-block="tecnica">
+          <div class="panel-config" id="config-tecnica"></div>
+          <div class="exercise-list" id="exercises-tecnica"></div>
+          <button type="button" class="btn-add" data-block="tecnica">+ Exercício</button>
+        </div>
+        <div class="setup-panel" data-block="wod">
+          <div class="panel-config" id="config-wod"></div>
+          <div class="exercise-list" id="exercises-wod"></div>
+          <button type="button" class="btn-add" data-block="wod">+ Exercício</button>
+        </div>
+      </div>
+
+      <div class="global-settings">
+        <label>
+          Descanso entre blocos (seg)
+          <input type="number" id="rest-between-blocks" min="0" max="600" value="60">
+        </label>
+      </div>
+
+      <footer class="setup-footer">
+        <button type="button" id="btn-start" class="btn-primary">Iniciar treino</button>
+      </footer>
+    </section>
+
+    <!-- Timer -->
+    <section id="timer-screen" class="screen">
+      <div class="timer-layout">
+        <div class="timer-clock-area">
+          <div class="block-badge" id="timer-block-name">WOD</div>
+          <div class="phase-label" id="timer-phase">Trabalho</div>
+
+          <div class="clock-wrapper">
+            <svg class="progress-ring" viewBox="0 0 200 200" aria-hidden="true">
+              <g id="progress-segments"></g>
+            </svg>
+            <div class="clock-display" id="clock-display" aria-live="polite">
+              <span class="clock-min" id="clock-min">00</span>
+              <span class="clock-sep">:</span>
+              <span class="clock-sec" id="clock-sec">00</span>
+            </div>
+          </div>
+
+          <div class="round-info" id="round-info"></div>
+        </div>
+
+        <div class="timer-exercise-area">
+          <div class="exercise-now" id="exercise-now-panel">
+            <span class="label">Agora</span>
+            <h2 id="current-exercise">—</h2>
+            <p class="reps" id="current-reps"></p>
+          </div>
+
+          <div class="exercise-next" id="exercise-next-panel">
+            <span class="label">Próximo</span>
+            <h3 id="next-exercise">—</h3>
+            <p class="reps" id="next-reps"></p>
+          </div>
+
+          <div class="exercise-list-panel hidden" id="exercise-list-panel">
+            <span class="label">Exercícios do bloco</span>
+            <ul id="block-exercise-list"></ul>
+          </div>
+        </div>
+      </div>
+
+      <footer class="timer-controls">
+        <button type="button" id="btn-pause" class="btn-control">Pausar</button>
+        <button type="button" id="btn-skip" class="btn-control">Pular</button>
+        <button type="button" id="btn-stop" class="btn-control btn-danger">Parar</button>
+      </footer>
+    </section>
+
+    <!-- Finished -->
+    <section id="finished-screen" class="screen">
+      <div class="finished-content">
+        <h1>Treino concluído</h1>
+        <p id="finished-summary"></p>
+        <button type="button" id="btn-restart" class="btn-primary">Novo treino</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

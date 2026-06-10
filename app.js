@@ -11,6 +11,7 @@
   const MODES = [
     { value: "sequential", label: "Sequencial" },
     { value: "emom", label: "EMOM" },
+    { value: "tabata", label: "Tabata" },
     { value: "amrap", label: "AMRAP" },
     { value: "fortime", label: "For Time" },
   ];
@@ -20,9 +21,14 @@
   const state = {
     blocks: {},
     restBetweenBlocks: 60,
-    timer: null,
+    layoutRatio: 70,
+    soundEnabled: true,
+    prepCountdown: true,
     paused: false,
     segments: [],
+    amrapRounds: 0,
+    wakeLock: null,
+    lastBeepSec: -1,
   };
 
   const $ = (sel) => document.querySelector(sel);
@@ -36,6 +42,7 @@
       intervalSeconds: 60,
       totalMinutes: 12,
       timeCapMinutes: 0,
+      tabataRounds: 8,
       exercises: [{ name: "", reps: "" }],
     };
   }
@@ -47,8 +54,48 @@
       renderExercises(block);
     });
 
+    loadPreferences();
     buildProgressRing();
+    applyLayoutRatio(state.layoutRatio);
+    $("#sound-enabled").checked = state.soundEnabled;
+    $("#prep-countdown").checked = state.prepCountdown;
+    $("#rest-between-blocks").value = state.restBetweenBlocks;
     bindEvents();
+  }
+
+  function loadPreferences() {
+    try {
+      const saved = sessionStorage.getItem("wod-prefs");
+      if (!saved) return;
+      const prefs = JSON.parse(saved);
+      if (prefs.layoutRatio) state.layoutRatio = prefs.layoutRatio;
+      if (prefs.soundEnabled !== undefined) state.soundEnabled = prefs.soundEnabled;
+      if (prefs.prepCountdown !== undefined) state.prepCountdown = prefs.prepCountdown;
+      if (prefs.restBetweenBlocks !== undefined) state.restBetweenBlocks = prefs.restBetweenBlocks;
+    } catch (_) { /* ignore */ }
+  }
+
+  function savePreferences() {
+    sessionStorage.setItem(
+      "wod-prefs",
+      JSON.stringify({
+        layoutRatio: state.layoutRatio,
+        soundEnabled: state.soundEnabled,
+        prepCountdown: state.prepCountdown,
+        restBetweenBlocks: state.restBetweenBlocks,
+      })
+    );
+  }
+
+  function applyLayoutRatio(ratio) {
+    state.layoutRatio = ratio;
+    document.documentElement.style.setProperty("--clock-ratio", `${ratio}%`);
+    $("#layout-ratio").value = ratio;
+    $("#layout-ratio-label").textContent = `${ratio}% relógio`;
+    $$(".layout-preset").forEach((btn) => {
+      btn.classList.toggle("active", +btn.dataset.ratio === ratio);
+    });
+    savePreferences();
   }
 
   function renderBlockConfig(block) {
@@ -85,6 +132,10 @@
         Time cap (min, 0 = sem limite)
         <input type="number" min="0" max="60" value="${cfg.timeCapMinutes}" data-block="${block}" data-field="timeCapMinutes">
       </label>
+      <label class="field-tabata" data-block="${block}">
+        Rounds Tabata
+        <input type="number" min="1" max="30" value="${cfg.tabataRounds}" data-block="${block}" data-field="tabataRounds">
+      </label>
     `;
 
     updateConfigVisibility(block);
@@ -109,6 +160,47 @@
     panel.querySelectorAll(".field-cap").forEach((el) => {
       el.style.display = mode === "amrap" || mode === "fortime" ? "" : "none";
     });
+    panel.querySelectorAll(".field-tabata").forEach((el) => {
+      el.style.display = mode === "tabata" ? "" : "none";
+    });
+  }
+
+  function playBeep(freq, duration, volume) {
+    if (!state.soundEnabled) return;
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = "sine";
+      gain.gain.value = volume;
+      osc.start();
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      osc.stop(ctx.currentTime + duration);
+    } catch (_) { /* ignore */ }
+  }
+
+  function beepTick() {
+    playBeep(880, 0.08, 0.15);
+  }
+
+  function beepPhaseEnd() {
+    playBeep(440, 0.25, 0.25);
+    setTimeout(() => playBeep(660, 0.35, 0.3), 280);
+  }
+
+  async function requestWakeLock() {
+    if (!("wakeLock" in navigator)) return;
+    try {
+      state.wakeLock = await navigator.wakeLock.request("screen");
+    } catch (_) { /* ignore */ }
+  }
+
+  function releaseWakeLock() {
+    state.wakeLock?.release();
+    state.wakeLock = null;
   }
 
   function renderExercises(block) {
@@ -240,13 +332,56 @@
 
     $("#rest-between-blocks").addEventListener("change", (e) => {
       state.restBetweenBlocks = +e.target.value || 0;
+      savePreferences();
     });
+
+    $("#layout-ratio").addEventListener("input", (e) => {
+      applyLayoutRatio(+e.target.value);
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.classList.contains("layout-preset")) return;
+      applyLayoutRatio(+e.target.dataset.ratio);
+    });
+
+    $("#sound-enabled").addEventListener("change", (e) => {
+      state.soundEnabled = e.target.checked;
+      savePreferences();
+    });
+
+    $("#prep-countdown").addEventListener("change", (e) => {
+      state.prepCountdown = e.target.checked;
+      savePreferences();
+    });
+
+    $("#btn-fullscreen").addEventListener("click", toggleFullscreen);
+    $("#btn-round-plus").addEventListener("click", () => updateAmrapRounds(1));
+    $("#btn-round-minus").addEventListener("click", () => updateAmrapRounds(-1));
 
     $("#btn-start").addEventListener("click", startWorkout);
     $("#btn-pause").addEventListener("click", togglePause);
     $("#btn-skip").addEventListener("click", skipPhase);
     $("#btn-stop").addEventListener("click", stopWorkout);
     $("#btn-restart").addEventListener("click", () => showScreen("setup-screen"));
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && $("#timer-screen").classList.contains("active")) {
+        requestWakeLock();
+      }
+    });
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.();
+    } else {
+      document.exitFullscreen?.();
+    }
+  }
+
+  function updateAmrapRounds(delta) {
+    state.amrapRounds = Math.max(0, state.amrapRounds + delta);
+    $("#round-count").textContent = state.amrapRounds;
   }
 
   function showScreen(id) {
@@ -316,6 +451,38 @@
             countdown: true,
           });
         }
+      } else if (config.mode === "tabata") {
+        const ex = exercises[0];
+        for (let r = 0; r < config.tabataRounds; r++) {
+          timeline.push({
+            type: "work",
+            blockKey: block.key,
+            blockLabel: block.label,
+            mode: config.mode,
+            exercise: ex,
+            exercises,
+            round: r + 1,
+            totalRounds: config.tabataRounds,
+            duration: 20,
+            countdown: true,
+            label: "Tabata",
+          });
+          if (r < config.tabataRounds - 1) {
+            timeline.push({
+              type: "rest",
+              blockKey: block.key,
+              blockLabel: block.label,
+              mode: config.mode,
+              exercise: ex,
+              exercises,
+              round: r + 1,
+              totalRounds: config.tabataRounds,
+              duration: 10,
+              countdown: true,
+              label: "Descanso Tabata",
+            });
+          }
+        }
       } else if (config.mode === "amrap" || config.mode === "fortime") {
         const cap = config.timeCapMinutes;
         timeline.push({
@@ -362,8 +529,46 @@
 
     phaseIndex = 0;
     state.paused = false;
+    state.amrapRounds = 0;
+    state.lastBeepSec = -1;
+    $("#round-count").textContent = "0";
+    $("#sound-enabled").checked = state.soundEnabled;
+    $("#prep-countdown").checked = state.prepCountdown;
+    $("#rest-between-blocks").value = state.restBetweenBlocks;
+    applyLayoutRatio(state.layoutRatio);
+
     showScreen("timer-screen");
-    enterPhase(0);
+    requestWakeLock();
+
+    if (state.prepCountdown) {
+      runPrepCountdown(() => enterPhase(0));
+    } else {
+      enterPhase(0);
+    }
+  }
+
+  function runPrepCountdown(done) {
+    const overlay = $("#prep-overlay");
+    const num = $("#prep-number");
+    const sequence = ["3", "2", "1", "GO!"];
+    let i = 0;
+
+    overlay.classList.remove("hidden");
+    num.textContent = sequence[i];
+    playBeep(660, 0.12, 0.2);
+
+    const step = setInterval(() => {
+      i += 1;
+      if (i >= sequence.length) {
+        clearInterval(step);
+        overlay.classList.add("hidden");
+        beepPhaseEnd();
+        done();
+        return;
+      }
+      num.textContent = sequence[i];
+      playBeep(i === sequence.length - 1 ? 880 : 660, 0.12, 0.2);
+    }, 1000);
   }
 
   function enterPhase(index) {
@@ -377,7 +582,9 @@
     phaseTotal = phase.duration || 60;
     remaining = phase.countdown ? phaseTotal : 0;
     lastTick = performance.now();
+    state.lastBeepSec = -1;
 
+    if (index > 0) beepPhaseEnd();
     updateTimerUI(phase);
     clearInterval(tickInterval);
     tickInterval = setInterval(tick, 100);
@@ -396,6 +603,13 @@
 
     if (phase.countdown) {
       remaining -= delta;
+      const secLeft = Math.ceil(remaining);
+      if (secLeft <= 3 && secLeft > 0 && secLeft !== state.lastBeepSec) {
+        state.lastBeepSec = secLeft;
+        beepTick();
+        $("#clock-display").classList.add("flash");
+        setTimeout(() => $("#clock-display").classList.remove("flash"), 1200);
+      }
       if (remaining <= 0) {
         remaining = 0;
         updateTimerUI(phase);
@@ -436,6 +650,13 @@
     const nowPanel = $("#exercise-now-panel");
     const nextPanel = $("#exercise-next-panel");
     const listPanel = $("#exercise-list-panel");
+    const amrapPanel = $("#amrap-rounds-panel");
+
+    if (phase.mode === "amrap") {
+      amrapPanel.classList.remove("hidden");
+    } else {
+      amrapPanel.classList.add("hidden");
+    }
 
     if (isRest) {
       nowPanel.classList.remove("hidden");
@@ -484,6 +705,14 @@
       }
 
       $("#round-info").textContent = `Minuto ${phase.interval} / ${phase.totalIntervals}`;
+    } else if (phase.mode === "tabata") {
+      nowPanel.classList.remove("hidden");
+      nextPanel.classList.add("hidden");
+      listPanel.classList.add("hidden");
+
+      $("#current-exercise").textContent = isRest ? "Descanso" : phase.exercise.name;
+      $("#current-reps").textContent = isRest ? "" : (phase.exercise.reps ? `${phase.exercise.reps} reps` : "");
+      $("#round-info").textContent = `Round ${phase.round} / ${phase.totalRounds} · ${isRest ? "10s" : "20s"}`;
     } else if (phase.mode === "amrap" || phase.mode === "fortime") {
       nowPanel.classList.add("hidden");
       nextPanel.classList.add("hidden");
@@ -544,12 +773,15 @@
 
   function stopWorkout() {
     clearInterval(tickInterval);
+    releaseWakeLock();
     showScreen("setup-screen");
   }
 
   function finishWorkout() {
     clearInterval(tickInterval);
-    $("#finished-summary").textContent = "Bom treino! Configure um novo WOD quando quiser.";
+    releaseWakeLock();
+    const rounds = state.amrapRounds > 0 ? ` Rounds AMRAP: ${state.amrapRounds}.` : "";
+    $("#finished-summary").textContent = `Bom treino!${rounds} Configure um novo WOD quando quiser.`;
     showScreen("finished-screen");
   }
 

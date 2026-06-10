@@ -49,6 +49,24 @@
           Descanso entre blocos (seg)
           <input type="number" id="rest-between-blocks" min="0" max="600" value="60">
         </label>
+        <label>
+          Proporção relógio / exercícios
+          <div class="layout-presets" role="group" aria-label="Proporção da tela">
+            <button type="button" class="layout-preset active" data-ratio="70">Relógio grande</button>
+            <button type="button" class="layout-preset" data-ratio="55">Balanceado</button>
+            <button type="button" class="layout-preset" data-ratio="40">Exercícios</button>
+          </div>
+          <input type="range" id="layout-ratio" min="35" max="75" value="70" step="5">
+          <span class="range-hint" id="layout-ratio-label">70% relógio</span>
+        </label>
+        <label class="toggle-label">
+          <input type="checkbox" id="sound-enabled" checked>
+          Sons de alerta (3s e troca de fase)
+        </label>
+        <label class="toggle-label">
+          <input type="checkbox" id="prep-countdown" checked>
+          Contagem 3-2-1 antes de iniciar
+        </label>
       </div>
 
       <footer class="setup-footer">
@@ -58,7 +76,15 @@
 
     <!-- Timer -->
     <section id="timer-screen" class="screen">
-      <div class="timer-layout">
+      <div class="timer-toolbar">
+        <div class="layout-presets layout-presets--inline" role="group" aria-label="Ajustar proporção">
+          <button type="button" class="layout-preset layout-preset--sm active" data-ratio="70" title="Relógio grande">⏱</button>
+          <button type="button" class="layout-preset layout-preset--sm" data-ratio="55" title="Balanceado">⊞</button>
+          <button type="button" class="layout-preset layout-preset--sm" data-ratio="40" title="Exercícios">☰</button>
+        </div>
+        <button type="button" id="btn-fullscreen" class="btn-icon" title="Tela cheia">⛶</button>
+      </div>
+      <div class="timer-layout" id="timer-layout">
         <div class="timer-clock-area">
           <div class="block-badge" id="timer-block-name">WOD</div>
           <div class="phase-label" id="timer-phase">Trabalho</div>
@@ -75,6 +101,14 @@
           </div>
 
           <div class="round-info" id="round-info"></div>
+          <div class="amrap-rounds hidden" id="amrap-rounds-panel">
+            <span class="label">Rounds</span>
+            <div class="round-counter">
+              <button type="button" id="btn-round-minus" class="btn-round" aria-label="Menos round">−</button>
+              <span id="round-count">0</span>
+              <button type="button" id="btn-round-plus" class="btn-round" aria-label="Mais round">+</button>
+            </div>
+          </div>
         </div>
 
         <div class="timer-exercise-area">
@@ -103,6 +137,11 @@
         <button type="button" id="btn-stop" class="btn-control btn-danger">Parar</button>
       </footer>
     </section>
+
+    <!-- Prep countdown overlay -->
+    <div id="prep-overlay" class="prep-overlay hidden" aria-live="assertive">
+      <span id="prep-number">3</span>
+    </div>
 
     <!-- Finished -->
     <section id="finished-screen" class="screen">

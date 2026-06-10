@@ -20,6 +20,7 @@
   --segment-inactive: #3d4a56;
   --radius: 12px;
   --font-mono: "Share Tech Mono", "Courier New", monospace;
+  --clock-ratio: 70%;
 }
 
 html,
@@ -194,6 +195,9 @@ body {
   padding: 1rem;
   background: var(--bg-panel);
   border-radius: var(--radius);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
 }
 
 .global-settings label {
@@ -206,8 +210,65 @@ body {
   text-transform: uppercase;
 }
 
-.global-settings input {
+.global-settings input[type="number"] {
   max-width: 160px;
+}
+
+.global-settings input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.range-hint {
+  font-size: 0.85rem;
+  color: var(--text);
+  text-transform: none;
+  font-weight: 400;
+}
+
+.layout-presets {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.layout-preset {
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--bg-input);
+  border-radius: 8px;
+  background: var(--bg-input);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  cursor: pointer;
+}
+
+.layout-preset.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(0, 229, 255, 0.1);
+}
+
+.layout-preset--sm {
+  padding: 0.45rem 0.65rem;
+  font-size: 1rem;
+}
+
+.toggle-label {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.6rem !important;
+  text-transform: none !important;
+  font-size: 0.9rem !important;
+  color: var(--text) !important;
+}
+
+.toggle-label input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--accent);
 }
 
 .setup-footer {
@@ -240,13 +301,35 @@ body {
   background: var(--bg);
 }
 
+.timer-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1.25rem 0;
+}
+
+.layout-presets--inline {
+  gap: 0.35rem;
+}
+
+.btn-icon {
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--bg-input);
+  border-radius: var(--radius);
+  background: var(--bg-panel);
+  color: var(--text);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
 .timer-layout {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: var(--clock-ratio) 1fr;
   gap: 0;
   min-height: 0;
-  padding: 1rem 1.5rem;
+  padding: 0.5rem 1.5rem 1rem;
 }
 
 .timer-clock-area {
@@ -281,8 +364,8 @@ body {
 
 .clock-wrapper {
   position: relative;
-  width: min(52vw, 420px);
-  height: min(52vw, 420px);
+  width: min(calc(var(--clock-ratio) * 1.1), 72vh, 560px);
+  height: min(calc(var(--clock-ratio) * 1.1), 72vh, 560px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -314,7 +397,7 @@ body {
   position: relative;
   z-index: 1;
   font-family: var(--font-mono);
-  font-size: clamp(4rem, 14vw, 7rem);
+  font-size: clamp(4.5rem, min(18vw, 22vh), 9rem);
   line-height: 1;
   letter-spacing: 0.02em;
   display: flex;
@@ -352,6 +435,38 @@ body {
   color: var(--text-muted);
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.amrap-rounds {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.round-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.35rem;
+}
+
+.round-counter span {
+  font-family: var(--font-mono);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  color: var(--accent);
+  min-width: 2ch;
+}
+
+.btn-round {
+  width: 52px;
+  height: 52px;
+  border: 2px solid var(--bg-input);
+  border-radius: 50%;
+  background: var(--bg-panel);
+  color: var(--accent);
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
 }
 
 .timer-exercise-area {
@@ -495,6 +610,39 @@ body {
   margin-bottom: 2rem;
 }
 
+/* ── Prep overlay ── */
+
+.prep-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 14, 18, 0.92);
+}
+
+.prep-overlay span {
+  font-family: var(--font-mono);
+  font-size: clamp(8rem, 30vw, 16rem);
+  color: var(--accent);
+  text-shadow: 0 0 40px var(--accent-glow);
+  animation: prep-pulse 0.8s ease infinite;
+}
+
+@keyframes prep-pulse {
+  50% { transform: scale(1.06); opacity: 0.85; }
+}
+
+.clock-display.flash #clock-sec,
+.clock-display.flash .clock-min {
+  animation: sec-flash 0.4s ease 3;
+}
+
+@keyframes sec-flash {
+  50% { color: #fff; text-shadow: 0 0 30px #fff; }
+}
+
 /* ── Landscape iPad optimization ── */
 
 @media (orientation: landscape) and (min-width: 768px) {
@@ -528,7 +676,7 @@ body {
   }
 
   .clock-wrapper {
-    width: min(70vw, 320px);
-    height: min(70vw, 320px);
+    width: min(80vw, 380px);
+    height: min(80vw, 380px);
   }
 }

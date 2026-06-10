@@ -67,9 +67,12 @@
     loadPreferences();
     buildProgressRing();
     applyLayoutRatio(state.layoutRatio);
-    $("#sound-enabled").checked = state.soundEnabled;
-    $("#prep-seconds").value = state.prepSeconds;
-    $("#rest-between-blocks").value = state.restBetweenBlocks;
+    const soundEl = $("#sound-enabled");
+    if (soundEl) soundEl.checked = state.soundEnabled;
+    const prepEl = $("#prep-seconds");
+    if (prepEl) prepEl.value = state.prepSeconds;
+    const restEl = $("#rest-between-blocks");
+    if (restEl) restEl.value = state.restBetweenBlocks;
     bindEvents();
   }
 
@@ -554,7 +557,7 @@
       });
     });
 
-    $("#rest-between-blocks").addEventListener("change", (e) => {
+    $("#rest-between-blocks")?.addEventListener("change", (e) => {
       state.restBetweenBlocks = +e.target.value || 0;
       savePreferences();
     });
@@ -797,7 +800,8 @@
     state.halfTimeAnnounced = false;
     state.tenSecAnnounced = false;
     $("#round-count").textContent = "0";
-    $("#rest-between-blocks").value = state.restBetweenBlocks;
+    const restEl = $("#rest-between-blocks");
+    if (restEl) restEl.value = state.restBetweenBlocks;
     applyLayoutRatio(state.layoutRatio);
 
     showScreen("timer-screen");
@@ -1103,16 +1107,27 @@
     loadPreferences();
     buildProgressRing();
     applyLayoutRatio(state.layoutRatio);
-    $("#sound-enabled").checked = state.soundEnabled;
-    $("#prep-seconds").value = state.prepSeconds;
+    const soundEl = $("#sound-enabled");
+    if (soundEl) soundEl.checked = state.soundEnabled;
+    const prepEl = $("#prep-seconds");
+    if (prepEl) prepEl.value = state.prepSeconds;
     bindEvents();
 
     const codeEl = $("#pairing-code");
     const statusEl = $("#pairing-status");
 
+    if (typeof WodSync === "undefined") {
+      codeEl.textContent = "ERRO";
+      statusEl.textContent = "sync.js não carregou. Recarregue a página.";
+      return;
+    }
+
     displaySync = WodSync.createHost({
       onReady(code) {
         codeEl.textContent = code;
+        statusEl.textContent = "Conectando ao servidor…";
+      },
+      onSignalingReady() {
         statusEl.textContent = "Aguardando controle remoto…";
       },
       onConnect() {
@@ -1126,8 +1141,9 @@
         broadcastStatus();
       },
       onMessage: handleRemoteCommand,
-      onError() {
-        statusEl.textContent = "Erro de conexão. Recarregue a página.";
+      onError(err) {
+        const msg = err?.message || err?.type || "erro";
+        statusEl.textContent = `Sem conexão (${msg}). Código válido — tentando reconectar…`;
       },
     });
   }
@@ -1148,7 +1164,8 @@
       renderBlockConfig(block);
       renderExercises(block);
     });
-    $("#rest-between-blocks").value = state.restBetweenBlocks;
+    const restEl = $("#rest-between-blocks");
+    if (restEl) restEl.value = state.restBetweenBlocks;
     bindEvents();
     setRemoteUi(false);
 

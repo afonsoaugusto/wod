@@ -6,10 +6,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>WOD Timer</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="styles.css?v=13">
 </head>
 <body data-page="standalone">
   <!-- Desbloqueio de áudio no iOS/Safari (gesto do usuário) -->
@@ -19,6 +21,7 @@
       <a href="index.html" class="active">Timer</a>
       <a href="display.html">Tela</a>
       <a href="remote.html">Controle</a>
+      <a href="bar-calculator.html">Barra</a>
       <a href="about.html">Sobre</a>
     </nav>
 
@@ -43,6 +46,12 @@
         <button type="button" class="block-tab" data-block="wod" role="tab">WOD</button>
       </div>
 
+      <div class="setup-start-bar">
+        <button type="button" id="btn-start" class="btn-primary">Iniciar treino</button>
+        <p class="workout-preview" id="workout-preview">Adicione exercícios para ver a duração estimada.</p>
+      </div>
+
+      <div class="setup-scroll">
       <div class="setup-panels">
         <div class="setup-panel active" data-block="alongamento">
           <div class="panel-config" id="config-alongamento"></div>
@@ -61,16 +70,34 @@
         </div>
       </div>
 
+      <div class="wod-templates">
+        <label>
+          Carregar WOD
+          <select id="template-select"></select>
+        </label>
+        <div class="template-save-row">
+          <input type="text" id="template-name" placeholder="Nome para salvar">
+          <button type="button" id="btn-save-wod" class="btn-secondary btn-inline">Salvar</button>
+          <button type="button" id="btn-delete-wod" class="btn-secondary btn-inline btn-danger-text">Excluir</button>
+        </div>
+      </div>
+
       <div class="global-settings">
         <label>
           Descanso entre blocos (seg)
           <input type="number" id="rest-between-blocks" min="0" max="600" value="60">
         </label>
+        <label>
+          Unidade de peso sugerido
+          <select id="weight-unit">
+            <option value="lb" selected>Libras (lb)</option>
+            <option value="kg">Quilos (kg)</option>
+          </select>
+          <small>Referência para pesos M/F nos exercícios (padrão: libras)</small>
+        </label>
+      </div>
       </div>
 
-      <footer class="setup-footer">
-        <button type="button" id="btn-start" class="btn-primary">Iniciar treino</button>
-      </footer>
     </section>
 
     <!-- Timer -->
@@ -131,6 +158,7 @@
       <footer class="timer-controls">
         <button type="button" id="btn-pause" class="btn-control">Pausar</button>
         <button type="button" id="btn-skip" class="btn-control">Pular</button>
+        <button type="button" id="btn-fortime-done" class="btn-control btn-accent hidden">Concluído</button>
         <button type="button" id="btn-stop" class="btn-control btn-danger">Parar</button>
       </footer>
     </section>
@@ -173,6 +201,18 @@
           </section>
 
           <section class="settings-section">
+            <h3>Pesos</h3>
+            <label class="settings-field">
+              <span>Unidade de peso sugerido nos exercícios</span>
+              <select id="weight-unit-settings">
+                <option value="lb" selected>Libras (lb)</option>
+                <option value="kg">Quilos (kg)</option>
+              </select>
+              <small>Padrão: libras. Use nos campos Peso M / Peso F de cada exercício.</small>
+            </label>
+          </section>
+
+          <section class="settings-section">
             <h3>Áudio e tela</h3>
             <label class="settings-toggle">
               <input type="checkbox" id="sound-enabled" checked>
@@ -191,8 +231,8 @@
     </div>
   </div>
 
-  <script src="core.js"></script>
-  <script src="theme.js"></script>
-  <script src="app.js?v=7"></script>
+  <script src="core.js?v=11"></script>
+  <script src="theme.js?v=11"></script>
+  <script src="app.js?v=11"></script>
 </body>
 </html>

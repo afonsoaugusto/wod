@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>WOD Timer — Calculadora de barra</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=15">
+</head>
+<body data-page="bar-calculator">
+  <div class="about-page">
+    <nav class="site-nav">
+      <a href="index.html">Timer</a>
+      <a href="display.html">Tela</a>
+      <a href="remote.html">Controle</a>
+      <a href="bar-calculator.html" class="active">Barra</a>
+      <a href="about.html">Sobre</a>
+      <button type="button" class="btn-icon btn-theme site-nav-theme" title="Alternar tema">🌙</button>
+    </nav>
+
+    <main class="about-content bar-calc-page">
+      <header>
+        <h1>Calculadora de barra</h1>
+        <p class="about-lead">Informe o peso da barra e o peso alvo para saber quais anilhas colocar em cada lado.</p>
+      </header>
+
+      <section class="calc-panel">
+        <label class="calc-field">
+          <span class="calc-field-label">Unidade</span>
+          <select id="weight-unit"></select>
+        </label>
+
+        <label class="calc-field">
+          <span class="calc-field-label">Peso da barra (<span id="unit-label-bar">lb</span>)</span>
+          <div class="calc-bar-presets">
+            <input type="number" id="bar-weight" min="0" step="0.5" value="45">
+            <button type="button" id="btn-set-bar-male" class="btn-secondary btn-inline">Barra M (45 lb / 20 kg)</button>
+            <button type="button" id="btn-set-bar-female" class="btn-secondary btn-inline">Barra F (35 lb / 15 kg)</button>
+          </div>
+        </label>
+
+        <label class="calc-field">
+          <span class="calc-field-label">Peso alvo na barra (<span id="unit-label-target">lb</span>)</span>
+          <input type="number" id="target-weight" min="0" step="0.5" placeholder="Ex.: 115">
+        </label>
+
+        <div id="calc-result" class="calc-result"></div>
+      </section>
+
+      <section class="calc-panel">
+        <h2>Tabela de percentuais</h2>
+        <p class="calc-hint">Com base no peso de referência (1RM ou peso de trabalho), veja as anilhas para cada percentual.</p>
+        <label class="calc-field">
+          <span class="calc-field-label">Peso de referência (<span id="unit-label-base">lb</span>)</span>
+          <input type="number" id="base-weight" min="0" step="0.5" placeholder="Ex.: 225">
+        </label>
+
+        <div class="calc-table-wrap">
+          <table class="about-table calc-table" id="percent-table">
+            <thead>
+              <tr>
+                <th>%</th>
+                <th>Peso total</th>
+                <th>Por lado</th>
+                <th>Anilhas/lado (<span id="table-unit-hint">lb</span>)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="core.js?v=10"></script>
+  <script src="theme.js?v=10"></script>
+  <script src="bar-calculator.js?v=2"></script>
+</body>
+</html>

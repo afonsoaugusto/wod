@@ -3,9 +3,12 @@ const assert = require("node:assert/strict");
 const {
   BLOCKS,
   defaultBlock,
+  defaultExercise,
+  isExerciseActive,
   getActiveBlocks,
   buildTimeline,
   createStateFromConfig,
+  normalizeExercise,
 } = require("../core.js");
 
 function makeState(overrides = {}) {
@@ -29,6 +32,20 @@ function wodBlock(config) {
   });
 }
 
+describe("isExerciseActive", () => {
+  it("aceita exercício só com nome", () => {
+    assert.equal(isExerciseActive({ name: "Burpee", reps: "" }), true);
+  });
+
+  it("aceita exercício só com reps", () => {
+    assert.equal(isExerciseActive({ name: "", reps: "10" }), true);
+  });
+
+  it("ignora linha só com pesos", () => {
+    assert.equal(isExerciseActive({ name: "", reps: "", weightM: "95 lb", weightF: "65 lb" }), false);
+  });
+});
+
 describe("getActiveBlocks", () => {
   it("ignora blocos sem exercícios nomeados", () => {
     const state = makeState();
@@ -37,6 +54,15 @@ describe("getActiveBlocks", () => {
     state.blocks.wod.exercises = [{ name: "Burpee", reps: "10" }];
     assert.equal(getActiveBlocks(state).length, 1);
     assert.equal(getActiveBlocks(state)[0].key, "wod");
+  });
+
+  it("aceita exercício apenas com reps (pesos opcionais)", () => {
+    const state = makeState();
+    state.blocks.wod.exercises = [{ name: "", reps: "21-15-9", weightM: "", weightF: "" }];
+    const active = getActiveBlocks(state);
+    assert.equal(active.length, 1);
+    assert.equal(active[0].config.exercises[0].name, "21-15-9");
+    assert.equal(buildTimeline(state).length, 1);
   });
 });
 
@@ -163,6 +189,20 @@ describe("Controle remoto (payload de config)", () => {
     assert.equal(state.blocks.alongamento.mode, "sequential");
     assert.equal(getActiveBlocks(state).length, 1);
     assert.equal(buildTimeline(state)[0].label, "AMRAP");
+  });
+});
+
+describe("defaultExercise", () => {
+  it("inclui campos de peso masculino e feminino", () => {
+    const ex = defaultExercise();
+    assert.equal(ex.weightM, "");
+    assert.equal(ex.weightF, "");
+  });
+
+  it("preserva pesos ao normalizar", () => {
+    const ex = normalizeExercise({ name: "Clean", reps: "5", weightM: "135", weightF: "95" });
+    assert.equal(ex.weightM, "135");
+    assert.equal(ex.weightF, "95");
   });
 });
 

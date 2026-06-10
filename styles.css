@@ -98,6 +98,7 @@
 html,
 body {
   height: 100%;
+  height: 100dvh;
   background: var(--bg);
   color: var(--text);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -105,14 +106,34 @@ body {
   overflow: hidden;
 }
 
+html:has(body[data-page="about"]),
+html:has(body[data-page="bar-calculator"]) {
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+body[data-page="about"],
+body[data-page="bar-calculator"] {
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
 #app {
   height: 100%;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .screen {
   display: none;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .screen.active {
@@ -127,9 +148,11 @@ body {
   display: flex;
   gap: 0.35rem;
   padding: 0.65rem 1rem;
+  padding-top: max(0.65rem, env(safe-area-inset-top));
   background: var(--bg-panel);
   border-bottom: 1px solid var(--bg-input);
   overflow-x: auto;
+  flex-shrink: 0;
 }
 
 .site-nav a {
@@ -164,14 +187,53 @@ body {
   border: none;
 }
 
-#setup-screen {
-  overflow-y: auto;
-  padding: 1.25rem 1.5rem 2rem;
+#setup-screen,
+#remote-screen {
+  padding: 0;
+  overflow: hidden;
 }
 
-#remote-screen {
+.setup-header,
+.remote-connect,
+.block-tabs,
+.setup-start-bar,
+.remote-controls {
+  flex-shrink: 0;
+}
+
+#setup-screen .setup-header,
+#setup-screen .block-tabs,
+#setup-screen .setup-start-bar,
+#remote-screen .setup-header,
+#remote-screen .remote-connect,
+#remote-screen .block-tabs,
+#remote-screen .setup-start-bar {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+#setup-screen .setup-header {
+  padding-top: 1rem;
+}
+
+#remote-screen .setup-header {
+  padding-top: 0.75rem;
+}
+
+.setup-scroll {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  padding: 1rem 1.25rem 2rem;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: 0 1.25rem 2rem;
+  padding-bottom: max(2rem, env(safe-area-inset-bottom));
+}
+
+#setup-screen .block-tabs,
+#remote-screen .block-tabs {
+  margin-bottom: 0.75rem;
 }
 
 .header-row {
@@ -204,7 +266,7 @@ body {
 .block-tabs {
   display: flex;
   gap: 0.5rem;
-  margin: 1.25rem 0 1rem;
+  margin: 1rem 0 0.75rem;
 }
 
 .block-tab {
@@ -228,7 +290,7 @@ body {
 
 .setup-panels {
   position: relative;
-  min-height: 280px;
+  min-height: 0;
 }
 
 .setup-panel {
@@ -283,13 +345,25 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  max-height: min(42dvh, 360px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 0.15rem;
 }
 
 .exercise-row {
   display: grid;
-  grid-template-columns: 1fr 120px 44px;
+  grid-template-columns: 1fr 100px 44px;
   gap: 0.5rem;
   align-items: center;
+}
+
+.exercise-row--weights {
+  grid-template-columns: 1fr 90px 80px 80px 44px;
+}
+
+.exercise-row .weight-field {
+  font-size: 0.9rem;
 }
 
 .exercise-row input {
@@ -342,8 +416,94 @@ body {
   text-transform: uppercase;
 }
 
-.global-settings input[type="number"] {
-  max-width: 160px;
+.global-settings input[type="number"],
+.global-settings select,
+.wod-templates select {
+  max-width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--bg-input);
+  border-radius: 8px;
+  background: var(--bg-input);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.wod-templates {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--bg-panel);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.wod-templates label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.template-save-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.template-save-row input {
+  flex: 1;
+  min-width: 140px;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--bg-input);
+  border-radius: 8px;
+  background: var(--bg-input);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.workout-preview {
+  font-size: 0.95rem;
+  color: var(--accent);
+  margin: 0;
+}
+
+.btn-inline {
+  display: inline-block;
+  width: auto;
+  margin-top: 0;
+  min-width: auto;
+}
+
+.btn-danger-text {
+  color: var(--danger);
+  border-color: rgba(255, 92, 92, 0.35);
+}
+
+.btn-control.btn-accent {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.settings-field select {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--bg-input);
+  border-radius: 8px;
+  background: var(--bg-input);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.remote-amrap {
+  padding: 0.75rem;
+  background: var(--bg-panel);
+  border-radius: var(--radius);
+  text-align: center;
 }
 
 .btn-icon {
@@ -537,6 +697,32 @@ body {
   color: var(--accent);
 }
 
+.setup-start-bar {
+  margin: 0 1.25rem 0.75rem;
+  padding: 0.85rem 1rem;
+  background: var(--bg-panel);
+  border-radius: var(--radius);
+  border: 2px solid var(--accent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+}
+
+.setup-start-bar .btn-primary {
+  width: 100%;
+  max-width: 360px;
+}
+
+.setup-start-bar .workout-preview {
+  text-align: center;
+}
+
 .setup-footer {
   margin-top: 1.5rem;
   display: flex;
@@ -565,6 +751,8 @@ body {
 
 #timer-screen {
   background: var(--bg);
+  height: 100%;
+  max-height: 100dvh;
 }
 
 .timer-toolbar {
@@ -572,7 +760,8 @@ body {
   justify-content: flex-end;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem 1.25rem 0;
+  padding: 0.35rem 1rem 0;
+  flex-shrink: 0;
 }
 
 .timer-layout {
@@ -581,7 +770,9 @@ body {
   grid-template-columns: minmax(0, calc(var(--clock-col) * 1%)) minmax(0, 1fr);
   gap: 0;
   min-height: 0;
-  padding: 0.5rem 1.5rem 1rem;
+  max-height: 100%;
+  overflow: hidden;
+  padding: 0.25rem 1rem 0.5rem;
 }
 
 .timer-clock-area {
@@ -589,7 +780,9 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 0.5rem;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .block-badge {
@@ -616,8 +809,12 @@ body {
 
 .clock-wrapper {
   position: relative;
-  width: min(72vh, calc((100vw - 3rem) * var(--clock-col) / 100 * 0.88), 600px);
-  height: min(72vh, calc((100vw - 3rem) * var(--clock-col) / 100 * 0.88), 600px);
+  width: min(100%, 32dvh, 420px);
+  height: min(100%, 32dvh, 420px);
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 1;
+  flex-shrink: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -725,9 +922,12 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 1.5rem;
-  padding: 1.5rem 2rem;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
   border-left: 1px solid var(--bg-input);
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .exercise-now,
@@ -783,8 +983,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
-  max-height: 40vh;
-  overflow-y: auto;
+  max-height: none;
+  overflow-y: visible;
 }
 
 .exercise-list-panel li {
@@ -816,9 +1016,13 @@ body {
 .timer-controls {
   display: flex;
   justify-content: center;
-  gap: 1rem;
-  padding: 0.75rem 1.5rem 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  padding: 0.6rem 1rem;
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
   border-top: 1px solid var(--bg-input);
+  flex-shrink: 0;
+  background: var(--bg);
 }
 
 .btn-control {
@@ -905,20 +1109,38 @@ body {
 /* ── Landscape iPad optimization ── */
 
 @media (orientation: landscape) and (min-width: 768px) {
-  #setup-screen {
-    padding: 1.5rem 3rem 2rem;
+  #setup-screen .setup-header,
+  #setup-screen .block-tabs,
+  #setup-screen .setup-start-bar,
+  #remote-screen .setup-header,
+  #remote-screen .remote-connect,
+  #remote-screen .block-tabs,
+  #remote-screen .setup-start-bar {
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
 
-  .setup-panels {
-    min-height: 240px;
+  .setup-scroll {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .setup-start-bar {
+    margin-left: 2rem;
+    margin-right: 2rem;
   }
 
   .timer-layout {
-    padding: 0.5rem 2rem;
+    padding: 0.25rem 1.5rem 0.5rem;
+  }
+
+  .clock-wrapper {
+    width: min(100%, 42dvh, 520px);
+    height: min(100%, 42dvh, 520px);
   }
 
   .timer-exercise-area {
-    padding: 2rem 3rem;
+    padding: 1rem 2rem;
   }
 }
 
@@ -1018,7 +1240,11 @@ body {
 }
 
 .remote-controls {
-  margin-top: 1.25rem;
+  margin-top: 0;
+  padding: 0.75rem 1.25rem;
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--bg-input);
+  background: var(--bg);
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
@@ -1045,15 +1271,23 @@ body {
 /* ── About page ── */
 
 .about-page {
-  min-height: 100%;
+  height: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow-x: hidden;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 .about-content {
   max-width: 720px;
   margin: 0 auto;
   padding: 1.5rem 1.25rem 3rem;
+  padding-bottom: max(3rem, env(safe-area-inset-bottom));
   line-height: 1.65;
+  width: 100%;
 }
 
 .about-content h1 {
@@ -1142,20 +1376,176 @@ body {
   font-size: 0.9rem;
 }
 
+/* ── Bar calculator ── */
+
+.bar-calc-page .calc-panel {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--bg-panel);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bar-calc-page .calc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.bar-calc-page .calc-field-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.bar-calc-page .calc-panel h2 {
+  font-size: 1.2rem;
+  margin-bottom: 0.25rem;
+  color: var(--accent);
+}
+
+.bar-calc-page input,
+.bar-calc-page select {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--bg-input);
+  border-radius: 8px;
+  background: var(--bg-input);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.calc-bar-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.calc-bar-presets input {
+  flex: 1;
+  min-width: 100px;
+}
+
+.calc-result-card {
+  padding: 1rem;
+  border-radius: 8px;
+  background: var(--bg-input);
+  border-left: 4px solid var(--accent);
+}
+
+.calc-result-main {
+  font-size: 1.2rem;
+  margin-bottom: 0.35rem;
+}
+
+.calc-result-plates {
+  font-family: var(--font-mono);
+  color: var(--accent);
+  font-size: 1.05rem;
+}
+
+.calc-hint {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.calc-warning {
+  margin-top: 0.5rem;
+  color: var(--rest);
+  font-size: 0.9rem;
+}
+
+.calc-table-wrap {
+  overflow-x: auto;
+  margin-top: 0.5rem;
+}
+
+.calc-table {
+  width: 100%;
+  min-width: 480px;
+}
+
+.calc-table th,
+.calc-table td {
+  vertical-align: middle;
+}
+
+.calc-table th {
+  white-space: nowrap;
+  font-size: 0.85rem;
+}
+
+.calc-table td:last-child {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.calc-table-empty td {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 1.25rem;
+  font-style: italic;
+}
+
+@media (max-width: 640px) {
+  .exercise-row--weights {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .exercise-row--weights .btn-remove {
+    grid-column: 2;
+    justify-self: end;
+  }
+}
+
 @media (orientation: portrait) {
   .timer-layout {
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
-    overflow-y: auto;
+    grid-template-rows: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    overflow: hidden;
   }
 
   .timer-exercise-area {
     border-left: none;
     border-top: 1px solid var(--bg-input);
+    justify-content: flex-start;
   }
 
   .clock-wrapper {
-    width: min(80vw, 380px);
-    height: min(80vw, 380px);
+    width: min(72vw, 28dvh, 320px);
+    height: min(72vw, 28dvh, 320px);
+  }
+
+  .btn-control {
+    min-width: 100px;
+    padding: 0.75rem 1.25rem;
+  }
+}
+
+@media (max-height: 720px) and (orientation: landscape) {
+  .clock-wrapper {
+    width: min(100%, 26dvh, 320px);
+    height: min(100%, 26dvh, 320px);
+  }
+
+  .clock-display {
+    font-size: clamp(2.5rem, 11dvh, 6rem);
+  }
+
+  .phase-label {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .exercise-now h2 {
+    font-size: clamp(1.5rem, 4dvh, 2.5rem);
+  }
+
+  .timer-exercise-area {
+    gap: 0.65rem;
+    padding: 0.5rem 1rem;
   }
 }

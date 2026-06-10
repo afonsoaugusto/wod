@@ -1,24 +1,49 @@
 (function () {
   "use strict";
 
-  const { BLOCKS, BLOCK_LABELS, MODES, defaultBlock, buildTimeline } = WodCore;
+  if (typeof WodCore === "undefined") {
+    window.addEventListener("DOMContentLoaded", () => {
+      alert("Erro: core.js não carregou. Recarregue a página com Cmd+Shift+R.");
+    });
+    return;
+  }
+
+  const BLOCKS = WodCore.BLOCKS;
+  const BLOCK_LABELS = WodCore.BLOCK_LABELS;
+  const MODES = WodCore.MODES;
+  const WEIGHT_UNITS = WodCore.WEIGHT_UNITS || [];
+  const CLASSIC_TEMPLATES = WodCore.CLASSIC_TEMPLATES || [];
+  const defaultBlock = WodCore.defaultBlock;
+  const defaultExercise = WodCore.defaultExercise || (() => ({ name: "", reps: "", weightM: "", weightF: "" }));
+  const buildTimeline = WodCore.buildTimeline;
+  const estimateDuration = WodCore.estimateDuration || (() => 0);
+  const formatDuration = WodCore.formatDuration || ((s) => (s > 0 ? `${s}s` : "sem limite"));
+  const formatClockTime = WodCore.formatClockTime || ((t) => String(t));
+  const serializeConfig = WodCore.serializeConfig;
+  const createStateFromConfig = WodCore.createStateFromConfig;
+
+  const SAVED_WODS_KEY = "wod-saved-templates";
 
   const SEGMENT_COUNT = 60;
 
   const state = {
     blocks: {},
     restBetweenBlocks: 60,
+    weightUnit: "lb",
     layoutRatio: 70,
     soundEnabled: true,
     prepSeconds: 3,
     paused: false,
     segments: [],
     amrapRounds: 0,
+    forTimeElapsed: null,
     wakeLock: null,
     lastBeepSec: -1,
     halfTimeAnnounced: false,
     tenSecAnnounced: false,
   };
+
+  let prepInterval = null;
 
   let audioCtx = null;
   let audioUnlocked = false;
@@ -41,12 +66,15 @@
     loadPreferences();
     buildProgressRing();
     applyLayoutRatio(state.layoutRatio);
+    syncWeightUnitUI();
     const soundEl = $("#sound-enabled");
     if (soundEl) soundEl.checked = state.soundEnabled;
     const prepEl = $("#prep-seconds");
     if (prepEl) prepEl.value = state.prepSeconds;
     const restEl = $("#rest-between-blocks");
     if (restEl) restEl.value = state.restBetweenBlocks;
+    renderTemplateSelectors();
+    updateWorkoutPreview();
     bindEvents();
   }
 
@@ -63,6 +91,7 @@
         state.prepSeconds = 0;
       }
       if (prefs.restBetweenBlocks !== undefined) state.restBetweenBlocks = prefs.restBetweenBlocks;
+      if (prefs.weightUnit) state.weightUnit = prefs.weightUnit;
     } catch (_) { /* ignore */ }
   }
 
@@ -74,8 +103,174 @@
         soundEnabled: state.soundEnabled,
         prepSeconds: state.prepSeconds,
         restBetweenBlocks: state.restBetweenBlocks,
+        weightUnit: state.weightUnit,
       })
     );
+  }
+
+  function syncWeightUnitUI() {
+    const el = $("#weight-unit");
+    if (!el) return;
+    el.value = state.weightUnit;
+    document.querySelectorAll(".weight-unit-label").forEach((node) => {
+      node.textContent = state.weightUnit;
+    });
+  }
+
+  function getSavedTemplates() {
+    try {
+      const raw = localStorage.getItem(SAVED_WODS_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function saveTemplate(name) {
+    const trimmed = String(name || "").trim();
+    if (!trimmed) {
+      alert("Digite um nome para salvar o WOD.");
+      return;
+    }
+    const templates = getSavedTemplates();
+    const config = getSerializableConfig();
+    const existing = templates.findIndex((t) => t.name.toLowerCase() === trimmed.toLowerCase());
+    const entry = {
+      id: existing >= 0 ? templates[existing].id : `wod-${Date.now()}`,
+      name: trimmed,
+      savedAt: Date.now(),
+      config,
+    };
+    if (existing >= 0) templates[existing] = entry;
+    else templates.unshift(entry);
+    localStorage.setItem(SAVED_WODS_KEY, JSON.stringify(templates.slice(0, 30)));
+    renderTemplateSelectors();
+    const select = $("#template-select");
+    if (select) select.value = entry.id;
+  }
+
+  function deleteSavedTemplate(id) {
+    const templates = getSavedTemplates().filter((t) => t.id !== id);
+    localStorage.setItem(SAVED_WODS_KEY, JSON.stringify(templates));
+    renderTemplateSelectors();
+  }
+
+  function renderTemplateSelectors() {
+    const select = $("#template-select");
+    if (!select) return;
+
+    const saved = getSavedTemplates();
+    const groups = [
+      { label: "Clássicos", items: CLASSIC_TEMPLATES || [] },
+      { label: "Salvos", items: saved || [] },
+    ];
+
+    select.innerHTML = `<option value="">— Carregar WOD —</option>`;
+    groups.forEach((group) => {
+      if (!group.items?.length) return;
+      const optgroup = document.createElement("optgroup");
+      optgroup.label = group.label;
+      group.items.forEach((t) => {
+        const opt = document.createElement("option");
+        opt.value = t.id;
+        opt.textContent = t.classic ? `${t.name} ★` : t.name;
+        opt.title = t.description || t.name;
+        optgroup.appendChild(opt);
+      });
+      select.appendChild(optgroup);
+    });
+  }
+
+  function applyFullConfig(payload) {
+    if (!payload) return;
+    let merged;
+    if (createStateFromConfig) {
+      merged = createStateFromConfig(payload);
+    } else {
+      merged = { restBetweenBlocks: payload.restBetweenBlocks ?? 60, weightUnit: payload.weightUnit || "lb", blocks: {} };
+      BLOCKS.forEach((b) => {
+        merged.blocks[b] = payload.blocks?.[b] ? { ...defaultBlock(), ...payload.blocks[b] } : defaultBlock();
+      });
+    }
+    BLOCKS.forEach((b) => {
+      state.blocks[b] = merged.blocks[b] || defaultBlock();
+      renderBlockConfig(b);
+      renderExercises(b);
+    });
+    if (payload.restBetweenBlocks !== undefined) {
+      state.restBetweenBlocks = payload.restBetweenBlocks;
+      const el = $("#rest-between-blocks");
+      if (el) el.value = state.restBetweenBlocks;
+    }
+    if (payload.weightUnit) {
+      state.weightUnit = payload.weightUnit;
+      syncWeightUnitUI();
+    }
+    if (payload.layoutRatio !== undefined) applyLayoutRatio(payload.layoutRatio);
+    if (payload.soundEnabled !== undefined) {
+      state.soundEnabled = payload.soundEnabled;
+      const el = $("#sound-enabled");
+      if (el) el.checked = state.soundEnabled;
+    }
+    if (payload.prepSeconds !== undefined) {
+      state.prepSeconds = payload.prepSeconds;
+      const el = $("#prep-seconds");
+      if (el) el.value = state.prepSeconds;
+    }
+    savePreferences();
+    updateWorkoutPreview();
+  }
+
+  function loadSelectedTemplate(id) {
+    if (!id) return;
+    const classic = CLASSIC_TEMPLATES.find((t) => t.id === id);
+    const saved = getSavedTemplates().find((t) => t.id === id);
+    const template = classic || saved;
+    if (!template) return;
+    applyFullConfig(template.config);
+  }
+
+  function syncFormToState() {
+    document.querySelectorAll(".exercise-row input[data-block][data-index][data-field]").forEach((input) => {
+      const block = input.dataset.block;
+      const index = +input.dataset.index;
+      const field = input.dataset.field;
+      if (state.blocks[block]?.exercises[index]) {
+        state.blocks[block].exercises[index][field] = input.value;
+      }
+    });
+
+    const restEl = $("#rest-between-blocks");
+    if (restEl) state.restBetweenBlocks = +restEl.value || 0;
+
+    const weightEl = $("#weight-unit");
+    if (weightEl) state.weightUnit = weightEl.value;
+  }
+
+  function updateWorkoutPreview() {
+    const el = $("#workout-preview");
+    if (!el) return;
+    const seconds = estimateDuration(state);
+    const phases = buildTimeline(state);
+    if (!phases.length) {
+      el.textContent = "Adicione exercícios (nome ou reps) para ver a duração estimada.";
+      return;
+    }
+    el.textContent = `Duração estimada: ${formatDuration(seconds)} · ${phases.length} fases`;
+  }
+
+  function formatWeightLine(ex) {
+    const parts = [];
+    if (ex.weightM?.trim()) parts.push(`M: ${ex.weightM.trim()}`);
+    if (ex.weightF?.trim()) parts.push(`F: ${ex.weightF.trim()}`);
+    return parts.join(" · ");
+  }
+
+  function formatExerciseDetail(ex) {
+    const reps = ex.reps ? `${ex.reps} reps` : "";
+    const weights = formatWeightLine(ex);
+    if (reps && weights) return `${reps} · ${weights}`;
+    return reps || weights || "";
   }
 
   function applyLayoutRatio(ratio) {
@@ -103,13 +298,17 @@
   function syncSettingsUI() {
     $("#sound-enabled").checked = state.soundEnabled;
     $("#prep-seconds").value = state.prepSeconds;
+    const weightEl = $("#weight-unit-settings");
+    if (weightEl) weightEl.value = state.weightUnit;
     applyLayoutRatio(state.layoutRatio);
   }
 
   function getSerializableConfig() {
+    if (serializeConfig) return serializeConfig(state);
     return {
       blocks: JSON.parse(JSON.stringify(state.blocks)),
       restBetweenBlocks: state.restBetweenBlocks,
+      weightUnit: state.weightUnit,
       layoutRatio: state.layoutRatio,
       soundEnabled: state.soundEnabled,
       prepSeconds: state.prepSeconds,
@@ -117,27 +316,10 @@
   }
 
   function applyRemoteConfig(payload) {
-    if (!payload) return;
-    if (payload.blocks) {
-      BLOCKS.forEach((b) => {
-        if (payload.blocks[b]) state.blocks[b] = payload.blocks[b];
-      });
-    }
-    if (payload.restBetweenBlocks !== undefined) {
-      state.restBetweenBlocks = payload.restBetweenBlocks;
-      const el = $("#rest-between-blocks");
-      if (el) el.value = state.restBetweenBlocks;
-    }
-    if (payload.layoutRatio !== undefined) applyLayoutRatio(payload.layoutRatio);
-    if (payload.soundEnabled !== undefined) {
-      state.soundEnabled = payload.soundEnabled;
-      const el = $("#sound-enabled");
-      if (el) el.checked = state.soundEnabled;
-    }
-    if (payload.prepSeconds !== undefined) {
-      state.prepSeconds = payload.prepSeconds;
-      const el = $("#prep-seconds");
-      if (el) el.value = state.prepSeconds;
+    applyFullConfig(payload);
+    if (PAGE_MODE === "remote") {
+      BLOCKS.forEach((b) => renderBlockConfig(b));
+      BLOCKS.forEach((b) => renderExercises(b));
     }
   }
 
@@ -153,12 +335,16 @@
         remaining: phase ? Math.ceil(remaining) : 0,
         block: phase?.blockLabel || "",
         label: phase?.label || phase?.exercise?.name || "",
+        amrapRounds: state.amrapRounds,
+        forTimeElapsed: state.forTimeElapsed,
+        mode: phase?.mode || "",
       },
     });
   }
 
   function renderBlockConfig(block) {
     const container = $(`#config-${block}`);
+    if (!container) return;
     const cfg = state.blocks[block];
 
     container.innerHTML = `
@@ -415,14 +601,17 @@
 
   function renderExercises(block) {
     const container = $(`#exercises-${block}`);
+    if (!container) return;
     const exercises = state.blocks[block].exercises;
 
     container.innerHTML = exercises
       .map(
         (ex, i) => `
-      <div class="exercise-row" data-block="${block}" data-index="${i}">
+      <div class="exercise-row exercise-row--weights" data-block="${block}" data-index="${i}">
         <input type="text" placeholder="Exercício" value="${escapeHtml(ex.name)}" data-block="${block}" data-index="${i}" data-field="name">
         <input type="text" placeholder="Reps" value="${escapeHtml(ex.reps)}" data-block="${block}" data-index="${i}" data-field="reps">
+        <input type="text" class="weight-field" placeholder="Peso M" value="${escapeHtml(ex.weightM || "")}" data-block="${block}" data-index="${i}" data-field="weightM" title="Peso sugerido masculino">
+        <input type="text" class="weight-field" placeholder="Peso F" value="${escapeHtml(ex.weightF || "")}" data-block="${block}" data-index="${i}" data-field="weightF" title="Peso sugerido feminino">
         <button type="button" class="btn-remove" data-block="${block}" data-index="${i}" aria-label="Remover">×</button>
       </div>`
       )
@@ -439,6 +628,7 @@
 
   function buildProgressRing() {
     const g = $("#progress-segments");
+    if (!g) return;
     const cx = 100;
     const cy = 100;
     const outerR = 92;
@@ -509,10 +699,12 @@
       const index = e.target.dataset.index;
       if (index !== undefined) {
         state.blocks[block].exercises[+index][field] = e.target.value;
+        if (field === "name" || field === "reps") updateWorkoutPreview();
         return;
       }
 
       state.blocks[block][field] = +e.target.value || 0;
+      updateWorkoutPreview();
     });
 
     document.addEventListener("input", (e) => {
@@ -521,19 +713,48 @@
       const index = e.target.dataset?.index;
       if (!block || !field || index === undefined) return;
       state.blocks[block].exercises[+index][field] = e.target.value;
+      if (field === "name" || field === "reps") updateWorkoutPreview();
     });
 
     $$(".btn-add").forEach((btn) => {
       btn.addEventListener("click", () => {
         const block = btn.dataset.block;
-        state.blocks[block].exercises.push({ name: "", reps: "" });
+        state.blocks[block].exercises.push(defaultExercise());
         renderExercises(block);
+        updateWorkoutPreview();
       });
     });
 
     $("#rest-between-blocks")?.addEventListener("change", (e) => {
       state.restBetweenBlocks = +e.target.value || 0;
       savePreferences();
+      updateWorkoutPreview();
+    });
+
+    $("#weight-unit")?.addEventListener("change", (e) => {
+      state.weightUnit = e.target.value;
+      syncWeightUnitUI();
+      const settingsUnit = $("#weight-unit-settings");
+      if (settingsUnit) settingsUnit.value = state.weightUnit;
+      savePreferences();
+    });
+
+    $("#template-select")?.addEventListener("change", (e) => {
+      if (e.target.value) loadSelectedTemplate(e.target.value);
+    });
+
+    $("#btn-save-wod")?.addEventListener("click", () => {
+      const name = $("#template-name")?.value;
+      saveTemplate(name);
+    });
+
+    $("#btn-delete-wod")?.addEventListener("click", () => {
+      const id = $("#template-select")?.value;
+      if (!id || CLASSIC_TEMPLATES.some((t) => t.id === id)) {
+        alert("Selecione um WOD salvo (não um clássico) para excluir.");
+        return;
+      }
+      if (confirm("Excluir este WOD salvo?")) deleteSavedTemplate(id);
     });
 
     $("#layout-ratio")?.addEventListener("input", (e) => {
@@ -551,6 +772,7 @@
       if (state.blocks[block].exercises.length <= 1) return;
       state.blocks[block].exercises.splice(index, 1);
       renderExercises(block);
+      updateWorkoutPreview();
     });
 
     $("#sound-enabled")?.addEventListener("change", (e) => {
@@ -565,16 +787,28 @@
       savePreferences();
     });
 
+    $("#weight-unit-settings")?.addEventListener("change", (e) => {
+      state.weightUnit = e.target.value;
+      syncWeightUnitUI();
+      const setupUnit = $("#weight-unit");
+      if (setupUnit) setupUnit.value = state.weightUnit;
+      savePreferences();
+    });
+
     $("#btn-settings-setup")?.addEventListener("click", openSettings);
     $("#btn-settings-timer")?.addEventListener("click", openSettings);
     $("#btn-settings-close")?.addEventListener("click", closeSettings);
     $("#settings-backdrop")?.addEventListener("click", closeSettings);
     $("#btn-test-audio")?.addEventListener("click", testAudio);
     $("#btn-fullscreen")?.addEventListener("click", toggleFullscreen);
-    $("#btn-round-plus")?.addEventListener("click", () => updateAmrapRounds(1));
-    $("#btn-round-minus")?.addEventListener("click", () => updateAmrapRounds(-1));
+    $("#btn-round-plus")?.addEventListener("click", () => updateAmrapRounds(1, { local: true }));
+    $("#btn-round-minus")?.addEventListener("click", () => updateAmrapRounds(-1, { local: true }));
+    $("#btn-fortime-done")?.addEventListener("click", completeForTime);
+    $("#btn-remote-round-plus")?.addEventListener("click", () => sendAmrapRoundsDelta(1));
+    $("#btn-remote-round-minus")?.addEventListener("click", () => sendAmrapRoundsDelta(-1));
 
     $("#btn-start")?.addEventListener("click", () => {
+      syncFormToState();
       if (state.soundEnabled) unlockAudioInGesture();
       startWorkout();
     });
@@ -617,9 +851,45 @@
     }
   }
 
-  function updateAmrapRounds(delta) {
+  function updateAmrapRounds(delta, opts = {}) {
     state.amrapRounds = Math.max(0, state.amrapRounds + delta);
-    $("#round-count").textContent = state.amrapRounds;
+    const roundEl = $("#round-count");
+    if (roundEl) roundEl.textContent = state.amrapRounds;
+    const remoteCount = $("#remote-round-count");
+    if (remoteCount) remoteCount.textContent = state.amrapRounds;
+    broadcastStatus();
+    if (opts.local && PAGE_MODE === "display" && displaySync) {
+      displaySync.send({ type: "amrap-rounds", payload: { rounds: state.amrapRounds } });
+    }
+  }
+
+  function setAmrapRounds(rounds) {
+    state.amrapRounds = Math.max(0, rounds);
+    const roundEl = $("#round-count");
+    if (roundEl) roundEl.textContent = state.amrapRounds;
+    const remoteCount = $("#remote-round-count");
+    if (remoteCount) remoteCount.textContent = state.amrapRounds;
+    broadcastStatus();
+  }
+
+  function sendAmrapRoundsDelta(delta) {
+    remoteSync?.send({ type: "amrap-rounds", payload: { delta } });
+  }
+
+  function completeForTime() {
+    const phase = timeline[phaseIndex];
+    if (!phase || phase.mode !== "fortime" || phase.countdown) return;
+    state.forTimeElapsed = Math.floor(remaining);
+    clearInterval(tickInterval);
+    whistleEnd();
+    finishWorkout({ skipEndWhistle: true, forTimeDone: true });
+  }
+
+  function updateForTimeDoneButton(phase) {
+    const btn = $("#btn-fortime-done");
+    if (!btn) return;
+    const show = phase?.mode === "fortime" && !phase.countdown && $("#timer-screen").classList.contains("active");
+    btn.classList.toggle("hidden", !show);
   }
 
   function showScreen(id) {
@@ -636,9 +906,12 @@
   let lastTick = 0;
 
   function startWorkout(opts = {}) {
+    if (!opts.remote) syncFormToState();
     timeline = buildTimeline(state);
     if (timeline.length === 0) {
-      if (!opts.remote) alert("Adicione pelo menos um exercício em algum bloco.");
+      if (!opts.remote) {
+        alert("Adicione pelo menos um exercício (nome ou reps) em algum bloco. Pesos são opcionais.");
+      }
       return false;
     }
 
@@ -646,10 +919,12 @@
     phaseIndex = 0;
     state.paused = false;
     state.amrapRounds = 0;
+    state.forTimeElapsed = null;
     state.lastBeepSec = -1;
     state.halfTimeAnnounced = false;
     state.tenSecAnnounced = false;
-    $("#round-count").textContent = "0";
+    setAmrapRounds(0);
+    $("#btn-fortime-done")?.classList.add("hidden");
     const restEl = $("#rest-between-blocks");
     if (restEl) restEl.value = state.restBetweenBlocks;
     applyLayoutRatio(state.layoutRatio);
@@ -666,7 +941,16 @@
     return true;
   }
 
+  function cancelPrepCountdown() {
+    if (prepInterval) {
+      clearInterval(prepInterval);
+      prepInterval = null;
+    }
+    $("#prep-overlay")?.classList.add("hidden");
+  }
+
   function runPrepCountdown(seconds, done) {
+    cancelPrepCountdown();
     const overlay = $("#prep-overlay");
     const num = $("#prep-number");
     let count = seconds;
@@ -675,7 +959,7 @@
     num.textContent = count;
     playTone({ freq: 660, duration: 0.1, volume: 0.15, type: "sine" });
 
-    const step = setInterval(() => {
+    prepInterval = setInterval(() => {
       count -= 1;
       if (count > 0) {
         num.textContent = count;
@@ -683,7 +967,8 @@
         return;
       }
 
-      clearInterval(step);
+      clearInterval(prepInterval);
+      prepInterval = null;
       num.textContent = "GO!";
       playTone({ freq: 880, duration: 0.15, volume: 0.2, type: "sine" });
       window.setTimeout(() => {
@@ -799,7 +1084,7 @@
       const nextPhase = timeline[phaseIndex + 1];
       if (nextPhase && nextPhase.exercise) {
         $("#next-exercise").textContent = nextPhase.exercise.name;
-        $("#next-reps").textContent = nextPhase.exercise.reps ? `${nextPhase.exercise.reps} reps` : "";
+        $("#next-reps").textContent = formatExerciseDetail(nextPhase.exercise);
       } else if (nextPhase && nextPhase.exercises) {
         $("#next-exercise").textContent = nextPhase.label || BLOCK_LABELS[nextPhase.blockKey];
         $("#next-reps").textContent = `${nextPhase.exercises.length} exercícios`;
@@ -813,7 +1098,7 @@
       listPanel.classList.add("hidden");
 
       $("#current-exercise").textContent = phase.exercise.name;
-      $("#current-reps").textContent = phase.exercise.reps ? `${phase.exercise.reps} reps` : "";
+      $("#current-reps").textContent = formatExerciseDetail(phase.exercise);
 
       const nextExIndex = (phase.exerciseIndex + 1) % phase.exercises.length;
       const nextEx = phase.exercises[nextExIndex];
@@ -822,7 +1107,7 @@
         const nextPhase = timeline[phaseIndex + 1];
         if (nextPhase?.exercise) {
           $("#next-exercise").textContent = nextPhase.exercise.name;
-          $("#next-reps").textContent = nextPhase.exercise.reps ? `${nextPhase.exercise.reps} reps` : "";
+          $("#next-reps").textContent = formatExerciseDetail(nextPhase.exercise);
         } else if (nextPhase?.type === "rest") {
           $("#next-exercise").textContent = nextPhase.label || "Descanso";
           $("#next-reps").textContent = "";
@@ -832,7 +1117,7 @@
         }
       } else {
         $("#next-exercise").textContent = nextEx.name;
-        $("#next-reps").textContent = nextEx.reps ? `${nextEx.reps} reps` : "";
+        $("#next-reps").textContent = formatExerciseDetail(nextEx);
       }
 
       $("#round-info").textContent = `Minuto ${phase.interval} / ${phase.totalIntervals}`;
@@ -846,16 +1131,16 @@
         $("#current-reps").textContent = "";
         const nextEx = phase.exercises[phase.round % phase.exercises.length];
         $("#next-exercise").textContent = nextEx.name;
-        $("#next-reps").textContent = nextEx.reps ? `${nextEx.reps} reps` : "";
+        $("#next-reps").textContent = formatExerciseDetail(nextEx);
       } else {
         $("#current-exercise").textContent = phase.exercise.name;
-        $("#current-reps").textContent = phase.exercise.reps ? `${phase.exercise.reps} reps` : "";
+        $("#current-reps").textContent = formatExerciseDetail(phase.exercise);
         const isLastRound = phase.round === phase.totalRounds;
         if (isLastRound) {
           const nextPhase = timeline[phaseIndex + 1];
           if (nextPhase?.exercise) {
             $("#next-exercise").textContent = nextPhase.exercise.name;
-            $("#next-reps").textContent = nextPhase.exercise.reps ? `${nextPhase.exercise.reps} reps` : "";
+            $("#next-reps").textContent = formatExerciseDetail(nextPhase.exercise);
           } else if (nextPhase?.type === "rest") {
             $("#next-exercise").textContent = nextPhase.label || "Descanso";
             $("#next-reps").textContent = "";
@@ -866,7 +1151,7 @@
         } else {
           const nextEx = phase.exercises[phase.round % phase.exercises.length];
           $("#next-exercise").textContent = nextEx.name;
-          $("#next-reps").textContent = nextEx.reps ? `${nextEx.reps} reps` : "";
+          $("#next-reps").textContent = formatExerciseDetail(nextEx);
         }
       }
       $("#round-info").textContent = `Round ${phase.round} / ${phase.totalRounds} · ${isRest ? "10s" : "20s"}`;
@@ -881,7 +1166,7 @@
           (ex, i) => `
         <li>
           <span>${escapeHtml(ex.name)}</span>
-          <span class="item-reps">${escapeHtml(ex.reps)}</span>
+          <span class="item-reps">${escapeHtml([ex.reps, formatWeightLine(ex)].filter(Boolean).join(" · "))}</span>
         </li>`
         )
         .join("");
@@ -898,12 +1183,12 @@
       listPanel.classList.add("hidden");
 
       $("#current-exercise").textContent = phase.exercise.name;
-      $("#current-reps").textContent = phase.exercise.reps ? `${phase.exercise.reps} reps` : "";
+      $("#current-reps").textContent = formatExerciseDetail(phase.exercise);
 
       const nextPhase = timeline[phaseIndex + 1];
       if (nextPhase?.exercise) {
         $("#next-exercise").textContent = nextPhase.exercise.name;
-        $("#next-reps").textContent = nextPhase.exercise.reps ? `${nextPhase.exercise.reps} reps` : "";
+        $("#next-reps").textContent = formatExerciseDetail(nextPhase.exercise);
       } else if (nextPhase?.type === "rest") {
         $("#next-exercise").textContent = "Descanso";
         $("#next-reps").textContent = `${nextPhase.duration}s`;
@@ -915,6 +1200,7 @@
       const exNum = phase.exerciseIndex + 1;
       $("#round-info").textContent = `Exercício ${exNum} / ${phase.exercises.length}`;
     }
+    updateForTimeDoneButton(phase);
     broadcastStatus();
   }
 
@@ -936,6 +1222,7 @@
 
   function stopWorkout() {
     clearInterval(tickInterval);
+    cancelPrepCountdown();
     releaseWakeLock();
     if (PAGE_MODE === "display") showScreen("pairing-screen");
     else showScreen("setup-screen");
@@ -943,10 +1230,14 @@
 
   function finishWorkout(opts = {}) {
     clearInterval(tickInterval);
+    cancelPrepCountdown();
     releaseWakeLock();
     if (!opts.skipEndWhistle) whistleEnd();
-    const rounds = state.amrapRounds > 0 ? ` Rounds AMRAP: ${state.amrapRounds}.` : "";
-    $("#finished-summary").textContent = `Bom treino!${rounds} Configure um novo WOD quando quiser.`;
+    let summary = "Bom treino!";
+    if (state.amrapRounds > 0) summary += ` Rounds AMRAP: ${state.amrapRounds}.`;
+    if (state.forTimeElapsed !== null) summary += ` For Time: ${formatClockTime(state.forTimeElapsed)}.`;
+    summary += " Configure um novo WOD quando quiser.";
+    $("#finished-summary").textContent = summary;
     showScreen("finished-screen");
   }
 
@@ -971,6 +1262,12 @@
       case "stop":
         stopWorkout();
         break;
+      case "amrap-rounds": {
+        const p = data.payload || {};
+        if (p.rounds !== undefined) setAmrapRounds(p.rounds);
+        else if (p.delta) updateAmrapRounds(p.delta);
+        break;
+      }
       default:
         break;
     }
@@ -983,6 +1280,7 @@
     loadPreferences();
     buildProgressRing();
     applyLayoutRatio(state.layoutRatio);
+    syncWeightUnitUI();
     const soundEl = $("#sound-enabled");
     if (soundEl) soundEl.checked = state.soundEnabled;
     const prepEl = $("#prep-seconds");
@@ -1030,8 +1328,40 @@
     $("#btn-remote-pause").disabled = !connected;
     $("#btn-remote-skip").disabled = !connected;
     $("#btn-remote-stop").disabled = !connected;
+    $("#btn-remote-round-plus").disabled = !connected;
+    $("#btn-remote-round-minus").disabled = !connected;
     $("#remote-status").textContent = connected ? "Conectado à tela" : "Desconectado";
     $("#remote-status").classList.toggle("connected", connected);
+  }
+
+  function updateRemoteLiveStatus(p) {
+    const pauseBtn = $("#btn-remote-pause");
+    if (pauseBtn) pauseBtn.textContent = p.paused ? "Continuar" : "Pausar";
+
+    const amrapPanel = $("#remote-amrap-panel");
+    if (amrapPanel) {
+      const showAmrap = p.screen === "timer-screen" && p.mode === "amrap";
+      amrapPanel.classList.toggle("hidden", !showAmrap);
+    }
+    if (p.amrapRounds !== undefined) {
+      const remoteCount = $("#remote-round-count");
+      if (remoteCount) remoteCount.textContent = p.amrapRounds;
+    }
+
+    if (p.screen === "timer-screen" && p.label) {
+      let text = `${p.block} · ${p.label} · ${p.remaining}s`;
+      if (p.mode === "amrap" && p.amrapRounds !== undefined) text += ` · ${p.amrapRounds} rounds`;
+      if (p.forTimeElapsed !== null && p.forTimeElapsed !== undefined) {
+        text = `${p.block} · For Time: ${formatClockTime(p.forTimeElapsed)}`;
+      }
+      $("#remote-live-status").textContent = text;
+    } else if (p.screen === "finished-screen") {
+      $("#remote-live-status").textContent = "Treino concluído na tela";
+    } else if (p.screen === "pairing-screen") {
+      $("#remote-live-status").textContent = "Tela aguardando";
+    } else {
+      $("#remote-live-status").textContent = "—";
+    }
   }
 
   function initRemote() {
@@ -1040,6 +1370,10 @@
       renderBlockConfig(block);
       renderExercises(block);
     });
+    loadPreferences();
+    syncWeightUnitUI();
+    renderTemplateSelectors();
+    updateWorkoutPreview();
     const restEl = $("#rest-between-blocks");
     if (restEl) restEl.value = state.restBetweenBlocks;
     bindEvents();
@@ -1064,17 +1398,12 @@
         },
         onMessage(data) {
           if (data.type === "status") {
-            const p = data.payload || {};
-            const pauseBtn = $("#btn-remote-pause");
-            if (pauseBtn) pauseBtn.textContent = p.paused ? "Continuar" : "Pausar";
-            if (p.screen === "timer-screen" && p.label) {
-              $("#remote-live-status").textContent = `${p.block} · ${p.label} · ${p.remaining}s`;
-            } else if (p.screen === "finished-screen") {
-              $("#remote-live-status").textContent = "Treino concluído na tela";
-            } else if (p.screen === "pairing-screen") {
-              $("#remote-live-status").textContent = "Tela aguardando";
-            } else {
-              $("#remote-live-status").textContent = "—";
+            updateRemoteLiveStatus(data.payload || {});
+          } else if (data.type === "amrap-rounds") {
+            const rounds = data.payload?.rounds;
+            if (rounds !== undefined) {
+              const remoteCount = $("#remote-round-count");
+              if (remoteCount) remoteCount.textContent = rounds;
             }
           }
         },
@@ -1091,6 +1420,7 @@
     });
 
     $("#btn-remote-start")?.addEventListener("click", () => {
+      syncFormToState();
       remoteSync?.send({ type: "config", payload: getSerializableConfig() });
       remoteSync?.send({ type: "start" });
     });
@@ -1110,7 +1440,20 @@
     });
   }
 
-  if (PAGE_MODE === "display") initDisplay();
-  else if (PAGE_MODE === "remote") initRemote();
-  else init();
+  function boot() {
+    try {
+      if (PAGE_MODE === "display") initDisplay();
+      else if (PAGE_MODE === "remote") initRemote();
+      else init();
+    } catch (err) {
+      console.error("WOD Timer init error:", err);
+      alert(`Erro ao iniciar o app: ${err.message}\n\nRecarregue com Cmd+Shift+R.`);
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
 })();

@@ -24,6 +24,25 @@
     { value: "fortime", label: "For Time" },
   ];
 
+  const WEIGHT_UNITS = [
+    { value: "lb", label: "Libras (lb)" },
+    { value: "kg", label: "Quilos (kg)" },
+  ];
+
+  const PLATES_LB = [45, 35, 25, 10, 5, 2.5];
+  const PLATES_KG = [25, 20, 15, 10, 5, 2.5, 1.25];
+
+  const DEFAULT_BARS = {
+    lb: 45,
+    kg: 20,
+  };
+
+  const PERCENTAGES = [50, 60, 75, 80, 90, 95, 110];
+
+  function defaultExercise() {
+    return { name: "", reps: "", weightM: "", weightF: "" };
+  }
+
   function defaultBlock() {
     return {
       mode: "sequential",
@@ -33,22 +52,262 @@
       totalMinutes: 12,
       timeCapMinutes: 0,
       tabataRounds: 8,
-      exercises: [{ name: "", reps: "" }],
+      exercises: [defaultExercise()],
+    };
+  }
+
+  function defaultPreferences() {
+    return {
+      weightUnit: "lb",
+      layoutRatio: 70,
+      soundEnabled: true,
+      prepSeconds: 3,
+      restBetweenBlocks: 60,
+    };
+  }
+
+  /** Monta config padrão para WODs clássicos (benchmarks CrossFit). */
+  function classicConfig(wodOverrides) {
+    return {
+      restBetweenBlocks: 0,
+      weightUnit: "lb",
+      blocks: {
+        alongamento: defaultBlock(),
+        tecnica: defaultBlock(),
+        wod: { ...defaultBlock(), ...wodOverrides },
+      },
+    };
+  }
+
+  function classic(id, name, description, wodOverrides) {
+    return { id, name, classic: true, description, config: classicConfig(wodOverrides) };
+  }
+
+  /**
+   * Benchmarks CrossFit — Girls (2003), Heroes e clássicos de referência.
+   * Fontes: CrossFit Journal, WODprep, Sand & Steel, Garage Gym Reviews.
+   */
+  const CLASSIC_TEMPLATES = [
+    classic("cindy", "Cindy", "AMRAP 20 min — 5 pull-ups, 10 push-ups, 15 air squats", {
+      mode: "amrap",
+      timeCapMinutes: 20,
+      exercises: [
+        { name: "Pull-up", reps: "5", weightM: "", weightF: "" },
+        { name: "Push-up", reps: "10", weightM: "", weightF: "" },
+        { name: "Air Squat", reps: "15", weightM: "", weightF: "" },
+      ],
+    }),
+    classic("fran", "Fran", "For Time — 21-15-9 thrusters e pull-ups", {
+      mode: "fortime",
+      timeCapMinutes: 0,
+      exercises: [
+        { name: "Thruster", reps: "21-15-9", weightM: "95 lb", weightF: "65 lb" },
+        { name: "Pull-up", reps: "21-15-9", weightM: "", weightF: "" },
+      ],
+    }),
+    classic("grace", "Grace", "For Time — 30 clean & jerks", {
+      mode: "fortime",
+      timeCapMinutes: 0,
+      exercises: [{ name: "Clean & Jerk", reps: "30", weightM: "135 lb", weightF: "95 lb" }],
+    }),
+    classic("isabel", "Isabel", "For Time — 30 snatches", {
+      mode: "fortime",
+      timeCapMinutes: 0,
+      exercises: [{ name: "Snatch", reps: "30", weightM: "135 lb", weightF: "95 lb" }],
+    }),
+    classic("helen", "Helen", "3 rounds For Time — 400 m run, 21 KB swings, 12 pull-ups", {
+      mode: "fortime",
+      timeCapMinutes: 0,
+      exercises: [
+        { name: "Run", reps: "400 m × 3", weightM: "", weightF: "" },
+        { name: "Kettlebell Swing", reps: "21 × 3", weightM: "53 lb", weightF: "35 lb" },
+        { name: "Pull-up", reps: "12 × 3", weightM: "", weightF: "" },
+      ],
+    }),
+    classic("diane", "Diane", "For Time — 21-15-9 deadlifts e handstand push-ups", {
+      mode: "fortime",
+      timeCapMinutes: 0,
+      exercises: [
+        { name: "Deadlift", reps: "21-15-9", weightM: "225 lb", weightF: "155 lb" },
+        { name: "Handstand Push-up", reps: "21-15-9", weightM: "", weightF: "" },
+      ],
+    }),
+    classic("elizabeth", "Elizabeth", "For Time — 21-15-9 squat cleans e ring dips", {
+      mode: "fortime",
+      timeCapMinutes: 0,
+      exercises: [
+        { name: "Squat Clean", reps: "21-15-9", weightM: "135 lb", weightF: "95 lb" },
+        { name: "Ring Dip", reps: "21-15-9", weightM: "", weightF: "" },
+      ],
+    }),
+    classic("nancy", "Nancy", "5 rounds For Time — 400 m run + 15 overhead squats", {
+      mode: "fortime",
+      timeCapMinutes: 0,
+      exercises: [
+        { name: "Run", reps: "400 m × 5", weightM: "", weightF: "" },
+        { name: "Overhead Squat", reps: "15 × 5", weightM: "95 lb", weightF: "65 lb" },
+      ],
+    }),
+    classic("karen", "Karen", "For Time — 150 wall balls", {
+      mode: "fortime",
+      timeCapMinutes: 0,
+      exercises: [{ name: "Wall Ball", reps: "150", weightM: "20 lb", weightF: "14 lb" }],
+    }),
+    classic("angie", "Angie", "For Time — 100 pull-ups, 100 push-ups, 100 sit-ups, 100 squats", {
+      mode: "fortime",
+      timeCapMinutes: 0,
+      exercises: [
+        { name: "Pull-up", reps: "100", weightM: "", weightF: "" },
+        { name: "Push-up", reps: "100", weightM: "", weightF: "" },
+        { name: "Sit-up", reps: "100", weightM: "", weightF: "" },
+        { name: "Air Squat", reps: "100", weightM: "", weightF: "" },
+      ],
+    }),
+    classic("annie", "Annie", "For Time — 50-40-30-20-10 double-unders e sit-ups", {
+      mode: "fortime",
+      timeCapMinutes: 0,
+      exercises: [
+        { name: "Double-under", reps: "50-40-30-20-10", weightM: "", weightF: "" },
+        { name: "Sit-up", reps: "50-40-30-20-10", weightM: "", weightF: "" },
+      ],
+    }),
+    classic("candy", "Candy", "5 rounds For Time — 20 pull-ups, 40 push-ups, 60 squats", {
+      mode: "fortime",
+      timeCapMinutes: 0,
+      exercises: [
+        { name: "Pull-up", reps: "20 × 5", weightM: "", weightF: "" },
+        { name: "Push-up", reps: "40 × 5", weightM: "", weightF: "" },
+        { name: "Air Squat", reps: "60 × 5", weightM: "", weightF: "" },
+      ],
+    }),
+    classic("chelsea", "Chelsea", "EMOM 30 min — 5 pull-ups, 10 push-ups, 15 air squats por minuto", {
+      mode: "emom",
+      totalMinutes: 30,
+      intervalSeconds: 60,
+      exercises: [
+        { name: "5 Pull-up + 10 Push-up + 15 Air Squat", reps: "1 round/min", weightM: "", weightF: "" },
+      ],
+    }),
+    classic("eva", "Eva", "5 rounds For Time — 800 m run, 30 KB swings, 30 pull-ups", {
+      mode: "fortime",
+      timeCapMinutes: 0,
+      exercises: [
+        { name: "Run", reps: "800 m × 5", weightM: "", weightF: "" },
+        { name: "Kettlebell Swing", reps: "30 × 5", weightM: "70 lb", weightF: "53 lb" },
+        { name: "Pull-up", reps: "30 × 5", weightM: "", weightF: "" },
+      ],
+    }),
+    classic("barbara", "Barbara", "5 rounds For Time — 20 pull-ups, 30 push-ups, 40 sit-ups, 50 squats (3 min descanso entre rounds)", {
+      mode: "fortime",
+      timeCapMinutes: 0,
+      exercises: [
+        { name: "Pull-up", reps: "20 × 5", weightM: "", weightF: "" },
+        { name: "Push-up", reps: "30 × 5", weightM: "", weightF: "" },
+        { name: "Sit-up", reps: "40 × 5", weightM: "", weightF: "" },
+        { name: "Air Squat", reps: "50 × 5", weightM: "", weightF: "" },
+      ],
+    }),
+    classic("murph", "Murph", "Hero WOD — 1 mi run, 100 pull-ups, 200 push-ups, 300 squats, 1 mi run", {
+      mode: "fortime",
+      timeCapMinutes: 0,
+      exercises: [
+        { name: "Run", reps: "1 mile", weightM: "", weightF: "" },
+        { name: "Pull-up", reps: "100", weightM: "20 lb vest", weightF: "14 lb vest" },
+        { name: "Push-up", reps: "200", weightM: "20 lb vest", weightF: "14 lb vest" },
+        { name: "Air Squat", reps: "300", weightM: "20 lb vest", weightF: "14 lb vest" },
+        { name: "Run", reps: "1 mile", weightM: "", weightF: "" },
+      ],
+    }),
+  ];
+
+  function normalizeExercise(ex) {
+    return {
+      name: ex?.name ?? "",
+      reps: ex?.reps ?? "",
+      weightM: ex?.weightM ?? "",
+      weightF: ex?.weightF ?? "",
+    };
+  }
+
+  function normalizeBlock(block) {
+    const base = defaultBlock();
+    const merged = { ...base, ...block };
+    merged.exercises = (block?.exercises?.length ? block.exercises : base.exercises).map(normalizeExercise);
+    return merged;
+  }
+
+  function isExerciseActive(ex) {
+    return Boolean(ex.name.trim() || ex.reps.trim());
+  }
+
+  function resolveExerciseDisplay(ex) {
+    return {
+      ...ex,
+      name: ex.name.trim() || ex.reps.trim() || "Exercício",
     };
   }
 
   function getActiveBlocks(state) {
     return BLOCKS.filter((b) => {
-      const ex = state.blocks[b].exercises.filter((e) => e.name.trim());
-      return ex.length > 0;
-    }).map((b) => ({
-      key: b,
-      label: BLOCK_LABELS[b],
-      config: {
-        ...state.blocks[b],
-        exercises: state.blocks[b].exercises.filter((e) => e.name.trim()),
-      },
-    }));
+      const block = state.blocks?.[b];
+      if (!Array.isArray(block?.exercises)) return false;
+      return block.exercises.some(isExerciseActive);
+    }).map((b) => {
+      const block = state.blocks[b];
+      return {
+        key: b,
+        label: BLOCK_LABELS[b],
+        config: {
+          ...block,
+          exercises: block.exercises.filter(isExerciseActive).map(resolveExerciseDisplay),
+        },
+      };
+    });
+  }
+
+  function estimateBlockSeconds(block, config) {
+    const n = config.exercises.length;
+    if (!n) return 0;
+
+    switch (config.mode) {
+      case "sequential":
+        return n * config.workSeconds + Math.max(0, n - 1) * config.restSeconds;
+      case "emom":
+        return config.totalMinutes * config.intervalSeconds;
+      case "tabata":
+        return config.tabataRounds * 30 - 10;
+      case "amrap":
+      case "fortime":
+        return config.timeCapMinutes > 0 ? config.timeCapMinutes * 60 : 0;
+      default:
+        return 0;
+    }
+  }
+
+  function estimateDuration(state) {
+    const active = getActiveBlocks(state);
+    let total = 0;
+    active.forEach((block, i) => {
+      total += estimateBlockSeconds(block, block.config);
+      if (i < active.length - 1) total += state.restBetweenBlocks || 0;
+    });
+    return total;
+  }
+
+  function formatDuration(seconds) {
+    if (seconds <= 0) return "sem limite";
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    if (m === 0) return `${s}s`;
+    if (s === 0) return `${m} min`;
+    return `${m} min ${s}s`;
+  }
+
+  function formatClockTime(totalSeconds) {
+    const sec = Math.max(0, Math.floor(totalSeconds));
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
   }
 
   function buildTimeline(state) {
@@ -171,22 +430,131 @@
     const state = {
       blocks: {},
       restBetweenBlocks: payload.restBetweenBlocks ?? 60,
+      weightUnit: payload.weightUnit ?? "lb",
     };
     BLOCKS.forEach((b) => {
       state.blocks[b] = payload.blocks?.[b]
-        ? { ...defaultBlock(), ...payload.blocks[b] }
+        ? normalizeBlock(payload.blocks[b])
         : defaultBlock();
     });
     return state;
+  }
+
+  function getPlatesForUnit(unit) {
+    return unit === "kg" ? PLATES_KG : PLATES_LB;
+  }
+
+  function roundWeight(value, unit) {
+    const step = unit === "kg" ? 0.25 : 0.5;
+    return Math.round(value / step) * step;
+  }
+
+  /**
+   * Calcula anilhas por lado para atingir o peso total na barra.
+   * Retorna { perSide, plates, remainder, achievable, totalWeight }.
+   */
+  function calculatePlatesPerSide(totalWeight, barWeight, unit = "lb") {
+    const plates = getPlatesForUnit(unit);
+    const minStep = unit === "kg" ? 0.25 : 0.5;
+    const target = roundWeight(Number(totalWeight) || 0, unit);
+    const bar = roundWeight(Number(barWeight) || 0, unit);
+    const load = roundWeight(Math.max(0, target - bar), unit);
+    let perSide = roundWeight(load / 2, unit);
+
+    if (perSide < 0) perSide = 0;
+
+    const result = [];
+    let remainder = perSide;
+
+    for (const plate of plates) {
+      while (remainder + minStep / 4 >= plate) {
+        result.push(plate);
+        remainder = roundWeight(remainder - plate, unit);
+      }
+    }
+
+    const usedPerSide = result.reduce((sum, p) => sum + p, 0);
+    const achievable = roundWeight(bar + usedPerSide * 2, unit);
+
+    return {
+      unit,
+      totalWeight: target,
+      barWeight: bar,
+      perSide: usedPerSide,
+      plates: result,
+      remainder: roundWeight(remainder, unit),
+      achievable,
+      exact: remainder === 0 && achievable === target,
+    };
+  }
+
+  function formatPlatesList(plates, unit) {
+    if (!plates.length) return "—";
+    const counts = {};
+    plates.forEach((p) => {
+      const key = String(p);
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .sort(([a], [b]) => Number(b) - Number(a))
+      .map(([w, n]) => (n > 1 ? `${n}×${w}` : `${w}`))
+      .join(" + ")
+      + ` ${unit}`;
+  }
+
+  function buildPercentageTable(baseWeight, barWeight, unit = "lb", percentages = PERCENTAGES) {
+    const base = Number(baseWeight) || 0;
+    return percentages.map((pct) => {
+      const target = roundWeight((base * pct) / 100, unit);
+      const calc = calculatePlatesPerSide(target, barWeight, unit);
+      return {
+        percent: pct,
+        targetWeight: target,
+        ...calc,
+      };
+    });
+  }
+
+  function serializeConfig(state) {
+    return {
+      blocks: JSON.parse(JSON.stringify(state.blocks)),
+      restBetweenBlocks: state.restBetweenBlocks,
+      weightUnit: state.weightUnit ?? "lb",
+      layoutRatio: state.layoutRatio,
+      soundEnabled: state.soundEnabled,
+      prepSeconds: state.prepSeconds,
+    };
   }
 
   return {
     BLOCKS,
     BLOCK_LABELS,
     MODES,
+    WEIGHT_UNITS,
+    PLATES_LB,
+    PLATES_KG,
+    DEFAULT_BARS,
+    PERCENTAGES,
+    CLASSIC_TEMPLATES,
+    defaultExercise,
     defaultBlock,
+    defaultPreferences,
+    normalizeExercise,
+    normalizeBlock,
+    isExerciseActive,
+    resolveExerciseDisplay,
     getActiveBlocks,
+    estimateBlockSeconds,
+    estimateDuration,
+    formatDuration,
+    formatClockTime,
     buildTimeline,
     createStateFromConfig,
+    getPlatesForUnit,
+    roundWeight,
+    calculatePlatesPerSide,
+    formatPlatesList,
+    buildPercentageTable,
+    serializeConfig,
   };
 });

@@ -6,10 +6,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>WOD Timer — Tela</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="styles.css?v=13">
 </head>
 <body data-page="display">
   <audio id="audio-unlock" preload="auto" playsinline src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQQAAAAAAA=="></audio>
@@ -17,6 +19,7 @@
     <nav class="site-nav site-nav--minimal">
       <a href="index.html">Timer</a>
       <a href="remote.html">Controle</a>
+      <a href="bar-calculator.html">Barra</a>
       <a href="about.html">Sobre</a>
     </nav>
 
@@ -87,6 +90,7 @@
       <footer class="timer-controls">
         <button type="button" id="btn-pause" class="btn-control">Pausar</button>
         <button type="button" id="btn-skip" class="btn-control">Pular</button>
+        <button type="button" id="btn-fortime-done" class="btn-control btn-accent hidden">Concluído</button>
         <button type="button" id="btn-stop" class="btn-control btn-danger">Parar</button>
       </footer>
     </section>
@@ -124,6 +128,17 @@
             </label>
           </section>
           <section class="settings-section">
+            <h3>Pesos</h3>
+            <label class="settings-field">
+              <span>Unidade de peso sugerido nos exercícios</span>
+              <select id="weight-unit-settings">
+                <option value="lb" selected>Libras (lb)</option>
+                <option value="kg">Quilos (kg)</option>
+              </select>
+            </label>
+          </section>
+
+          <section class="settings-section">
             <h3>Áudio e tela</h3>
             <label class="settings-toggle">
               <input type="checkbox" id="sound-enabled" checked>
@@ -142,9 +157,9 @@
   </div>
 
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script src="core.js"></script>
-  <script src="theme.js"></script>
-  <script src="sync.js"></script>
-  <script src="app.js?v=7"></script>
+  <script src="core.js?v=11"></script>
+  <script src="theme.js?v=11"></script>
+  <script src="sync.js?v=11"></script>
+  <script src="app.js?v=11"></script>
 </body>
 </html>

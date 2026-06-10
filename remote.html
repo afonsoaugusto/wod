@@ -4,16 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>WOD Timer — Controle remoto</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="styles.css?v=13">
 </head>
 <body data-page="remote">
   <div id="app">
     <nav class="site-nav">
       <a href="index.html">Timer</a>
       <a href="display.html">Tela</a>
+      <a href="bar-calculator.html">Barra</a>
       <a href="about.html">Sobre</a>
     </nav>
 
@@ -47,6 +50,12 @@
         <button type="button" class="block-tab" data-block="wod" role="tab">WOD</button>
       </div>
 
+      <div class="setup-start-bar">
+        <button type="button" id="btn-remote-start" class="btn-primary" disabled>Iniciar na tela</button>
+        <p class="workout-preview" id="workout-preview">Adicione exercícios para ver a duração estimada.</p>
+      </div>
+
+      <div class="setup-scroll">
       <div class="setup-panels">
         <div class="setup-panel active" data-block="alongamento">
           <div class="panel-config" id="config-alongamento"></div>
@@ -65,20 +74,47 @@
         </div>
       </div>
 
+      <div class="wod-templates">
+        <label>
+          Carregar WOD
+          <select id="template-select"></select>
+        </label>
+        <div class="template-save-row">
+          <input type="text" id="template-name" placeholder="Nome para salvar">
+          <button type="button" id="btn-save-wod" class="btn-secondary btn-inline">Salvar</button>
+          <button type="button" id="btn-delete-wod" class="btn-secondary btn-inline btn-danger-text">Excluir</button>
+        </div>
+      </div>
+
       <div class="global-settings">
         <label>
           Descanso entre blocos (seg)
           <input type="number" id="rest-between-blocks" min="0" max="600" value="60">
         </label>
+        <label>
+          Unidade de peso sugerido
+          <select id="weight-unit">
+            <option value="lb" selected>Libras (lb)</option>
+            <option value="kg">Quilos (kg)</option>
+          </select>
+        </label>
+      </div>
       </div>
 
       <div class="remote-controls">
         <button type="button" id="btn-send-config" class="btn-secondary" disabled>Enviar configuração</button>
-        <button type="button" id="btn-remote-start" class="btn-primary" disabled>Iniciar na tela</button>
         <div class="remote-live">
           <button type="button" id="btn-remote-pause" class="btn-control" disabled>Pausar</button>
           <button type="button" id="btn-remote-skip" class="btn-control" disabled>Pular</button>
           <button type="button" id="btn-remote-stop" class="btn-control btn-danger" disabled>Parar</button>
+        </div>
+        <div class="remote-amrap hidden" id="remote-amrap-panel">
+          <span class="label">Rounds AMRAP na tela</span>
+          <div class="round-counter">
+            <button type="button" id="btn-remote-round-minus" class="btn-round" disabled aria-label="Menos round">−</button>
+            <span id="remote-round-count">0</span>
+            <button type="button" id="btn-remote-round-plus" class="btn-round" disabled aria-label="Mais round">+</button>
+          </div>
         </div>
         <p class="remote-live-status" id="remote-live-status">—</p>
       </div>
@@ -86,9 +122,9 @@
   </div>
 
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script src="core.js"></script>
-  <script src="theme.js"></script>
-  <script src="sync.js"></script>
-  <script src="app.js?v=7"></script>
+  <script src="core.js?v=11"></script>
+  <script src="theme.js?v=11"></script>
+  <script src="sync.js?v=11"></script>
+  <script src="app.js?v=11"></script>
 </body>
 </html>

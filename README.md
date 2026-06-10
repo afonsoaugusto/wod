@@ -21,8 +21,18 @@ Requer mesma rede Wi‑Fi e internet (sinalização WebRTC via PeerJS).
 
 ## Testes
 
+Com Node.js 20+ instalado:
+
 ```bash
 npm test
+# ou
+make test
+```
+
+Sem Node — via Podman:
+
+```bash
+make test-podman
 ```
 
 CI roda automaticamente no GitHub Actions a cada push/PR na branch `main`.

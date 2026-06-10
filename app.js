@@ -23,7 +23,7 @@
     restBetweenBlocks: 60,
     layoutRatio: 70,
     soundEnabled: true,
-    prepCountdown: true,
+    prepSeconds: 3,
     paused: false,
     segments: [],
     amrapRounds: 0,
@@ -64,7 +64,7 @@
     buildProgressRing();
     applyLayoutRatio(state.layoutRatio);
     $("#sound-enabled").checked = state.soundEnabled;
-    $("#prep-countdown").checked = state.prepCountdown;
+    $("#prep-seconds").value = state.prepSeconds;
     $("#rest-between-blocks").value = state.restBetweenBlocks;
     bindEvents();
   }
@@ -76,7 +76,11 @@
       const prefs = JSON.parse(saved);
       if (prefs.layoutRatio) state.layoutRatio = prefs.layoutRatio;
       if (prefs.soundEnabled !== undefined) state.soundEnabled = prefs.soundEnabled;
-      if (prefs.prepCountdown !== undefined) state.prepCountdown = prefs.prepCountdown;
+      if (prefs.prepSeconds !== undefined) {
+        state.prepSeconds = prefs.prepSeconds;
+      } else if (prefs.prepCountdown === false) {
+        state.prepSeconds = 0;
+      }
       if (prefs.restBetweenBlocks !== undefined) state.restBetweenBlocks = prefs.restBetweenBlocks;
     } catch (_) { /* ignore */ }
   }
@@ -87,7 +91,7 @@
       JSON.stringify({
         layoutRatio: state.layoutRatio,
         soundEnabled: state.soundEnabled,
-        prepCountdown: state.prepCountdown,
+        prepSeconds: state.prepSeconds,
         restBetweenBlocks: state.restBetweenBlocks,
       })
     );
@@ -117,7 +121,7 @@
 
   function syncSettingsUI() {
     $("#sound-enabled").checked = state.soundEnabled;
-    $("#prep-countdown").checked = state.prepCountdown;
+    $("#prep-seconds").value = state.prepSeconds;
     applyLayoutRatio(state.layoutRatio);
   }
 
@@ -523,8 +527,9 @@
       if (state.soundEnabled) unlockAudioInGesture();
     });
 
-    $("#prep-countdown")?.addEventListener("change", (e) => {
-      state.prepCountdown = e.target.checked;
+    $("#prep-seconds")?.addEventListener("change", (e) => {
+      state.prepSeconds = Math.max(0, Math.min(30, +e.target.value || 0));
+      e.target.value = state.prepSeconds;
       savePreferences();
     });
 
@@ -739,34 +744,38 @@
     showScreen("timer-screen");
     requestWakeLock();
 
-    if (state.prepCountdown) {
-      runPrepCountdown(() => enterPhase(0, { skipStartWhistle: true }));
+    if (state.prepSeconds > 0) {
+      runPrepCountdown(state.prepSeconds, () => enterPhase(0, { skipStartWhistle: true }));
     } else {
       enterPhase(0);
     }
   }
 
-  function runPrepCountdown(done) {
+  function runPrepCountdown(seconds, done) {
     const overlay = $("#prep-overlay");
     const num = $("#prep-number");
-    const sequence = ["3", "2", "1", "GO!"];
-    let i = 0;
+    let count = seconds;
 
     overlay.classList.remove("hidden");
-    num.textContent = sequence[i];
+    num.textContent = count;
     playTone({ freq: 660, duration: 0.1, volume: 0.15, type: "sine" });
 
     const step = setInterval(() => {
-      i += 1;
-      if (i >= sequence.length) {
-        clearInterval(step);
+      count -= 1;
+      if (count > 0) {
+        num.textContent = count;
+        playTone({ freq: 660, duration: 0.1, volume: 0.15, type: "sine" });
+        return;
+      }
+
+      clearInterval(step);
+      num.textContent = "GO!";
+      playTone({ freq: 880, duration: 0.15, volume: 0.2, type: "sine" });
+      window.setTimeout(() => {
         overlay.classList.add("hidden");
         whistleStart();
         done();
-        return;
-      }
-      num.textContent = sequence[i];
-      playTone({ freq: 660, duration: 0.1, volume: 0.15, type: "sine" });
+      }, 1000);
     }, 1000);
   }
 

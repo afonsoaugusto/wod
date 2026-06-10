@@ -366,6 +366,30 @@ body {
   flex-shrink: 0;
 }
 
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.settings-field input[type="number"] {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--bg-input);
+  border-radius: 8px;
+  background: var(--bg-input);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.settings-field small {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
 .btn-secondary {
   display: block;
   width: 100%;

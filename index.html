@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
   <!-- Desbloqueio de áudio no iOS/Safari (gesto do usuário) -->
@@ -165,9 +165,10 @@
               <input type="checkbox" id="sound-enabled" checked>
               <span>Sons e voz (apitos, half time, 10 seconds)</span>
             </label>
-            <label class="settings-toggle">
-              <input type="checkbox" id="prep-countdown" checked>
-              <span>Contagem 3-2-1 antes de iniciar</span>
+            <label class="settings-field">
+              <span>Contagem antes de iniciar (seg)</span>
+              <input type="number" id="prep-seconds" min="0" max="30" value="3">
+              <small>0 = sem contagem · ex.: 3 mostra 3, 2, 1, GO!</small>
             </label>
             <button type="button" id="btn-test-audio" class="btn-secondary">Testar áudio</button>
             <button type="button" id="btn-fullscreen" class="btn-secondary">Tela cheia</button>
@@ -177,6 +178,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>

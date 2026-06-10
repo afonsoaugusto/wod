@@ -12,7 +12,9 @@ Contador de tempo para treinos de CrossFit, otimizado para iPad em modo paisagem
 ### Recursos extras
 
 - **Tabata** — 20s trabalho / 10s descanso por round
-- **Sons de alerta** nos últimos 3 segundos e na troca de fase
+- **Apito de início** e **apito de término** (sons distintos) em cada fase
+- **Voz "half time"** na metade e **"10 seconds"** nos últimos 10s
+- **Bips** nos últimos 3 segundos
 - **Contador de rounds** no AMRAP (+/−)
 - **Tela cheia** e **tela sempre ligada** durante o treino
 - Preferências de layout salvas na sessão do navegador

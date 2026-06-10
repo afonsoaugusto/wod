@@ -29,7 +29,11 @@
     amrapRounds: 0,
     wakeLock: null,
     lastBeepSec: -1,
+    halfTimeAnnounced: false,
+    tenSecAnnounced: false,
   };
+
+  let audioCtx = null;
 
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => document.querySelectorAll(sel);
@@ -165,30 +169,87 @@
     });
   }
 
-  function playBeep(freq, duration, volume) {
+  function getAudioContext() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  function playTone({ freq, duration, volume = 0.3, type = "sine", freqEnd, delay = 0 }) {
     if (!state.soundEnabled) return;
     try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const ctx = getAudioContext();
+      const t = ctx.currentTime + delay;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, t);
+      if (freqEnd) {
+        osc.frequency.exponentialRampToValueAtTime(Math.max(freqEnd, 1), t + duration);
+      }
+      gain.gain.setValueAtTime(0.001, t);
+      gain.gain.linearRampToValueAtTime(volume, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
       osc.connect(gain);
       gain.connect(ctx.destination);
-      osc.frequency.value = freq;
-      osc.type = "sine";
-      gain.gain.value = volume;
-      osc.start();
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-      osc.stop(ctx.currentTime + duration);
+      osc.start(t);
+      osc.stop(t + duration + 0.05);
     } catch (_) { /* ignore */ }
   }
 
-  function beepTick() {
-    playBeep(880, 0.08, 0.15);
+  /** Apito de início — tom ascendente (assobio curto) */
+  function whistleStart() {
+    if (!state.soundEnabled) return;
+    playTone({ freq: 1400, freqEnd: 3200, duration: 0.32, volume: 0.38, type: "sine" });
+    playTone({ freq: 2200, duration: 0.12, volume: 0.22, type: "triangle", delay: 0.28 });
   }
 
-  function beepPhaseEnd() {
-    playBeep(440, 0.25, 0.25);
-    setTimeout(() => playBeep(660, 0.35, 0.3), 280);
+  /** Apito de término — dois tons descendentes (som diferente do início) */
+  function whistleEnd() {
+    if (!state.soundEnabled) return;
+    playTone({ freq: 2600, freqEnd: 700, duration: 0.28, volume: 0.4, type: "square", delay: 0 });
+    playTone({ freq: 2000, freqEnd: 500, duration: 0.35, volume: 0.38, type: "square", delay: 0.32 });
+  }
+
+  function beepTick() {
+    playTone({ freq: 880, duration: 0.08, volume: 0.18, type: "sine" });
+  }
+
+  function speak(text) {
+    if (!state.soundEnabled || !("speechSynthesis" in window)) return;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = 0.95;
+    utterance.volume = 1;
+    const voices = speechSynthesis.getVoices();
+    const en = voices.find((v) => v.lang.startsWith("en") && v.name.includes("Female"))
+      || voices.find((v) => v.lang.startsWith("en"));
+    if (en) utterance.voice = en;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utterance);
+  }
+
+  if ("speechSynthesis" in window) {
+    speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+  }
+
+  function checkPhaseAnnouncements(secLeft, phaseTotal) {
+    if (phaseTotal < 15) return;
+
+    const halfMark = Math.floor(phaseTotal / 2);
+    if (halfMark > 10 && !state.halfTimeAnnounced && secLeft === halfMark) {
+      state.halfTimeAnnounced = true;
+      speak("half time");
+    }
+
+    if (!state.tenSecAnnounced && secLeft === 10) {
+      state.tenSecAnnounced = true;
+      speak("10 seconds");
+    }
   }
 
   async function requestWakeLock() {
@@ -531,6 +592,9 @@
     state.paused = false;
     state.amrapRounds = 0;
     state.lastBeepSec = -1;
+    state.halfTimeAnnounced = false;
+    state.tenSecAnnounced = false;
+    getAudioContext();
     $("#round-count").textContent = "0";
     $("#sound-enabled").checked = state.soundEnabled;
     $("#prep-countdown").checked = state.prepCountdown;
@@ -541,7 +605,7 @@
     requestWakeLock();
 
     if (state.prepCountdown) {
-      runPrepCountdown(() => enterPhase(0));
+      runPrepCountdown(() => enterPhase(0, { skipStartWhistle: true }));
     } else {
       enterPhase(0);
     }
@@ -555,36 +619,36 @@
 
     overlay.classList.remove("hidden");
     num.textContent = sequence[i];
-    playBeep(660, 0.12, 0.2);
+    playTone({ freq: 660, duration: 0.1, volume: 0.15, type: "sine" });
 
     const step = setInterval(() => {
       i += 1;
       if (i >= sequence.length) {
         clearInterval(step);
         overlay.classList.add("hidden");
-        beepPhaseEnd();
+        whistleStart();
         done();
         return;
       }
       num.textContent = sequence[i];
-      playBeep(i === sequence.length - 1 ? 880 : 660, 0.12, 0.2);
+      playTone({ freq: 660, duration: 0.1, volume: 0.15, type: "sine" });
     }, 1000);
   }
 
-  function enterPhase(index) {
-    if (index >= timeline.length) {
-      finishWorkout();
-      return;
-    }
-
+  function enterPhase(index, opts = {}) {
     phaseIndex = index;
     const phase = timeline[index];
     phaseTotal = phase.duration || 60;
     remaining = phase.countdown ? phaseTotal : 0;
     lastTick = performance.now();
     state.lastBeepSec = -1;
+    state.halfTimeAnnounced = false;
+    state.tenSecAnnounced = false;
 
-    if (index > 0) beepPhaseEnd();
+    if (!opts.skipStartWhistle) {
+      whistleStart();
+    }
+
     updateTimerUI(phase);
     clearInterval(tickInterval);
     tickInterval = setInterval(tick, 100);
@@ -604,6 +668,9 @@
     if (phase.countdown) {
       remaining -= delta;
       const secLeft = Math.ceil(remaining);
+
+      checkPhaseAnnouncements(secLeft, phaseTotal);
+
       if (secLeft <= 3 && secLeft > 0 && secLeft !== state.lastBeepSec) {
         state.lastBeepSec = secLeft;
         beepTick();
@@ -614,7 +681,12 @@
         remaining = 0;
         updateTimerUI(phase);
         clearInterval(tickInterval);
-        setTimeout(() => enterPhase(phaseIndex + 1), 300);
+        whistleEnd();
+        const next = phaseIndex + 1;
+        setTimeout(() => {
+          if (next >= timeline.length) finishWorkout({ skipEndWhistle: true });
+          else enterPhase(next);
+        }, 450);
         return;
       }
     } else {
@@ -768,7 +840,12 @@
 
   function skipPhase() {
     clearInterval(tickInterval);
-    enterPhase(phaseIndex + 1);
+    whistleEnd();
+    const next = phaseIndex + 1;
+    setTimeout(() => {
+      if (next >= timeline.length) finishWorkout({ skipEndWhistle: true });
+      else enterPhase(next);
+    }, 350);
   }
 
   function stopWorkout() {
@@ -777,9 +854,10 @@
     showScreen("setup-screen");
   }
 
-  function finishWorkout() {
+  function finishWorkout(opts = {}) {
     clearInterval(tickInterval);
     releaseWakeLock();
+    if (!opts.skipEndWhistle) whistleEnd();
     const rounds = state.amrapRounds > 0 ? ` Rounds AMRAP: ${state.amrapRounds}.` : "";
     $("#finished-summary").textContent = `Bom treino!${rounds} Configure um novo WOD quando quiser.`;
     showScreen("finished-screen");

@@ -1,20 +1,7 @@
 (function () {
   "use strict";
 
-  const BLOCKS = ["alongamento", "tecnica", "wod"];
-  const BLOCK_LABELS = {
-    alongamento: "Alongamento",
-    tecnica: "Técnica",
-    wod: "WOD",
-  };
-
-  const MODES = [
-    { value: "sequential", label: "Sequencial" },
-    { value: "emom", label: "EMOM" },
-    { value: "tabata", label: "Tabata" },
-    { value: "amrap", label: "AMRAP" },
-    { value: "fortime", label: "For Time" },
-  ];
+  const { BLOCKS, BLOCK_LABELS, MODES, defaultBlock, buildTimeline } = WodCore;
 
   const SEGMENT_COUNT = 60;
 
@@ -43,19 +30,6 @@
 
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => document.querySelectorAll(sel);
-
-  function defaultBlock() {
-    return {
-      mode: "sequential",
-      workSeconds: 60,
-      restSeconds: 15,
-      intervalSeconds: 60,
-      totalMinutes: 12,
-      timeCapMinutes: 0,
-      tabataRounds: 8,
-      exercises: [{ name: "", reps: "" }],
-    };
-  }
 
   function init() {
     BLOCKS.forEach((block) => {
@@ -654,130 +628,6 @@
     broadcastStatus();
   }
 
-  function getActiveBlocks() {
-    return BLOCKS.filter((b) => {
-      const ex = state.blocks[b].exercises.filter((e) => e.name.trim());
-      return ex.length > 0;
-    }).map((b) => ({
-      key: b,
-      label: BLOCK_LABELS[b],
-      config: { ...state.blocks[b], exercises: state.blocks[b].exercises.filter((e) => e.name.trim()) },
-    }));
-  }
-
-  function buildTimeline() {
-    const active = getActiveBlocks();
-    const timeline = [];
-
-    active.forEach((block, blockIndex) => {
-      const { config } = block;
-      const exercises = config.exercises;
-
-      if (config.mode === "sequential") {
-        exercises.forEach((ex, i) => {
-          timeline.push({
-            type: "work",
-            blockKey: block.key,
-            blockLabel: block.label,
-            mode: config.mode,
-            exercise: ex,
-            exerciseIndex: i,
-            exercises,
-            duration: config.workSeconds,
-            countdown: true,
-          });
-          if (config.restSeconds > 0 && i < exercises.length - 1) {
-            timeline.push({
-              type: "rest",
-              blockKey: block.key,
-              blockLabel: block.label,
-              mode: config.mode,
-              duration: config.restSeconds,
-              countdown: true,
-              label: "Descanso",
-            });
-          }
-        });
-      } else if (config.mode === "emom") {
-        const totalIntervals = config.totalMinutes;
-        for (let m = 0; m < totalIntervals; m++) {
-          const exIndex = m % exercises.length;
-          timeline.push({
-            type: "work",
-            blockKey: block.key,
-            blockLabel: block.label,
-            mode: config.mode,
-            exercise: exercises[exIndex],
-            exerciseIndex: exIndex,
-            exercises,
-            interval: m + 1,
-            totalIntervals,
-            duration: config.intervalSeconds,
-            countdown: true,
-          });
-        }
-      } else if (config.mode === "tabata") {
-        const ex = exercises[0];
-        for (let r = 0; r < config.tabataRounds; r++) {
-          timeline.push({
-            type: "work",
-            blockKey: block.key,
-            blockLabel: block.label,
-            mode: config.mode,
-            exercise: ex,
-            exercises,
-            round: r + 1,
-            totalRounds: config.tabataRounds,
-            duration: 20,
-            countdown: true,
-            label: "Tabata",
-          });
-          if (r < config.tabataRounds - 1) {
-            timeline.push({
-              type: "rest",
-              blockKey: block.key,
-              blockLabel: block.label,
-              mode: config.mode,
-              exercise: ex,
-              exercises,
-              round: r + 1,
-              totalRounds: config.tabataRounds,
-              duration: 10,
-              countdown: true,
-              label: "Descanso Tabata",
-            });
-          }
-        }
-      } else if (config.mode === "amrap" || config.mode === "fortime") {
-        const cap = config.timeCapMinutes;
-        timeline.push({
-          type: "work",
-          blockKey: block.key,
-          blockLabel: block.label,
-          mode: config.mode,
-          exercises,
-          duration: cap > 0 ? cap * 60 : 0,
-          countdown: cap > 0,
-          label: config.mode === "amrap" ? "AMRAP" : "For Time",
-        });
-      }
-
-      if (blockIndex < active.length - 1 && state.restBetweenBlocks > 0) {
-        timeline.push({
-          type: "rest",
-          blockKey: block.key,
-          blockLabel: block.label,
-          duration: state.restBetweenBlocks,
-          countdown: true,
-          label: "Descanso entre blocos",
-          betweenBlocks: true,
-        });
-      }
-    });
-
-    return timeline;
-  }
-
   let timeline = [];
   let phaseIndex = 0;
   let remaining = 0;
@@ -786,7 +636,7 @@
   let lastTick = 0;
 
   function startWorkout(opts = {}) {
-    timeline = buildTimeline();
+    timeline = buildTimeline(state);
     if (timeline.length === 0) {
       if (!opts.remote) alert("Adicione pelo menos um exercício em algum bloco.");
       return false;
@@ -988,11 +838,37 @@
       $("#round-info").textContent = `Minuto ${phase.interval} / ${phase.totalIntervals}`;
     } else if (phase.mode === "tabata") {
       nowPanel.classList.remove("hidden");
-      nextPanel.classList.add("hidden");
+      nextPanel.classList.remove("hidden");
       listPanel.classList.add("hidden");
 
-      $("#current-exercise").textContent = isRest ? "Descanso" : phase.exercise.name;
-      $("#current-reps").textContent = isRest ? "" : (phase.exercise.reps ? `${phase.exercise.reps} reps` : "");
+      if (isRest) {
+        $("#current-exercise").textContent = "Descanso";
+        $("#current-reps").textContent = "";
+        const nextEx = phase.exercises[phase.round % phase.exercises.length];
+        $("#next-exercise").textContent = nextEx.name;
+        $("#next-reps").textContent = nextEx.reps ? `${nextEx.reps} reps` : "";
+      } else {
+        $("#current-exercise").textContent = phase.exercise.name;
+        $("#current-reps").textContent = phase.exercise.reps ? `${phase.exercise.reps} reps` : "";
+        const isLastRound = phase.round === phase.totalRounds;
+        if (isLastRound) {
+          const nextPhase = timeline[phaseIndex + 1];
+          if (nextPhase?.exercise) {
+            $("#next-exercise").textContent = nextPhase.exercise.name;
+            $("#next-reps").textContent = nextPhase.exercise.reps ? `${nextPhase.exercise.reps} reps` : "";
+          } else if (nextPhase?.type === "rest") {
+            $("#next-exercise").textContent = nextPhase.label || "Descanso";
+            $("#next-reps").textContent = "";
+          } else {
+            $("#next-exercise").textContent = "Fim do bloco";
+            $("#next-reps").textContent = "";
+          }
+        } else {
+          const nextEx = phase.exercises[phase.round % phase.exercises.length];
+          $("#next-exercise").textContent = nextEx.name;
+          $("#next-reps").textContent = nextEx.reps ? `${nextEx.reps} reps` : "";
+        }
+      }
       $("#round-info").textContent = `Round ${phase.round} / ${phase.totalRounds} · ${isRest ? "10s" : "20s"}`;
     } else if (phase.mode === "amrap" || phase.mode === "fortime") {
       nowPanel.classList.add("hidden");

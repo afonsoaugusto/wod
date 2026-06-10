@@ -1,0 +1,9 @@
+{
+  "name": "wod-timer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CrossFit WOD timer for GitHub Pages",
+  "scripts": {
+    "test": "node --test tests/"
+  }
+}

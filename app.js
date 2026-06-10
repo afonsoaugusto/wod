@@ -197,24 +197,47 @@
     return audioCtx;
   }
 
-  async function unlockAudio() {
+  /**
+   * Deve rodar de forma síncrona dentro do clique/toque do usuário.
+   * Safari/iOS perde permissão de áudio após await no handler.
+   */
+  function unlockAudioInGesture() {
     if (!state.soundEnabled) return false;
+
     const ctx = getAudioContext();
     if (!ctx) return false;
 
     if (ctx.state === "suspended") {
-      await ctx.resume();
+      ctx.resume();
     }
 
-    const buffer = ctx.createBuffer(1, 1, 22050);
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-    source.connect(ctx.destination);
-    source.start(0);
+    try {
+      const buffer = ctx.createBuffer(1, 1, 22050);
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(ctx.destination);
+      source.start(0);
+    } catch (_) { /* ignore */ }
 
-    audioUnlocked = ctx.state === "running";
-    await preloadVoices();
-    return audioUnlocked;
+    const el = $("#audio-unlock");
+    if (el) {
+      el.volume = 0.01;
+      el.play().catch(() => {});
+    }
+
+    audioUnlocked = true;
+    preloadVoices();
+    return true;
+  }
+
+  function ensureAudioReady() {
+    if (!state.soundEnabled) return null;
+    const ctx = getAudioContext();
+    if (!ctx) return null;
+    if (ctx.state === "suspended") {
+      ctx.resume();
+    }
+    return ctx;
   }
 
   function preloadVoices() {
@@ -255,9 +278,8 @@
   }
 
   function playTone({ freq, duration, volume = 0.3, type = "sine", freqEnd, delay = 0 }) {
-    if (!state.soundEnabled || !audioUnlocked) return;
-    const ctx = getAudioContext();
-    if (!ctx || ctx.state !== "running") return;
+    const ctx = ensureAudioReady();
+    if (!ctx) return;
 
     try {
       const t = ctx.currentTime + delay;
@@ -297,7 +319,7 @@
   }
 
   function speak(text) {
-    if (!state.soundEnabled || !audioUnlocked || !("speechSynthesis" in window)) return;
+    if (!state.soundEnabled || !("speechSynthesis" in window)) return;
 
     window.setTimeout(() => {
       const utterance = new SpeechSynthesisUtterance(text);
@@ -312,13 +334,12 @@
     }, 50);
   }
 
-  async function testAudio() {
+  function testAudio() {
     state.soundEnabled = true;
     $("#sound-enabled").checked = true;
     savePreferences();
 
-    const ok = await unlockAudio();
-    if (!ok) {
+    if (!unlockAudioInGesture()) {
       alert("Não foi possível ativar o áudio. Verifique se o iPad não está no modo silencioso.");
       return;
     }
@@ -496,10 +517,10 @@
       renderExercises(block);
     });
 
-    $("#sound-enabled")?.addEventListener("change", async (e) => {
+    $("#sound-enabled")?.addEventListener("change", (e) => {
       state.soundEnabled = e.target.checked;
       savePreferences();
-      if (state.soundEnabled) await unlockAudio();
+      if (state.soundEnabled) unlockAudioInGesture();
     });
 
     $("#prep-countdown")?.addEventListener("change", (e) => {
@@ -516,7 +537,26 @@
     $("#btn-round-plus")?.addEventListener("click", () => updateAmrapRounds(1));
     $("#btn-round-minus")?.addEventListener("click", () => updateAmrapRounds(-1));
 
-    $("#btn-start").addEventListener("click", () => startWorkout());
+    $("#btn-start").addEventListener("click", () => {
+      if (state.soundEnabled) unlockAudioInGesture();
+      startWorkout();
+    });
+
+    ["touchstart", "pointerdown"].forEach((evt) => {
+      document.addEventListener(
+        evt,
+        () => {
+          if (
+            state.soundEnabled &&
+            !audioUnlocked &&
+            $("#timer-screen").classList.contains("active")
+          ) {
+            unlockAudioInGesture();
+          }
+        },
+        { passive: true }
+      );
+    });
     $("#btn-pause").addEventListener("click", togglePause);
     $("#btn-skip").addEventListener("click", skipPhase);
     $("#btn-stop").addEventListener("click", stopWorkout);
@@ -678,7 +718,7 @@
   let tickInterval = null;
   let lastTick = 0;
 
-  async function startWorkout() {
+  function startWorkout() {
     timeline = buildTimeline();
     if (timeline.length === 0) {
       alert("Adicione pelo menos um exercício em algum bloco.");
@@ -695,10 +735,6 @@
     $("#round-count").textContent = "0";
     $("#rest-between-blocks").value = state.restBetweenBlocks;
     applyLayoutRatio(state.layoutRatio);
-
-    if (state.soundEnabled) {
-      await unlockAudio();
-    }
 
     showScreen("timer-screen");
     requestWakeLock();

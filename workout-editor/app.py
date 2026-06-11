@@ -68,7 +68,8 @@ class ScrollableFrame(ttk.Frame):
             borderwidth=0,
             height=height,
         )
-        self.scrollbar = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.canvas.yview)
+        scrollbar_host = scrollbar_parent if scrollbar_parent is not None else self
+        self.scrollbar = ttk.Scrollbar(scrollbar_host, orient=tk.VERTICAL, command=self.canvas.yview)
         self.inner = ttk.Frame(self.canvas, style="CardInner.TFrame")
 
         self.inner.bind("<Configure>", self._on_inner_configure)
@@ -80,7 +81,6 @@ class ScrollableFrame(ttk.Frame):
             self.scrollbar.grid(row=0, column=1, sticky="ns")
         else:
             self.scrollbar.grid(
-                in_=scrollbar_parent,
                 row=scrollbar_row,
                 column=scrollbar_col,
                 rowspan=scrollbar_rowspan,

@@ -1,0 +1,46 @@
+{
+  "id": "helen",
+  "name": "Helen",
+  "description": "3 rounds For Time — 400 m run, 21 KB swings, 12 pull-ups",
+  "classic": true,
+  "config": {
+    "restBetweenBlocks": 0,
+    "weightUnit": "lb",
+    "blockList": [
+      {
+        "category": "wod",
+        "mode": "fortime",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Run",
+            "reps": "400 m × 3",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Kettlebell Swing",
+            "reps": "21 × 3",
+            "weightM": "53 lb",
+            "weightF": "35 lb",
+            "restSeconds": ""
+          },
+          {
+            "name": "Pull-up",
+            "reps": "12 × 3",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

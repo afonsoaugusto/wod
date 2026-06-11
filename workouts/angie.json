@@ -1,0 +1,53 @@
+{
+  "id": "angie",
+  "name": "Angie",
+  "description": "For Time — 100 pull-ups, 100 push-ups, 100 sit-ups, 100 squats",
+  "classic": true,
+  "config": {
+    "restBetweenBlocks": 0,
+    "weightUnit": "lb",
+    "blockList": [
+      {
+        "category": "wod",
+        "mode": "fortime",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Pull-up",
+            "reps": "100",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Push-up",
+            "reps": "100",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Sit-up",
+            "reps": "100",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Air Squat",
+            "reps": "100",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

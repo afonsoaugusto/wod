@@ -1,7 +1,8 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert/strict");
 const {
-  CLASSIC_TEMPLATES,
+  loadWorkoutsSync,
+  parseWorkoutTemplate,
   estimateDuration,
   formatDuration,
   formatClockTime,
@@ -12,13 +13,25 @@ const {
   defaultBlockEntry,
 } = require("../core.js");
 
-describe("CLASSIC_TEMPLATES", () => {
+const CLASSIC_TEMPLATES = loadWorkoutsSync();
+
+describe("workouts/*.json", () => {
   it("inclui benchmarks clássicos (Girls, Heroes)", () => {
     const names = CLASSIC_TEMPLATES.map((t) => t.id);
     ["cindy", "fran", "grace", "helen", "diane", "elizabeth", "isabel", "murph", "chelsea", "karen"].forEach(
       (id) => assert.ok(names.includes(id), `falta template ${id}`)
     );
     assert.ok(CLASSIC_TEMPLATES.length >= 15);
+  });
+
+  it("marca treinos padrão com classic: true", () => {
+    const murph = CLASSIC_TEMPLATES.find((t) => t.id === "murph");
+    assert.equal(murph.classic, true);
+    assert.match(murph.name, /Murph/);
+  });
+
+  it("parseWorkoutTemplate valida id e name", () => {
+    assert.throws(() => parseWorkoutTemplate({ name: "X" }), /id and name/);
   });
 
   it("Cindy gera timeline AMRAP com time cap de 20 min", () => {

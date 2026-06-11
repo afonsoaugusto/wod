@@ -1,0 +1,39 @@
+{
+  "id": "fran",
+  "name": "Fran",
+  "description": "For Time — 21-15-9 thrusters e pull-ups",
+  "classic": true,
+  "config": {
+    "restBetweenBlocks": 0,
+    "weightUnit": "lb",
+    "blockList": [
+      {
+        "category": "wod",
+        "mode": "fortime",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Thruster",
+            "reps": "21-15-9",
+            "weightM": "95 lb",
+            "weightF": "65 lb",
+            "restSeconds": ""
+          },
+          {
+            "name": "Pull-up",
+            "reps": "21-15-9",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

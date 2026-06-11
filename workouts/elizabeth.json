@@ -1,0 +1,39 @@
+{
+  "id": "elizabeth",
+  "name": "Elizabeth",
+  "description": "For Time — 21-15-9 squat cleans e ring dips",
+  "classic": true,
+  "config": {
+    "restBetweenBlocks": 0,
+    "weightUnit": "lb",
+    "blockList": [
+      {
+        "category": "wod",
+        "mode": "fortime",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Squat Clean",
+            "reps": "21-15-9",
+            "weightM": "135 lb",
+            "weightF": "95 lb",
+            "restSeconds": ""
+          },
+          {
+            "name": "Ring Dip",
+            "reps": "21-15-9",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

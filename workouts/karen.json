@@ -1,0 +1,32 @@
+{
+  "id": "karen",
+  "name": "Karen",
+  "description": "For Time — 150 wall balls",
+  "classic": true,
+  "config": {
+    "restBetweenBlocks": 0,
+    "weightUnit": "lb",
+    "blockList": [
+      {
+        "category": "wod",
+        "mode": "fortime",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Wall Ball",
+            "reps": "150",
+            "weightM": "20 lb",
+            "weightF": "14 lb",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

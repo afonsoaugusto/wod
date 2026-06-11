@@ -121,161 +121,78 @@
     };
   }
 
-  /** Monta config padrão para WODs clássicos (benchmarks CrossFit). */
-  function classicConfig(wodOverrides) {
+  function normalizeWorkoutConfig(config) {
+    const payload = config || {};
+    const normalized = {
+      restBetweenBlocks: payload.restBetweenBlocks ?? 0,
+      weightUnit: payload.weightUnit ?? "lb",
+      blockList: normalizeBlockList(payload),
+    };
+    if (payload.layoutRatio !== undefined) normalized.layoutRatio = payload.layoutRatio;
+    if (payload.soundEnabled !== undefined) normalized.soundEnabled = payload.soundEnabled;
+    if (payload.prepSeconds !== undefined) normalized.prepSeconds = payload.prepSeconds;
+    return normalized;
+  }
+
+  /** Converte um arquivo JSON de treino no formato usado pelo app. */
+  function parseWorkoutTemplate(data) {
+    if (!data?.id || !data?.name) {
+      throw new Error("Workout JSON must include id and name");
+    }
     return {
-      restBetweenBlocks: 0,
-      weightUnit: "lb",
-      blockList: [
-        normalizeBlockEntry({
-          category: "wod",
-          ...defaultBlock(),
-          ...wodOverrides,
-        }),
-      ],
+      id: String(data.id),
+      name: String(data.name),
+      description: data.description || "",
+      classic: Boolean(data.classic),
+      config: normalizeWorkoutConfig(data.config),
     };
   }
 
-  function classic(id, name, description, wodOverrides) {
-    return { id, name, classic: true, description, config: classicConfig(wodOverrides) };
+  function listWorkoutIds(workoutsDir, fs, path) {
+    const indexPath = path.join(workoutsDir, "index.json");
+    if (fs.existsSync(indexPath)) {
+      const index = JSON.parse(fs.readFileSync(indexPath, "utf8"));
+      if (Array.isArray(index.workouts)) return index.workouts;
+    }
+    return fs
+      .readdirSync(workoutsDir)
+      .filter((file) => file.endsWith(".json") && !file.startsWith("_") && file !== "index.json")
+      .map((file) => file.replace(/\.json$/, ""))
+      .sort();
   }
 
-  /**
-   * Benchmarks CrossFit — Girls (2003), Heroes e clássicos de referência.
-   * Fontes: CrossFit Journal, WODprep, Sand & Steel, Garage Gym Reviews.
-   */
-  const CLASSIC_TEMPLATES = [
-    classic("cindy", "Cindy", "AMRAP 20 min — 5 pull-ups, 10 push-ups, 15 air squats", {
-      mode: "amrap",
-      timeCapMinutes: 20,
-      exercises: [
-        { name: "Pull-up", reps: "5", weightM: "", weightF: "" },
-        { name: "Push-up", reps: "10", weightM: "", weightF: "" },
-        { name: "Air Squat", reps: "15", weightM: "", weightF: "" },
-      ],
-    }),
-    classic("fran", "Fran", "For Time — 21-15-9 thrusters e pull-ups", {
-      mode: "fortime",
-      timeCapMinutes: 0,
-      exercises: [
-        { name: "Thruster", reps: "21-15-9", weightM: "95 lb", weightF: "65 lb" },
-        { name: "Pull-up", reps: "21-15-9", weightM: "", weightF: "" },
-      ],
-    }),
-    classic("grace", "Grace", "For Time — 30 clean & jerks", {
-      mode: "fortime",
-      timeCapMinutes: 0,
-      exercises: [{ name: "Clean & Jerk", reps: "30", weightM: "135 lb", weightF: "95 lb" }],
-    }),
-    classic("isabel", "Isabel", "For Time — 30 snatches", {
-      mode: "fortime",
-      timeCapMinutes: 0,
-      exercises: [{ name: "Snatch", reps: "30", weightM: "135 lb", weightF: "95 lb" }],
-    }),
-    classic("helen", "Helen", "3 rounds For Time — 400 m run, 21 KB swings, 12 pull-ups", {
-      mode: "fortime",
-      timeCapMinutes: 0,
-      exercises: [
-        { name: "Run", reps: "400 m × 3", weightM: "", weightF: "" },
-        { name: "Kettlebell Swing", reps: "21 × 3", weightM: "53 lb", weightF: "35 lb" },
-        { name: "Pull-up", reps: "12 × 3", weightM: "", weightF: "" },
-      ],
-    }),
-    classic("diane", "Diane", "For Time — 21-15-9 deadlifts e handstand push-ups", {
-      mode: "fortime",
-      timeCapMinutes: 0,
-      exercises: [
-        { name: "Deadlift", reps: "21-15-9", weightM: "225 lb", weightF: "155 lb" },
-        { name: "Handstand Push-up", reps: "21-15-9", weightM: "", weightF: "" },
-      ],
-    }),
-    classic("elizabeth", "Elizabeth", "For Time — 21-15-9 squat cleans e ring dips", {
-      mode: "fortime",
-      timeCapMinutes: 0,
-      exercises: [
-        { name: "Squat Clean", reps: "21-15-9", weightM: "135 lb", weightF: "95 lb" },
-        { name: "Ring Dip", reps: "21-15-9", weightM: "", weightF: "" },
-      ],
-    }),
-    classic("nancy", "Nancy", "5 rounds For Time — 400 m run + 15 overhead squats", {
-      mode: "fortime",
-      timeCapMinutes: 0,
-      exercises: [
-        { name: "Run", reps: "400 m × 5", weightM: "", weightF: "" },
-        { name: "Overhead Squat", reps: "15 × 5", weightM: "95 lb", weightF: "65 lb" },
-      ],
-    }),
-    classic("karen", "Karen", "For Time — 150 wall balls", {
-      mode: "fortime",
-      timeCapMinutes: 0,
-      exercises: [{ name: "Wall Ball", reps: "150", weightM: "20 lb", weightF: "14 lb" }],
-    }),
-    classic("angie", "Angie", "For Time — 100 pull-ups, 100 push-ups, 100 sit-ups, 100 squats", {
-      mode: "fortime",
-      timeCapMinutes: 0,
-      exercises: [
-        { name: "Pull-up", reps: "100", weightM: "", weightF: "" },
-        { name: "Push-up", reps: "100", weightM: "", weightF: "" },
-        { name: "Sit-up", reps: "100", weightM: "", weightF: "" },
-        { name: "Air Squat", reps: "100", weightM: "", weightF: "" },
-      ],
-    }),
-    classic("annie", "Annie", "For Time — 50-40-30-20-10 double-unders e sit-ups", {
-      mode: "fortime",
-      timeCapMinutes: 0,
-      exercises: [
-        { name: "Double-under", reps: "50-40-30-20-10", weightM: "", weightF: "" },
-        { name: "Sit-up", reps: "50-40-30-20-10", weightM: "", weightF: "" },
-      ],
-    }),
-    classic("candy", "Candy", "5 rounds For Time — 20 pull-ups, 40 push-ups, 60 squats", {
-      mode: "fortime",
-      timeCapMinutes: 0,
-      exercises: [
-        { name: "Pull-up", reps: "20 × 5", weightM: "", weightF: "" },
-        { name: "Push-up", reps: "40 × 5", weightM: "", weightF: "" },
-        { name: "Air Squat", reps: "60 × 5", weightM: "", weightF: "" },
-      ],
-    }),
-    classic("chelsea", "Chelsea", "EMOM 30 min — 5 pull-ups, 10 push-ups, 15 air squats por minuto", {
-      mode: "emom",
-      totalMinutes: 30,
-      intervalSeconds: 60,
-      exercises: [
-        { name: "5 Pull-up + 10 Push-up + 15 Air Squat", reps: "1 round/min", weightM: "", weightF: "" },
-      ],
-    }),
-    classic("eva", "Eva", "5 rounds For Time — 800 m run, 30 KB swings, 30 pull-ups", {
-      mode: "fortime",
-      timeCapMinutes: 0,
-      exercises: [
-        { name: "Run", reps: "800 m × 5", weightM: "", weightF: "" },
-        { name: "Kettlebell Swing", reps: "30 × 5", weightM: "70 lb", weightF: "53 lb" },
-        { name: "Pull-up", reps: "30 × 5", weightM: "", weightF: "" },
-      ],
-    }),
-    classic("barbara", "Barbara", "5 rounds For Time — 20 pull-ups, 30 push-ups, 40 sit-ups, 50 squats (3 min descanso entre rounds)", {
-      mode: "fortime",
-      timeCapMinutes: 0,
-      exercises: [
-        { name: "Pull-up", reps: "20 × 5", weightM: "", weightF: "" },
-        { name: "Push-up", reps: "30 × 5", weightM: "", weightF: "" },
-        { name: "Sit-up", reps: "40 × 5", weightM: "", weightF: "" },
-        { name: "Air Squat", reps: "50 × 5", weightM: "", weightF: "" },
-      ],
-    }),
-    classic("murph", "Murph", "Hero WOD — 1 mi run, 100 pull-ups, 200 push-ups, 300 squats, 1 mi run", {
-      mode: "fortime",
-      timeCapMinutes: 0,
-      exercises: [
-        { name: "Run", reps: "1 mile", weightM: "", weightF: "" },
-        { name: "Pull-up", reps: "100", weightM: "20 lb vest", weightF: "14 lb vest" },
-        { name: "Push-up", reps: "200", weightM: "20 lb vest", weightF: "14 lb vest" },
-        { name: "Air Squat", reps: "300", weightM: "20 lb vest", weightF: "14 lb vest" },
-        { name: "Run", reps: "1 mile", weightM: "", weightF: "" },
-      ],
-    }),
-  ];
+  /** Carrega treinos de workouts/*.json (Node.js / testes). */
+  function loadWorkoutsSync(workoutsDir) {
+    const fs = require("fs");
+    const path = require("path");
+    const dir = workoutsDir || path.join(__dirname, "workouts");
+    return listWorkoutIds(dir, fs, path).map((id) => {
+      const raw = JSON.parse(fs.readFileSync(path.join(dir, `${id}.json`), "utf8"));
+      return parseWorkoutTemplate(raw);
+    });
+  }
+
+  /** Carrega treinos via fetch (navegador). */
+  async function fetchWorkouts(basePath = "workouts/") {
+    const normalizedBase = basePath.endsWith("/") ? basePath : `${basePath}/`;
+    const indexRes = await fetch(`${normalizedBase}index.json`);
+    if (!indexRes.ok) {
+      throw new Error(`Workouts index not found (${indexRes.status})`);
+    }
+    const { workouts: ids } = await indexRes.json();
+    if (!Array.isArray(ids)) {
+      throw new Error("Workouts index must include a workouts array");
+    }
+    return Promise.all(
+      ids.map(async (id) => {
+        const res = await fetch(`${normalizedBase}${id}.json`);
+        if (!res.ok) {
+          throw new Error(`Workout "${id}" not found (${res.status})`);
+        }
+        return parseWorkoutTemplate(await res.json());
+      })
+    );
+  }
 
   function normalizeExercise(ex) {
     return {
@@ -603,7 +520,10 @@
     PLATES_KG,
     DEFAULT_BARS,
     PERCENTAGES,
-    CLASSIC_TEMPLATES,
+    parseWorkoutTemplate,
+    normalizeWorkoutConfig,
+    loadWorkoutsSync,
+    fetchWorkouts,
     defaultExercise,
     defaultBlock,
     defaultBlockEntry,

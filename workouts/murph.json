@@ -1,0 +1,60 @@
+{
+  "id": "murph",
+  "name": "Murph",
+  "description": "Hero WOD — 1 mi run, 100 pull-ups, 200 push-ups, 300 squats, 1 mi run",
+  "classic": true,
+  "config": {
+    "restBetweenBlocks": 0,
+    "weightUnit": "lb",
+    "blockList": [
+      {
+        "category": "wod",
+        "mode": "fortime",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Run",
+            "reps": "1 mile",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Pull-up",
+            "reps": "100",
+            "weightM": "20 lb vest",
+            "weightF": "14 lb vest",
+            "restSeconds": ""
+          },
+          {
+            "name": "Push-up",
+            "reps": "200",
+            "weightM": "20 lb vest",
+            "weightF": "14 lb vest",
+            "restSeconds": ""
+          },
+          {
+            "name": "Air Squat",
+            "reps": "300",
+            "weightM": "20 lb vest",
+            "weightF": "14 lb vest",
+            "restSeconds": ""
+          },
+          {
+            "name": "Run",
+            "reps": "1 mile",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,7 +1,11 @@
 NODE_IMAGE ?= docker.io/library/node:22-alpine
 WORKDIR    := /app
 
-.PHONY: test test-podman shell
+.PHONY: test test-podman shell workouts-index
+
+# Atualiza workouts/index.json após adicionar um .json em workouts/
+workouts-index:
+	node scripts/update-workout-index.js
 
 # Roda testes localmente (requer Node.js 20+)
 test:

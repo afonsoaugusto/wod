@@ -1,0 +1,39 @@
+{
+  "id": "diane",
+  "name": "Diane",
+  "description": "For Time — 21-15-9 deadlifts e handstand push-ups",
+  "classic": true,
+  "config": {
+    "restBetweenBlocks": 0,
+    "weightUnit": "lb",
+    "blockList": [
+      {
+        "category": "wod",
+        "mode": "fortime",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Deadlift",
+            "reps": "21-15-9",
+            "weightM": "225 lb",
+            "weightF": "155 lb",
+            "restSeconds": ""
+          },
+          {
+            "name": "Handstand Push-up",
+            "reps": "21-15-9",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

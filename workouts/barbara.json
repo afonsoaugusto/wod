@@ -1,0 +1,53 @@
+{
+  "id": "barbara",
+  "name": "Barbara",
+  "description": "5 rounds For Time — 20 pull-ups, 30 push-ups, 40 sit-ups, 50 squats (3 min descanso entre rounds)",
+  "classic": true,
+  "config": {
+    "restBetweenBlocks": 0,
+    "weightUnit": "lb",
+    "blockList": [
+      {
+        "category": "wod",
+        "mode": "fortime",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Pull-up",
+            "reps": "20 × 5",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Push-up",
+            "reps": "30 × 5",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Sit-up",
+            "reps": "40 × 5",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Air Squat",
+            "reps": "50 × 5",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

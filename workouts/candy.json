@@ -1,0 +1,46 @@
+{
+  "id": "candy",
+  "name": "Candy",
+  "description": "5 rounds For Time — 20 pull-ups, 40 push-ups, 60 squats",
+  "classic": true,
+  "config": {
+    "restBetweenBlocks": 0,
+    "weightUnit": "lb",
+    "blockList": [
+      {
+        "category": "wod",
+        "mode": "fortime",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Pull-up",
+            "reps": "20 × 5",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Push-up",
+            "reps": "40 × 5",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Air Squat",
+            "reps": "60 × 5",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

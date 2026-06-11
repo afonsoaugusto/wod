@@ -16,7 +16,8 @@
   const defaultBlockEntry = WodCore.defaultBlockEntry || ((cat) => ({ id: `block-${Date.now()}`, category: cat || "wod", ...defaultBlock() }));
   const defaultExercise = WodCore.defaultExercise || (() => ({ name: "", reps: "", weightM: "", weightF: "", restSeconds: "" }));
   const WEIGHT_UNITS = WodCore.WEIGHT_UNITS || [];
-  const CLASSIC_TEMPLATES = WodCore.CLASSIC_TEMPLATES || [];
+  const fetchWorkouts = WodCore.fetchWorkouts;
+  let classicTemplates = [];
   const buildTimeline = WodCore.buildTimeline;
   const estimateDuration = WodCore.estimateDuration || (() => 0);
   const formatDuration = WodCore.formatDuration || ((s) => (s > 0 ? `${s}s` : "sem limite"));
@@ -75,7 +76,7 @@
     updateWorkoutPreview();
   }
 
-  function init() {
+  async function init() {
     state.blockList = [];
     loadPreferences();
     buildProgressRing();
@@ -87,6 +88,13 @@
     if (prepEl) prepEl.value = state.prepSeconds;
     const restEl = $("#rest-between-blocks");
     if (restEl) restEl.value = state.restBetweenBlocks;
+    if (typeof fetchWorkouts === "function") {
+      try {
+        classicTemplates = await fetchWorkouts();
+      } catch (err) {
+        console.warn("Não foi possível carregar treinos:", err);
+      }
+    }
     renderTemplateSelectors();
     renderWorkoutList();
     updateWorkoutPreview();
@@ -175,8 +183,11 @@
     if (!select) return;
 
     const saved = getSavedTemplates();
+    const presetWorkouts = classicTemplates.filter((t) => t.classic);
+    const customWorkouts = classicTemplates.filter((t) => !t.classic);
     const groups = [
-      { label: "Clássicos", items: CLASSIC_TEMPLATES || [] },
+      { label: "Padrão", items: presetWorkouts },
+      ...(customWorkouts.length ? [{ label: "Treinos", items: customWorkouts }] : []),
       { label: "Salvos", items: saved || [] },
     ];
 
@@ -230,7 +241,7 @@
 
   function loadSelectedTemplate(id) {
     if (!id) return;
-    const classic = CLASSIC_TEMPLATES.find((t) => t.id === id);
+    const classic = classicTemplates.find((t) => t.id === id);
     const saved = getSavedTemplates().find((t) => t.id === id);
     const template = classic || saved;
     if (!template) return;
@@ -945,7 +956,7 @@
 
     $("#btn-delete-wod")?.addEventListener("click", () => {
       const id = $("#template-select")?.value;
-      if (!id || CLASSIC_TEMPLATES.some((t) => t.id === id)) {
+      if (!id || classicTemplates.some((t) => t.id === id)) {
         alert("Selecione um WOD salvo (não um clássico) para excluir.");
         return;
       }
@@ -1585,7 +1596,9 @@
     try {
       if (PAGE_MODE === "display") initDisplay();
       else if (PAGE_MODE === "remote") initRemote();
-      else init();
+      else init().catch((err) => {
+        throw err;
+      });
     } catch (err) {
       console.error("WOD Timer init error:", err);
       alert(`Erro ao iniciar o app: ${err.message}\n\nRecarregue com Cmd+Shift+R.`);

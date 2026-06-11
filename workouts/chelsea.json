@@ -1,0 +1,32 @@
+{
+  "id": "chelsea",
+  "name": "Chelsea",
+  "description": "EMOM 30 min — 5 pull-ups, 10 push-ups, 15 air squats por minuto",
+  "classic": true,
+  "config": {
+    "restBetweenBlocks": 0,
+    "weightUnit": "lb",
+    "blockList": [
+      {
+        "category": "wod",
+        "mode": "emom",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 30,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "5 Pull-up + 10 Push-up + 15 Air Squat",
+            "reps": "1 round/min",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

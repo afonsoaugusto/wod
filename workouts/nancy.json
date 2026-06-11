@@ -1,0 +1,39 @@
+{
+  "id": "nancy",
+  "name": "Nancy",
+  "description": "5 rounds For Time — 400 m run + 15 overhead squats",
+  "classic": true,
+  "config": {
+    "restBetweenBlocks": 0,
+    "weightUnit": "lb",
+    "blockList": [
+      {
+        "category": "wod",
+        "mode": "fortime",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Run",
+            "reps": "400 m × 5",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Overhead Squat",
+            "reps": "15 × 5",
+            "weightM": "95 lb",
+            "weightF": "65 lb",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

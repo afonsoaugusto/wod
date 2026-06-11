@@ -1,0 +1,297 @@
+{
+  "id": "planilha",
+  "name": "Planilha",
+  "description": "Planilha 11/07",
+  "classic": false,
+  "config": {
+    "restBetweenBlocks": 20,
+    "weightUnit": "kg",
+    "blockList": [
+      {
+        "category": "alongamento",
+        "mode": "fortime",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "cards",
+        "exercises": [
+          {
+            "name": "250 m Remo",
+            "reps": "1",
+            "weightM": "1",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Hang Clean",
+            "reps": "10",
+            "weightM": "25",
+            "weightF": "15",
+            "restSeconds": ""
+          },
+          {
+            "name": "Good Morning",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Stric Pull UP",
+            "reps": "5",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "250 m Remo",
+            "reps": "1",
+            "weightM": "1",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Hang Clean",
+            "reps": "10",
+            "weightM": "25",
+            "weightF": "15",
+            "restSeconds": ""
+          },
+          {
+            "name": "Good Morning",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Stric Pull UP",
+            "reps": "5",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Core Plank",
+            "reps": "1 min",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Plank Shoulder Open",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Front Squak Holder",
+            "reps": "20\"",
+            "weightM": "25",
+            "weightF": "15",
+            "restSeconds": ""
+          },
+          {
+            "name": "Plank Shoulder OpenPlank Shoulder Open",
+            "reps": "10 10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Front Squak HolderFront Squak Holder",
+            "reps": "20\"20\"",
+            "weightM": "25",
+            "weightF": "15",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "emom",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 3,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "cards",
+        "exercises": [
+          {
+            "name": "HANG SQYAK CLEAN",
+            "reps": "3",
+            "weightM": "",
+            "weightF": "35",
+            "restSeconds": "60"
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "emom",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 3,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "cards",
+        "exercises": [
+          {
+            "name": "HANG SQYAK CLEAN",
+            "reps": "3",
+            "weightM": "",
+            "weightF": "39",
+            "restSeconds": "60"
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "emom",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 3,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "cards",
+        "exercises": [
+          {
+            "name": "HANG SQYAK CLEANHANG SQYAK CLEAN",
+            "reps": "2",
+            "weightM": "",
+            "weightF": "45",
+            "restSeconds": "60"
+          }
+        ]
+      },
+      {
+        "category": "wod",
+        "mode": "emom",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 3,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "cards",
+        "exercises": [
+          {
+            "name": "HANG SQYAK CLEAN",
+            "reps": "1",
+            "weightM": "",
+            "weightF": "51",
+            "restSeconds": "60"
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "fortime",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 5,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "DESCANSO",
+            "reps": "",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "wod",
+        "mode": "emom",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 6,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "cards",
+        "exercises": [
+          {
+            "name": "Toes to bar",
+            "reps": "2",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Pull Up",
+            "reps": "2",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Swing",
+            "reps": "2",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "wod",
+        "mode": "fortime",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 5,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Descanso",
+            "reps": "",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "wod",
+        "mode": "emom",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 120,
+        "totalMinutes": 8,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "cards",
+        "exercises": [
+          {
+            "name": "HSPU",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "16",
+            "restSeconds": ""
+          },
+          {
+            "name": "KB Swing",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "16",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

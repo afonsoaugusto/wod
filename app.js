@@ -76,6 +76,15 @@
     updateWorkoutPreview();
   }
 
+  async function loadClassicTemplates() {
+    if (typeof fetchWorkouts !== "function") return;
+    try {
+      classicTemplates = await fetchWorkouts();
+    } catch (err) {
+      console.warn("Não foi possível carregar treinos:", err);
+    }
+  }
+
   async function init() {
     state.blockList = [];
     loadPreferences();
@@ -88,13 +97,7 @@
     if (prepEl) prepEl.value = state.prepSeconds;
     const restEl = $("#rest-between-blocks");
     if (restEl) restEl.value = state.restBetweenBlocks;
-    if (typeof fetchWorkouts === "function") {
-      try {
-        classicTemplates = await fetchWorkouts();
-      } catch (err) {
-        console.warn("Não foi possível carregar treinos:", err);
-      }
-    }
+    await loadClassicTemplates();
     renderTemplateSelectors();
     renderWorkoutList();
     updateWorkoutPreview();
@@ -1522,10 +1525,11 @@
     }
   }
 
-  function initRemote() {
+  async function initRemote() {
     state.blockList = [];
     loadPreferences();
     syncWeightUnitUI();
+    await loadClassicTemplates();
     renderTemplateSelectors();
     renderWorkoutList();
     updateWorkoutPreview();
@@ -1595,8 +1599,11 @@
   function boot() {
     try {
       if (PAGE_MODE === "display") initDisplay();
-      else if (PAGE_MODE === "remote") initRemote();
-      else init().catch((err) => {
+      else if (PAGE_MODE === "remote") {
+        initRemote().catch((err) => {
+          throw err;
+        });
+      } else init().catch((err) => {
         throw err;
       });
     } catch (err) {

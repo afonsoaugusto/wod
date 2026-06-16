@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Quadro — WOD Timer</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=21">
+  <link rel="stylesheet" href="board.css?v=1">
+</head>
+<body data-page="board">
+  <div class="board-page">
+    <nav class="site-nav site-nav--minimal">
+      <a href="index.html">Timer</a>
+      <a href="display.html">Tela</a>
+      <a href="remote.html">Controle</a>
+      <a href="board.html" class="active">Quadro</a>
+      <a href="bar-calculator.html">Barra</a>
+      <a href="about.html">Sobre</a>
+    </nav>
+
+    <div class="board-toolbar">
+      <label>
+        Treino
+        <select id="workout-select" aria-label="Selecionar treino"></select>
+      </label>
+      <div class="board-toolbar-actions">
+        <button type="button" id="btn-fullscreen" class="board-btn">Tela cheia</button>
+        <button type="button" id="btn-print" class="board-btn board-btn--primary">Imprimir</button>
+      </div>
+    </div>
+
+    <div id="board-root">
+      <p class="board-loading">Carregando treino…</p>
+    </div>
+  </div>
+
+  <script src="core.js?v=12"></script>
+  <script src="board.js?v=1"></script>
+</body>
+</html>

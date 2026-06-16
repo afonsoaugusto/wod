@@ -1,0 +1,307 @@
+{
+  "id": "terca-feira",
+  "name": "Terça-feira",
+  "description": "Warm up, mobilidade, força (deadlift + front squat), WOD EMOM 12'",
+  "classic": false,
+  "config": {
+    "restBetweenBlocks": 0,
+    "weightUnit": "kg",
+    "blockList": [
+      {
+        "category": "alongamento",
+        "mode": "sequential",
+        "workSeconds": 120,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Remo",
+            "reps": "2'",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Air Squat",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Plank Shoulder Opener",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Good Morning",
+            "reps": "10",
+            "weightM": "15",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Front Squat",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Push Press",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Reverse Plank",
+            "reps": "30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Air Squat",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Plank Shoulder Opener",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Good Morning",
+            "reps": "10",
+            "weightM": "15",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Front Squat",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Push Press",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Reverse Plank",
+            "reps": "30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "alongamento",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Williams",
+            "reps": "30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Wall Therapy",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Handstand Hold",
+            "reps": "10\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Williams",
+            "reps": "30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Wall Therapy",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Handstand Hold",
+            "reps": "10\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Deadlift",
+            "reps": "8 × 2",
+            "weightM": "45",
+            "weightF": "",
+            "restSeconds": "120"
+          },
+          {
+            "name": "Deadlift",
+            "reps": "8 × 2",
+            "weightM": "55",
+            "weightF": "",
+            "restSeconds": "120"
+          },
+          {
+            "name": "Deadlift",
+            "reps": "8 × 2",
+            "weightM": "65",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "fortime",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 5,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Descanso",
+            "reps": "",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Front Squat",
+            "reps": "5",
+            "weightM": "50%",
+            "weightF": "",
+            "restSeconds": "120"
+          },
+          {
+            "name": "Front Squat",
+            "reps": "5 × 2",
+            "weightM": "65%",
+            "weightF": "",
+            "restSeconds": "120"
+          },
+          {
+            "name": "Front Squat",
+            "reps": "3",
+            "weightM": "75%",
+            "weightF": "",
+            "restSeconds": "120"
+          },
+          {
+            "name": "Front Squat",
+            "reps": "2 × 2",
+            "weightM": "80%",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "wod",
+        "mode": "emom",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "cards",
+        "exercises": [
+          {
+            "name": "Burpee",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Rope Climb",
+            "reps": "2",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "HSPU",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Descanso",
+            "reps": "",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

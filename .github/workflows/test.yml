@@ -1,4 +1,4 @@
-name: Tests
+name: CI
 
 on:
   push:
@@ -7,7 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  test:
+  unit-tests:
+    name: Testes unitários
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,3 +19,25 @@ jobs:
 
       - name: Run unit tests
         run: node --test tests/*.test.js
+
+  build:
+    name: Build Next.js
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          # Build não acessa o banco; valores fictícios apenas para inicializar libs.
+          AUTH_SECRET: "ci-build-placeholder-secret-value-0123456789"
+          MONGODB_URI: "mongodb://localhost:27017/wod"
+          MONGODB_DB: "wod"

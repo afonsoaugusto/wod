@@ -11,7 +11,7 @@ const {
   normalizeExercise,
   buildTimeline,
   defaultBlockEntry,
-} = require("../core.js");
+} = require("../public/timer/core.js");
 
 const CLASSIC_TEMPLATES = loadWorkoutsSync();
 

@@ -10,7 +10,7 @@ const {
   buildTimeline,
   createStateFromConfig,
   normalizeExercise,
-} = require("../core.js");
+} = require("../public/timer/core.js");
 
 function makeState(overrides = {}) {
   return Object.assign(

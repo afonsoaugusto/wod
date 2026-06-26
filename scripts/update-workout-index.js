@@ -4,7 +4,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const dir = path.join(__dirname, "..", "workouts");
+const dir = path.join(__dirname, "..", "public", "timer", "workouts");
 const ids = fs
   .readdirSync(dir)
   .filter((file) => file.endsWith(".json") && !file.startsWith("_") && file !== "index.json")

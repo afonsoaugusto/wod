@@ -7,7 +7,7 @@ const {
   roundWeight,
   DEFAULT_BARS,
   PERCENTAGES,
-} = require("../core.js");
+} = require("../public/timer/core.js");
 
 describe("calculatePlatesPerSide", () => {
   it("calcula anilhas em libras para 115 lb com barra de 45 lb", () => {

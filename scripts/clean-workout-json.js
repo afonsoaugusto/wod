@@ -4,7 +4,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const dir = path.join(__dirname, "..", "workouts");
+const dir = path.join(__dirname, "..", "public", "timer", "workouts");
 
 function cleanBlockList(blockList) {
   return (blockList || []).map(({ id, ...block }) => block);

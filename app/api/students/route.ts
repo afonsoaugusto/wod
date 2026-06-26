@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { getSessionUser, isCoach } from "@/lib/guards";
@@ -55,14 +56,16 @@ export async function POST(req: Request) {
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
+  const shareToken = randomBytes(12).toString("hex");
   const result = await col.insertOne({
     name,
     email,
     passwordHash,
     role: "student",
     coachId: me.id,
+    shareToken,
     createdAt: new Date(),
   });
 
-  return NextResponse.json({ id: result.insertedId.toString(), name, email });
+  return NextResponse.json({ id: result.insertedId.toString(), name, email, shareToken });
 }

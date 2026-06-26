@@ -102,6 +102,65 @@
     renderWorkoutList();
     updateWorkoutPreview();
     bindEvents();
+    await maybeLoadFromQuery();
+  }
+
+  function selectAndLoad(id) {
+    if (!id) return;
+    const select = $("#template-select");
+    if (select) select.value = id;
+    loadSelectedTemplate(id);
+  }
+
+  function showAssignmentBanner(text) {
+    if (!text) return;
+    let banner = document.getElementById("assignment-banner");
+    if (!banner) {
+      banner = document.createElement("div");
+      banner.id = "assignment-banner";
+      banner.style.cssText =
+        "margin:12px 0;padding:10px 14px;border-radius:10px;background:#1f6feb22;border:1px solid #1f6feb55;color:inherit;font-size:14px;";
+      const app = document.getElementById("app");
+      if (app) app.insertBefore(banner, app.firstChild);
+    }
+    banner.textContent = text;
+  }
+
+  // Carrega WOD via URL: ?wod=<id> (template) ou ?aluno=<token> (treino do aluno, sem login).
+  async function maybeLoadFromQuery() {
+    const params = new URLSearchParams(location.search);
+    const wod = params.get("wod");
+    const aluno = params.get("aluno");
+
+    if (aluno) {
+      try {
+        const res = await fetch(
+          `/api/public/next-workout?token=${encodeURIComponent(aluno)}`
+        );
+        if (!res.ok) {
+          showAssignmentBanner("Não foi possível carregar o treino deste aluno.");
+          return;
+        }
+        const data = await res.json();
+        const a = data.assignment;
+        const nome = data.student?.name ? `${data.student.name}` : "Aluno";
+        if (!a) {
+          showAssignmentBanner(`${nome}: nenhum treino associado ainda.`);
+          return;
+        }
+        const partes = [`${nome} · ${a.title}`];
+        if (a.scheduledFor) partes.push(a.scheduledFor);
+        if (a.details) partes.push(a.details);
+        showAssignmentBanner(partes.join(" — "));
+        if (a.workoutId) selectAndLoad(a.workoutId);
+      } catch (err) {
+        console.warn("Falha ao carregar treino do aluno:", err);
+        showAssignmentBanner("Não foi possível carregar o treino deste aluno.");
+      }
+      return;
+    }
+
+    if (wod) selectAndLoad(wod);
   }
 
   function loadPreferences() {

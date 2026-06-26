@@ -10,6 +10,8 @@ export interface UserDoc {
   passwordHash: string;
   role: Role;
   coachId?: string | null;
+  /** Token público para abrir o treino no timer sem login (apenas alunos). */
+  shareToken?: string;
   createdAt: Date;
 }
 

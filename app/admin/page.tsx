@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 import { redirect } from "next/navigation";
 import { getSessionUser, isCoach } from "@/lib/guards";
 import { users, groups, assignments } from "@/lib/models";
@@ -24,6 +25,15 @@ export default async function AdminPage() {
     .find({ role: "student", coachId: me.id })
     .sort({ createdAt: -1 })
     .toArray();
+
+  // Backfill: garante um shareToken para alunos cadastrados antes desta versão.
+  for (const s of studentDocs) {
+    if (!s.shareToken) {
+      const shareToken = randomBytes(12).toString("hex");
+      await usersCol.updateOne({ _id: s._id }, { $set: { shareToken } });
+      s.shareToken = shareToken;
+    }
+  }
   const groupDocs = await groupsCol
     .find({ coachId: me.id })
     .sort({ createdAt: -1 })
@@ -81,6 +91,14 @@ export default async function AdminPage() {
             {studentDocs.map((s) => (
               <li key={s._id!.toString()}>
                 <strong>{s.name}</strong> <span className="muted">· {s.email}</span>
+                {s.shareToken && (
+                  <div className="muted">
+                    Link sem login:{" "}
+                    <a href={`/timer?aluno=${s.shareToken}`} target="_blank" rel="noreferrer">
+                      /timer?aluno={s.shareToken}
+                    </a>
+                  </div>
+                )}
               </li>
             ))}
             {students.length === 0 && <li className="muted">Nenhum aluno ainda.</li>}

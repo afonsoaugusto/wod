@@ -152,7 +152,11 @@
         if (a.scheduledFor) partes.push(a.scheduledFor);
         if (a.details) partes.push(a.details);
         showAssignmentBanner(partes.join(" — "));
-        if (a.workoutId) selectAndLoad(a.workoutId);
+        if (a.config) {
+          applyFullConfig(a.config);
+        } else if (a.workoutId) {
+          selectAndLoad(a.workoutId);
+        }
       } catch (err) {
         console.warn("Falha ao carregar treino do aluno:", err);
         showAssignmentBanner("Não foi possível carregar o treino deste aluno.");

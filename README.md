@@ -141,6 +141,17 @@ curl -X POST https://SEU-DOMINIO/api/setup \
 
 Alternativa local/script: `npm run seed:admin` (requer `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `MONGODB_URI`).
 
+Para associar o treino do dia a grupos/alunos: `npm run seed:today` (opcional: `WORKOUT_ID`, `SCHEDULED_FOR`).
+
+Para cadastrar um usuário via CLI:
+
+```bash
+MONGODB_URI="..." npm run create-user -- \
+  --name "Ana" --email ana@box.com --password senha123 --role student
+# roles: admin | coach | student
+# aluno com vários coaches: acrescente --coach-email coach@box.com
+```
+
 ---
 
 ## Desenvolvimento

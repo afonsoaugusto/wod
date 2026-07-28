@@ -9,7 +9,9 @@
     "start": "next start",
     "test": "node --test tests/*.test.js",
     "workouts:index": "node scripts/update-workout-index.js",
-    "seed:admin": "node scripts/seed-admin.mjs"
+    "seed:admin": "node scripts/seed-admin.mjs",
+    "seed:today": "node scripts/seed-today-workout.mjs",
+    "create-user": "node scripts/create-user.mjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

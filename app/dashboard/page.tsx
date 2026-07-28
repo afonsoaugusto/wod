@@ -52,7 +52,11 @@ export default async function DashboardPage() {
                 {next.workoutId ? ` · template: ${next.workoutId}` : ""}
               </p>
               {next.details && <p>{next.details}</p>}
-              <a href="/timer" target="_blank" rel="noreferrer">
+              <a
+                href={next.workoutId ? `/timer?wod=${encodeURIComponent(next.workoutId)}` : "/timer"}
+                target="_blank"
+                rel="noreferrer"
+              >
                 <button>Abrir no timer</button>
               </a>
             </>

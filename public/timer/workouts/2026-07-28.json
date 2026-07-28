@@ -1,0 +1,378 @@
+{
+  "id": "2026-07-28",
+  "name": "28/07 — Terça",
+  "description": "Skill hang/pull + EMOM C2B/L-Sit/T2B + Split Jerk + Strict PU + For Time HSPU/DU/WW",
+  "classic": false,
+  "config": {
+    "restBetweenBlocks": 90,
+    "weightUnit": "kg",
+    "blockList": [
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 45,
+        "restSeconds": 30,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Dead Hang",
+            "reps": "20\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "15"
+          },
+          {
+            "name": "Strict Pull-up",
+            "reps": "2",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "15"
+          },
+          {
+            "name": "Hollow Hold",
+            "reps": "30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "15"
+          },
+          {
+            "name": "ATY",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "60"
+          },
+          {
+            "name": "Dead Hang",
+            "reps": "20\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "15"
+          },
+          {
+            "name": "Strict Pull-up",
+            "reps": "2",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "15"
+          },
+          {
+            "name": "Hollow Hold",
+            "reps": "30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "15"
+          },
+          {
+            "name": "ATY",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "60"
+          },
+          {
+            "name": "Dead Hang",
+            "reps": "20\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "15"
+          },
+          {
+            "name": "Strict Pull-up",
+            "reps": "2",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "15"
+          },
+          {
+            "name": "Hollow Hold",
+            "reps": "30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "15"
+          },
+          {
+            "name": "ATY",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "wod",
+        "mode": "emom",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "cards",
+        "exercises": [
+          {
+            "name": "C2B",
+            "reps": "6",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "L-Sit Paralela",
+            "reps": "30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "T2B",
+            "reps": "8",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Descanso",
+            "reps": "",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 180,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Split Jerk",
+            "reps": "2",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "180"
+          },
+          {
+            "name": "Split Jerk",
+            "reps": "2",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "180"
+          },
+          {
+            "name": "Split Jerk",
+            "reps": "2",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "180"
+          },
+          {
+            "name": "Split Jerk",
+            "reps": "2",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 120,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Strict Pull-up (elástico)",
+            "reps": "8",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "120"
+          },
+          {
+            "name": "Strict Pull-up (elástico)",
+            "reps": "8",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "120"
+          },
+          {
+            "name": "Strict Pull-up (elástico)",
+            "reps": "8",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "wod",
+        "mode": "fortime",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "HSPU",
+            "reps": "6",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "DU",
+            "reps": "30",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "HSPU",
+            "reps": "8",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "DU",
+            "reps": "30",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Wall Walks",
+            "reps": "3",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "DU",
+            "reps": "30",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Descanso",
+            "reps": "3'",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "HSPU",
+            "reps": "6",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "DU",
+            "reps": "30",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "HSPU",
+            "reps": "8",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "DU",
+            "reps": "30",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Wall Walks",
+            "reps": "3",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "DU",
+            "reps": "30",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Descanso",
+            "reps": "3'",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "HSPU",
+            "reps": "6",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "DU",
+            "reps": "30",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "HSPU",
+            "reps": "8",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "DU",
+            "reps": "30",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Wall Walks",
+            "reps": "3",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "DU",
+            "reps": "30",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

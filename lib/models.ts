@@ -33,6 +33,8 @@ export interface AssignmentDoc {
   title: string;
   /** Optional reference to a classic workout id (public/timer/workouts/<id>.json). */
   workoutId?: string | null;
+  /** Optional inline timer config (overrides workoutId when present). */
+  config?: Record<string, unknown> | null;
   /** Optional free-form workout description / planilha. */
   details?: string | null;
   scheduledFor?: string | null;

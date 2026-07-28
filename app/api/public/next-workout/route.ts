@@ -43,6 +43,7 @@ export async function GET(req: Request) {
           scheduledFor: next.scheduledFor ?? null,
           details: next.details ?? null,
           workoutId: next.workoutId ?? null,
+          config: next.config ?? null,
         }
       : null,
   });

@@ -2,7 +2,7 @@ import { randomBytes } from "crypto";
 import { redirect } from "next/navigation";
 import { getSessionUser, isCoach } from "@/lib/guards";
 import { users, groups, assignments } from "@/lib/models";
-import { getWorkoutIds } from "@/lib/workouts";
+import { getWorkoutOptions } from "@/lib/workouts";
 import StudentForm from "@/components/StudentForm";
 import GroupForm from "@/components/GroupForm";
 import AssignmentForm from "@/components/AssignmentForm";
@@ -45,7 +45,7 @@ export default async function AdminPage() {
 
   const students = studentDocs.map((s) => ({ id: s._id!.toString(), name: s.name }));
   const groupOptions = groupDocs.map((g) => ({ id: g._id!.toString(), name: g.name }));
-  const workoutIds = getWorkoutIds();
+  const workouts = getWorkoutOptions();
 
   const nameById = new Map<string, string>();
   students.forEach((s) => nameById.set(s.id, s.name));
@@ -81,7 +81,7 @@ export default async function AdminPage() {
 
           <div className="card">
             <h2>Associar próximo treino</h2>
-            <AssignmentForm students={students} groups={groupOptions} workoutIds={workoutIds} />
+            <AssignmentForm students={students} groups={groupOptions} workouts={workouts} />
           </div>
         </div>
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSessionUser, isCoach } from "@/lib/guards";
 import { assignments, groups } from "@/lib/models";
+import { getWorkoutConfig } from "@/lib/workouts";
 
 export const runtime = "nodejs";
 
@@ -48,11 +49,13 @@ export async function POST(req: Request) {
     workoutId?: string;
     details?: string;
     scheduledFor?: string;
+    embedConfig?: boolean;
   } | null;
 
   const targetType = body?.targetType === "group" ? "group" : "student";
   const targetId = String(body?.targetId ?? "").trim();
   const title = String(body?.title ?? "").trim();
+  const workoutId = body?.workoutId ? String(body.workoutId).trim() : "";
 
   if (!targetId || !title) {
     return NextResponse.json(
@@ -61,13 +64,19 @@ export async function POST(req: Request) {
     );
   }
 
+  let config: Record<string, unknown> | null = null;
+  if (workoutId && body?.embedConfig !== false) {
+    config = getWorkoutConfig(workoutId);
+  }
+
   const col = await assignments();
   const result = await col.insertOne({
     coachId: me.id,
     targetType,
     targetId,
     title,
-    workoutId: body?.workoutId ? String(body.workoutId) : null,
+    workoutId: workoutId || null,
+    config,
     details: body?.details ? String(body.details) : null,
     scheduledFor: body?.scheduledFor ? String(body.scheduledFor) : null,
     createdAt: new Date(),
@@ -82,6 +91,7 @@ type AssignmentLike = {
   targetId: string;
   title: string;
   workoutId?: string | null;
+  config?: Record<string, unknown> | null;
   details?: string | null;
   scheduledFor?: string | null;
   createdAt: Date;
@@ -94,6 +104,7 @@ function serialize(a: AssignmentLike) {
     targetId: a.targetId,
     title: a.title,
     workoutId: a.workoutId ?? null,
+    config: a.config ?? null,
     details: a.details ?? null,
     scheduledFor: a.scheduledFor ?? null,
     createdAt: a.createdAt,

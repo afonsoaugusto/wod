@@ -8,26 +8,47 @@ interface Option {
   name: string;
 }
 
+interface WorkoutOption {
+  id: string;
+  name: string;
+  description?: string;
+}
+
+function todayISO() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 export default function AssignmentForm({
   students,
   groups,
-  workoutIds,
+  workouts,
 }: {
   students: Option[];
   groups: Option[];
-  workoutIds: string[];
+  workouts: WorkoutOption[];
 }) {
   const router = useRouter();
   const [targetType, setTargetType] = useState<"student" | "group">("student");
   const [targetId, setTargetId] = useState("");
   const [title, setTitle] = useState("");
   const [workoutId, setWorkoutId] = useState("");
-  const [scheduledFor, setScheduledFor] = useState("");
+  const [scheduledFor, setScheduledFor] = useState(todayISO());
   const [details, setDetails] = useState("");
   const [msg, setMsg] = useState<{ type: "ok" | "error"; text: string } | null>(null);
   const [loading, setLoading] = useState(false);
 
   const options = targetType === "student" ? students : groups;
+
+  function onWorkoutChange(id: string) {
+    setWorkoutId(id);
+    if (!id) return;
+    const w = workouts.find((x) => x.id === id);
+    if (w && !title.trim()) setTitle(w.name);
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -36,7 +57,15 @@ export default function AssignmentForm({
     const res = await fetch("/api/assignments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ targetType, targetId, title, workoutId, scheduledFor, details }),
+      body: JSON.stringify({
+        targetType,
+        targetId,
+        title,
+        workoutId,
+        scheduledFor,
+        details,
+        embedConfig: true,
+      }),
     });
     setLoading(false);
     const data = await res.json().catch(() => ({}));
@@ -47,7 +76,7 @@ export default function AssignmentForm({
     setMsg({ type: "ok", text: "Treino associado." });
     setTitle("");
     setWorkoutId("");
-    setScheduledFor("");
+    setScheduledFor(todayISO());
     setDetails("");
     router.refresh();
   }
@@ -82,16 +111,16 @@ export default function AssignmentForm({
       <input id="a-title" value={title} onChange={(e) => setTitle(e.target.value)} required />
 
       <label htmlFor="a-workout">Template do timer (opcional)</label>
-      <select id="a-workout" value={workoutId} onChange={(e) => setWorkoutId(e.target.value)}>
+      <select id="a-workout" value={workoutId} onChange={(e) => onWorkoutChange(e.target.value)}>
         <option value="">Nenhum</option>
-        {workoutIds.map((id) => (
-          <option key={id} value={id}>
-            {id}
+        {workouts.map((w) => (
+          <option key={w.id} value={w.id} title={w.description || w.name}>
+            {w.name}
           </option>
         ))}
       </select>
 
-      <label htmlFor="a-date">Data prevista (opcional)</label>
+      <label htmlFor="a-date">Data prevista</label>
       <input
         id="a-date"
         type="date"

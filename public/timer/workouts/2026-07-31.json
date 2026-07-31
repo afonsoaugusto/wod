@@ -1,0 +1,176 @@
+{
+  "id": "2026-07-31",
+  "name": "31/07 — Sexta",
+  "description": "Aquecimento clean + Squat Clean 2,5' + Front Squat + Bike/C&J",
+  "classic": false,
+  "config": {
+    "restBetweenBlocks": 90,
+    "weightUnit": "kg",
+    "blockList": [
+      {
+        "category": "tecnica",
+        "mode": "amrap",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 5,
+        "timeCapMinutes": 5,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Clean (aquecimento livre)",
+            "reps": "5'",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "emom",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 150,
+        "totalMinutes": 6,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Squat Clean",
+            "reps": "2",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 180,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Front Squat",
+            "reps": "3",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "180"
+          },
+          {
+            "name": "Front Squat",
+            "reps": "3",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "180"
+          },
+          {
+            "name": "Front Squat",
+            "reps": "3",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "180"
+          },
+          {
+            "name": "Front Squat",
+            "reps": "3",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "wod",
+        "mode": "sequential",
+        "workSeconds": 90,
+        "restSeconds": 60,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Bike",
+            "reps": "200m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Clean & Jerk",
+            "reps": "8",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "60"
+          },
+          {
+            "name": "Bike",
+            "reps": "200m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Clean & Jerk",
+            "reps": "8",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "60"
+          },
+          {
+            "name": "Bike",
+            "reps": "200m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Clean & Jerk",
+            "reps": "8",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "60"
+          },
+          {
+            "name": "Bike",
+            "reps": "200m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Clean & Jerk",
+            "reps": "8",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "60"
+          },
+          {
+            "name": "Bike",
+            "reps": "200m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Clean & Jerk",
+            "reps": "8",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

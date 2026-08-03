@@ -1,0 +1,252 @@
+{
+  "id": "2026-08-03",
+  "name": "03/08 — Segunda",
+  "description": "Bike + side plank/chinese plank + elevação pélvica + bike/run + GHD",
+  "classic": false,
+  "config": {
+    "restBetweenBlocks": 90,
+    "weightUnit": "kg",
+    "blockList": [
+      {
+        "category": "alongamento",
+        "mode": "amrap",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 5,
+        "timeCapMinutes": 5,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Bike (warm up)",
+            "reps": "5'",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 120,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Side Plank Clamshell",
+            "reps": "15/15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Chinese Plank",
+            "reps": "60\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "120"
+          },
+          {
+            "name": "Side Plank Clamshell",
+            "reps": "15/15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Chinese Plank",
+            "reps": "60\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "120"
+          },
+          {
+            "name": "Side Plank Clamshell",
+            "reps": "15/15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Chinese Plank",
+            "reps": "60\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "120"
+          },
+          {
+            "name": "Side Plank Clamshell",
+            "reps": "15/15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Chinese Plank",
+            "reps": "60\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 180,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Elevação Pélvica (barra pesada)",
+            "reps": "10-15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "180"
+          },
+          {
+            "name": "Elevação Pélvica (barra pesada)",
+            "reps": "10-15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "180"
+          },
+          {
+            "name": "Elevação Pélvica (barra pesada)",
+            "reps": "10-15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "180"
+          },
+          {
+            "name": "Elevação Pélvica (barra pesada)",
+            "reps": "10-15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "wod",
+        "mode": "sequential",
+        "workSeconds": 90,
+        "restSeconds": 0,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Bike 65 RPM",
+            "reps": "60\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Run",
+            "reps": "100m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Bike 65 RPM",
+            "reps": "60\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Run",
+            "reps": "100m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Bike 65 RPM",
+            "reps": "60\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Run",
+            "reps": "100m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Bike 65 RPM",
+            "reps": "60\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Run",
+            "reps": "100m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 120,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "GHD Back Extension",
+            "reps": "15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "120"
+          },
+          {
+            "name": "GHD Back Extension",
+            "reps": "15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "120"
+          },
+          {
+            "name": "GHD Back Extension",
+            "reps": "15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "120"
+          },
+          {
+            "name": "GHD Back Extension",
+            "reps": "15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

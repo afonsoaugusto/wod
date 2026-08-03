@@ -1,0 +1,88 @@
+{
+  "id": "2026-08-06",
+  "name": "06/08 — Quinta",
+  "description": "Condicionamento: run/bike/row/OH carry/ski chipper",
+  "classic": false,
+  "config": {
+    "restBetweenBlocks": 0,
+    "weightUnit": "kg",
+    "blockList": [
+      {
+        "category": "wod",
+        "mode": "fortime",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Run",
+            "reps": "400m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Bike",
+            "reps": "1000m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Run",
+            "reps": "400m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Row",
+            "reps": "800m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Run",
+            "reps": "400m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "OH Carry",
+            "reps": "60m",
+            "weightM": "12",
+            "weightF": "12",
+            "restSeconds": ""
+          },
+          {
+            "name": "Run",
+            "reps": "400m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Ski",
+            "reps": "600m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Run",
+            "reps": "400m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

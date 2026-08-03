@@ -1,0 +1,203 @@
+{
+  "id": "2026-08-05",
+  "name": "05/08 — Quarta",
+  "description": "Bike + bench/shoulder 3' + stiff/lunge + star plank + ski",
+  "classic": false,
+  "config": {
+    "restBetweenBlocks": 90,
+    "weightUnit": "kg",
+    "blockList": [
+      {
+        "category": "alongamento",
+        "mode": "amrap",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 5,
+        "timeCapMinutes": 5,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Bike (de boa)",
+            "reps": "5'",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "emom",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 180,
+        "totalMinutes": 5,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Bench Press (PSE 7) + Shoulder Press (só barra)",
+            "reps": "5 + 10-15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 90,
+        "restSeconds": 0,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Stiff (pesadão)",
+            "reps": "12",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Lunge (barra vazia nas costas)",
+            "reps": "20m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Stiff (pesadão)",
+            "reps": "12",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Lunge (barra vazia nas costas)",
+            "reps": "20m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Stiff (pesadão)",
+            "reps": "12",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Lunge (barra vazia nas costas)",
+            "reps": "20m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Stiff (pesadão)",
+            "reps": "12",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Lunge (barra vazia nas costas)",
+            "reps": "20m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 0,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Star Plank",
+            "reps": "30\"/30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Star Plank",
+            "reps": "30\"/30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Star Plank",
+            "reps": "30\"/30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Star Plank",
+            "reps": "30\"/30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "wod",
+        "mode": "sequential",
+        "workSeconds": 90,
+        "restSeconds": 90,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Ski",
+            "reps": "20 cal",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "Ski",
+            "reps": "20 cal",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "Ski",
+            "reps": "20 cal",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "Ski",
+            "reps": "20 cal",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

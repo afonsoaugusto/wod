@@ -1856,17 +1856,29 @@ body[data-page="bar-calculator"] {
 
 .countdown-panel {
   margin-top: 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.5rem;
+  align-items: center;
+  width: min(100%, 36rem);
+}
+
+.countdown-cell {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  width: min(100%, 22rem);
+  justify-content: center;
+  min-width: 0;
+}
+
+.countdown-cell--controls {
+  gap: 0.85rem;
 }
 
 .countdown-display {
   margin: 0;
   font-family: var(--font-mono);
-  font-size: clamp(3rem, 14vw, 5.5rem);
+  font-size: clamp(2.75rem, 12vw, 5rem);
   line-height: 1;
   letter-spacing: 0.02em;
   color: var(--text);
@@ -1918,4 +1930,11 @@ body[data-page="bar-calculator"] {
   flex-wrap: wrap;
   gap: 0.75rem;
   justify-content: center;
+}
+
+@media (max-width: 480px) {
+  .countdown-panel {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }

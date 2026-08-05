@@ -6,6 +6,15 @@ const {
   incrementCounter,
   decrementCounter,
   resetCounter,
+  createCountdown,
+  setCountdownDuration,
+  startCountdown,
+  pauseCountdown,
+  toggleCountdown,
+  stopCountdown,
+  tickCountdown,
+  countdownLabel,
+  formatClockTime,
 } = require("../public/timer/core.js");
 
 describe("normalizeCount", () => {
@@ -54,5 +63,66 @@ describe("incrementCounter / decrementCounter", () => {
 describe("resetCounter", () => {
   it("volta para zero", () => {
     assert.deepEqual(resetCounter(), { value: 0 });
+  });
+});
+
+describe("createCountdown", () => {
+  it("usa 3 minutos por padrão", () => {
+    const state = createCountdown();
+    assert.equal(state.durationSeconds, 180);
+    assert.equal(state.remainingSeconds, 180);
+    assert.equal(state.status, "idle");
+  });
+
+  it("aceita duração customizada", () => {
+    assert.equal(createCountdown(90).durationSeconds, 90);
+  });
+});
+
+describe("countdown flow", () => {
+  it("exibe MM:SS na descida", () => {
+    assert.equal(formatClockTime(180), "03:00");
+    assert.equal(formatClockTime(179), "02:59");
+    assert.equal(formatClockTime(178), "02:58");
+  });
+
+  it("iniciar → tick → pausar → continuar → parar", () => {
+    let state = createCountdown(5);
+    state = startCountdown(state);
+    assert.equal(state.status, "running");
+    assert.equal(countdownLabel(state.status), "Pausar");
+
+    state = tickCountdown(state);
+    assert.equal(state.remainingSeconds, 4);
+
+    state = pauseCountdown(state);
+    assert.equal(state.status, "paused");
+    assert.equal(countdownLabel(state.status), "Continuar");
+    assert.equal(tickCountdown(state).remainingSeconds, 4);
+
+    state = toggleCountdown(state);
+    assert.equal(state.status, "running");
+
+    state = stopCountdown(state);
+    assert.equal(state.status, "idle");
+    assert.equal(state.remainingSeconds, 5);
+    assert.equal(countdownLabel(state.status), "Iniciar");
+  });
+
+  it("chega a finished em 00:00", () => {
+    let state = startCountdown(createCountdown(1));
+    state = tickCountdown(state);
+    assert.equal(state.remainingSeconds, 0);
+    assert.equal(state.status, "finished");
+    assert.equal(formatClockTime(state.remainingSeconds), "00:00");
+  });
+
+  it("setCountdownDuration redefine o tempo configurado", () => {
+    let state = startCountdown(createCountdown(60));
+    state = tickCountdown(state);
+    state = setCountdownDuration(state, 120);
+    assert.equal(state.durationSeconds, 120);
+    assert.equal(state.remainingSeconds, 120);
+    assert.equal(state.status, "idle");
   });
 });

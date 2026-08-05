@@ -533,6 +533,79 @@
     return { value: 0 };
   }
 
+  function normalizeDurationSeconds(value) {
+    const n = Math.trunc(Number(value));
+    if (!Number.isFinite(n) || n < 0) return 0;
+    return n;
+  }
+
+  function createCountdown(durationSeconds = 180) {
+    const duration = normalizeDurationSeconds(durationSeconds);
+    return {
+      durationSeconds: duration,
+      remainingSeconds: duration,
+      status: "idle",
+    };
+  }
+
+  function setCountdownDuration(state, durationSeconds) {
+    const duration = normalizeDurationSeconds(durationSeconds);
+    return {
+      durationSeconds: duration,
+      remainingSeconds: duration,
+      status: "idle",
+    };
+  }
+
+  function startCountdown(state) {
+    const duration = normalizeDurationSeconds(state?.durationSeconds);
+    let remaining = normalizeDurationSeconds(state?.remainingSeconds);
+    if (remaining <= 0) remaining = duration;
+    if (remaining <= 0) {
+      return { durationSeconds: duration, remainingSeconds: 0, status: "idle" };
+    }
+    return {
+      durationSeconds: duration,
+      remainingSeconds: remaining,
+      status: "running",
+    };
+  }
+
+  function pauseCountdown(state) {
+    if (state?.status !== "running") return state;
+    return { ...state, status: "paused" };
+  }
+
+  function toggleCountdown(state) {
+    if (state?.status === "running") return pauseCountdown(state);
+    return startCountdown(state);
+  }
+
+  function stopCountdown(state) {
+    const duration = normalizeDurationSeconds(state?.durationSeconds);
+    return {
+      durationSeconds: duration,
+      remainingSeconds: duration,
+      status: "idle",
+    };
+  }
+
+  function tickCountdown(state) {
+    if (state?.status !== "running") return state;
+    const remaining = Math.max(0, normalizeDurationSeconds(state.remainingSeconds) - 1);
+    return {
+      durationSeconds: normalizeDurationSeconds(state.durationSeconds),
+      remainingSeconds: remaining,
+      status: remaining === 0 ? "finished" : "running",
+    };
+  }
+
+  function countdownLabel(status) {
+    if (status === "running") return "Pausar";
+    if (status === "paused") return "Continuar";
+    return "Iniciar";
+  }
+
   return {
     BLOCKS,
     BLOCK_LABELS,
@@ -578,5 +651,14 @@
     incrementCounter,
     decrementCounter,
     resetCounter,
+    normalizeDurationSeconds,
+    createCountdown,
+    setCountdownDuration,
+    startCountdown,
+    pauseCountdown,
+    toggleCountdown,
+    stopCountdown,
+    tickCountdown,
+    countdownLabel,
   };
 });

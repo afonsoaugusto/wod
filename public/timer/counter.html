@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=22">
+  <link rel="stylesheet" href="styles.css?v=23">
 </head>
 <body data-page="counter">
   <div class="about-page counter-page">
@@ -34,11 +34,30 @@
         <button type="button" id="btn-increment" class="btn-counter btn-counter-plus" aria-label="Aumentar">+</button>
       </div>
       <button type="button" id="btn-reset" class="btn-secondary btn-inline">Zerar</button>
+
+      <section class="countdown-panel" aria-label="Temporizador">
+        <p class="countdown-display" id="countdown-display" aria-live="polite">03:00</p>
+        <div class="countdown-config">
+          <label class="countdown-field">
+            <span>Min</span>
+            <input type="number" id="countdown-minutes" min="0" max="99" step="1" value="3" inputmode="numeric">
+          </label>
+          <span class="countdown-sep" aria-hidden="true">:</span>
+          <label class="countdown-field">
+            <span>Seg</span>
+            <input type="number" id="countdown-seconds" min="0" max="59" step="1" value="0" inputmode="numeric">
+          </label>
+        </div>
+        <div class="countdown-actions">
+          <button type="button" id="btn-countdown-toggle" class="btn-primary btn-inline">Iniciar</button>
+          <button type="button" id="btn-countdown-stop" class="btn-secondary btn-inline">Parar</button>
+        </div>
+      </section>
     </main>
   </div>
 
-  <script src="core.js?v=11"></script>
+  <script src="core.js?v=12"></script>
   <script src="theme.js?v=10"></script>
-  <script src="counter.js?v=1"></script>
+  <script src="counter.js?v=2"></script>
 </body>
 </html>

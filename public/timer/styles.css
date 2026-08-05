@@ -1853,3 +1853,69 @@ body[data-page="bar-calculator"] {
   border-color: transparent;
   color: #fff;
 }
+
+.countdown-panel {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: min(100%, 22rem);
+}
+
+.countdown-display {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(3rem, 14vw, 5.5rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+
+.countdown-config {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.countdown-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.countdown-field input {
+  width: 4.5rem;
+  padding: 0.55rem 0.4rem;
+  border: 1px solid var(--border, var(--bg-input));
+  border-radius: 0.5rem;
+  background: var(--bg-input);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+.countdown-field input:disabled {
+  opacity: 0.55;
+}
+
+.countdown-sep {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  padding-bottom: 0.45rem;
+  color: var(--text-muted);
+}
+
+.countdown-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}

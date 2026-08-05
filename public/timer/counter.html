@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>WOD Timer — Contador</title>
+  <base href="/timer/">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=22">
+</head>
+<body data-page="counter">
+  <div class="about-page counter-page">
+    <nav class="site-nav">
+      <a href="index.html">Timer</a>
+      <a href="display.html">Tela</a>
+      <a href="remote.html">Controle</a>
+      <a href="board.html">Quadro</a>
+      <a href="bar-calculator.html">Barra</a>
+      <a href="counter.html" class="active">Contador</a>
+      <a href="about.html">Sobre</a>
+      <button type="button" class="btn-icon btn-theme site-nav-theme" title="Alternar tema">🌙</button>
+    </nav>
+
+    <main class="counter-main">
+      <p class="counter-value" id="counter-value" aria-live="polite">0</p>
+      <div class="counter-controls">
+        <button type="button" id="btn-decrement" class="btn-counter" aria-label="Diminuir">−</button>
+        <button type="button" id="btn-increment" class="btn-counter btn-counter-plus" aria-label="Aumentar">+</button>
+      </div>
+      <button type="button" id="btn-reset" class="btn-secondary btn-inline">Zerar</button>
+    </main>
+  </div>
+
+  <script src="core.js?v=11"></script>
+  <script src="theme.js?v=10"></script>
+  <script src="counter.js?v=1"></script>
+</body>
+</html>

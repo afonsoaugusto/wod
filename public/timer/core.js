@@ -509,6 +509,30 @@
     };
   }
 
+  function normalizeCount(value) {
+    const n = Math.trunc(Number(value));
+    if (!Number.isFinite(n)) return 0;
+    return n;
+  }
+
+  function createCounter(initial = 0) {
+    return { value: normalizeCount(initial) };
+  }
+
+  function incrementCounter(state, step = 1) {
+    const delta = Number.isFinite(Number(step)) ? Math.trunc(Number(step)) : 1;
+    return { value: normalizeCount(state?.value) + delta };
+  }
+
+  function decrementCounter(state, step = 1) {
+    const delta = Number.isFinite(Number(step)) ? Math.trunc(Number(step)) : 1;
+    return { value: normalizeCount(state?.value) - delta };
+  }
+
+  function resetCounter() {
+    return { value: 0 };
+  }
+
   return {
     BLOCKS,
     BLOCK_LABELS,
@@ -549,5 +573,10 @@
     formatPlatesList,
     buildPercentageTable,
     serializeConfig,
+    normalizeCount,
+    createCounter,
+    incrementCounter,
+    decrementCounter,
+    resetCounter,
   };
 });

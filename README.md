@@ -110,6 +110,7 @@ wod/
 | `/remote` | Controle pelo celular |
 | `/board` | Quadro |
 | `/bar-calculator` | Calculadora de anilhas |
+| `/counter` | Contador simples (+ / −) |
 | `/timer?wod=fran` | Carrega template direto |
 | `/timer?aluno=<token>` | Carrega próximo treino do aluno (sem login) |
 

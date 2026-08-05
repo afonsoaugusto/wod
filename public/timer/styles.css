@@ -1791,3 +1791,65 @@ body[data-page="bar-calculator"] {
     padding: 0.5rem 1rem;
   }
 }
+
+.counter-page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.counter-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 1.5rem 1rem 3rem;
+  text-align: center;
+}
+
+.counter-value {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(6rem, 28vw, 14rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--text);
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.counter-controls {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-counter {
+  width: clamp(4.5rem, 18vw, 7rem);
+  height: clamp(4.5rem, 18vw, 7rem);
+  border: 2px solid var(--border, var(--bg-input));
+  border-radius: 50%;
+  background: var(--bg-input);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: clamp(2.5rem, 10vw, 4rem);
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s ease, background 0.12s ease;
+}
+
+.btn-counter:active {
+  transform: scale(0.94);
+}
+
+.btn-counter-plus {
+  background: var(--accent, #e85d04);
+  border-color: transparent;
+  color: #fff;
+}

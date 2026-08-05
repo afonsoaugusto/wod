@@ -7,6 +7,7 @@ const nextConfig = {
       { source: "/display", destination: "/timer/display.html" },
       { source: "/remote", destination: "/timer/remote.html" },
       { source: "/bar-calculator", destination: "/timer/bar-calculator.html" },
+      { source: "/counter", destination: "/timer/counter.html" },
     ];
   },
 };

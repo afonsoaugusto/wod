@@ -1,0 +1,168 @@
+{
+  "id": "2026-08-19",
+  "name": "19/08 — Quarta (Inferiores)",
+  "description": "Back hack lunge + deadlift + sumo squat + side plank clamshell",
+  "classic": false,
+  "config": {
+    "restBetweenBlocks": 90,
+    "weightUnit": "kg",
+    "blockList": [
+      {
+        "category": "alongamento",
+        "mode": "amrap",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 5,
+        "timeCapMinutes": 5,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Warm Up (livre)",
+            "reps": "5'",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 90,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Back Hack Lunge (pesado)",
+            "reps": "4/4",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "Back Hack Lunge (pesado)",
+            "reps": "4/4",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "Back Hack Lunge (pesado)",
+            "reps": "4/4",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 90,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Deadlift (pesado — soltar descidas)",
+            "reps": "6",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "Deadlift (pesado — soltar descidas)",
+            "reps": "6",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "Deadlift (pesado — soltar descidas)",
+            "reps": "6",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 90,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Sumo Squat (pesado)",
+            "reps": "5",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "Sumo Squat (pesado)",
+            "reps": "5",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "Sumo Squat (pesado)",
+            "reps": "5",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 90,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Side Plank Clamshell",
+            "reps": "15/15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "Side Plank Clamshell",
+            "reps": "15/15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "Side Plank Clamshell",
+            "reps": "15/15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

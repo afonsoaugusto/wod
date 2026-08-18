@@ -1,0 +1,203 @@
+{
+  "id": "2026-08-20",
+  "name": "20/08 — Quinta (Inferiores)",
+  "description": "Goblet squat + single leg hip thrust + stiff unilateral + bike/cadeirinha",
+  "classic": false,
+  "config": {
+    "restBetweenBlocks": 90,
+    "weightUnit": "kg",
+    "blockList": [
+      {
+        "category": "alongamento",
+        "mode": "amrap",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 5,
+        "timeCapMinutes": 5,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Warm Up (livre)",
+            "reps": "5'",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 90,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Goblet Squat (pesado)",
+            "reps": "15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "Goblet Squat (pesado)",
+            "reps": "15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "Goblet Squat (pesado)",
+            "reps": "15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 90,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Single Leg Hip Thrust",
+            "reps": "8/8",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "Single Leg Hip Thrust",
+            "reps": "8/8",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "Single Leg Hip Thrust",
+            "reps": "8/8",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 90,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Stiff Unilateral",
+            "reps": "5/5",
+            "weightM": "6",
+            "weightF": "6",
+            "restSeconds": "90"
+          },
+          {
+            "name": "Stiff Unilateral",
+            "reps": "5/5",
+            "weightM": "6",
+            "weightF": "6",
+            "restSeconds": "90"
+          },
+          {
+            "name": "Stiff Unilateral",
+            "reps": "5/5",
+            "weightM": "6",
+            "weightF": "6",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "wod",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 0,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Bike forte 65 RPM",
+            "reps": "30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Single Leg Cadeirinha",
+            "reps": "30\"/30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Bike forte 65 RPM",
+            "reps": "30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Single Leg Cadeirinha",
+            "reps": "30\"/30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Bike forte 65 RPM",
+            "reps": "30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Single Leg Cadeirinha",
+            "reps": "30\"/30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Bike forte 65 RPM",
+            "reps": "30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Single Leg Cadeirinha",
+            "reps": "30\"/30\"",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

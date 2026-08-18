@@ -1,0 +1,211 @@
+{
+  "id": "2026-08-17",
+  "name": "17/08 — Segunda",
+  "description": "Bike + bulgarian/lunge + elevação pélvica/hip thrust + GHD",
+  "classic": false,
+  "config": {
+    "restBetweenBlocks": 90,
+    "weightUnit": "kg",
+    "blockList": [
+      {
+        "category": "alongamento",
+        "mode": "amrap",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 5,
+        "timeCapMinutes": 5,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Bike (warm up)",
+            "reps": "5'",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 120,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Bulgarian Split Squat (sem peso)",
+            "reps": "15/15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Walking Lunge",
+            "reps": "20m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "120"
+          },
+          {
+            "name": "Bulgarian Split Squat (sem peso)",
+            "reps": "15/15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Walking Lunge",
+            "reps": "20m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "120"
+          },
+          {
+            "name": "Bulgarian Split Squat (sem peso)",
+            "reps": "15/15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Walking Lunge",
+            "reps": "20m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "120"
+          },
+          {
+            "name": "Bulgarian Split Squat (sem peso)",
+            "reps": "15/15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Walking Lunge",
+            "reps": "20m",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 180,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Elevação Pélvica (barra pesada)",
+            "reps": "8-12",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Hip Thrust (sem peso)",
+            "reps": "1'",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "180"
+          },
+          {
+            "name": "Elevação Pélvica (barra pesada)",
+            "reps": "8-12",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Hip Thrust (sem peso)",
+            "reps": "1'",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "180"
+          },
+          {
+            "name": "Elevação Pélvica (barra pesada)",
+            "reps": "8-12",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Hip Thrust (sem peso)",
+            "reps": "1'",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "180"
+          },
+          {
+            "name": "Elevação Pélvica (barra pesada)",
+            "reps": "8-12",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Hip Thrust (sem peso)",
+            "reps": "1'",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 90,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "GHD Back Extension",
+            "reps": "15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "GHD Back Extension",
+            "reps": "15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "GHD Back Extension",
+            "reps": "15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "90"
+          },
+          {
+            "name": "GHD Back Extension",
+            "reps": "15",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}

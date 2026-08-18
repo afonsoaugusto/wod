@@ -1,0 +1,142 @@
+{
+  "id": "2026-08-18",
+  "name": "18/08 — Terça (WOD day)",
+  "description": "12' shuttle/burpee + 12' lunge/wall ball + raises/curls/snow angel",
+  "classic": false,
+  "config": {
+    "restBetweenBlocks": 240,
+    "weightUnit": "kg",
+    "blockList": [
+      {
+        "category": "wod",
+        "mode": "amrap",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 12,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Shuttle Run 7,5m (2-4-6-8…)",
+            "reps": "AMRAP 12'",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Burpee (2-4-6-8…)",
+            "reps": "AMRAP 12'",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "wod",
+        "mode": "amrap",
+        "workSeconds": 60,
+        "restSeconds": 15,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 12,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "Walking Lunge (10-20-30-40…)",
+            "reps": "AMRAP 12'",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          },
+          {
+            "name": "Wall Ball (10-20-30-40…)",
+            "reps": "AMRAP 12'",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      },
+      {
+        "category": "tecnica",
+        "mode": "sequential",
+        "workSeconds": 60,
+        "restSeconds": 60,
+        "intervalSeconds": 60,
+        "totalMinutes": 12,
+        "timeCapMinutes": 0,
+        "tabataRounds": 8,
+        "exerciseView": "list",
+        "exercises": [
+          {
+            "name": "DB Front Raises (@30X1)",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "60"
+          },
+          {
+            "name": "DB Hammer Curls",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "60"
+          },
+          {
+            "name": "Snow Angel (c/ peso)",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "60"
+          },
+          {
+            "name": "DB Front Raises (@30X1)",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "60"
+          },
+          {
+            "name": "DB Hammer Curls",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "60"
+          },
+          {
+            "name": "Snow Angel (c/ peso)",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "60"
+          },
+          {
+            "name": "DB Front Raises (@30X1)",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "60"
+          },
+          {
+            "name": "DB Hammer Curls",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": "60"
+          },
+          {
+            "name": "Snow Angel (c/ peso)",
+            "reps": "10",
+            "weightM": "",
+            "weightF": "",
+            "restSeconds": ""
+          }
+        ]
+      }
+    ]
+  }
+}
